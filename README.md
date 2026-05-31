@@ -21,6 +21,11 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
+### Docker
+```bash
+cd backend
+docker-compose up -d
+
 ### Frontend
 ```bash
 cd frontend
