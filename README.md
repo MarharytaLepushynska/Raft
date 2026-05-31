@@ -25,6 +25,7 @@ cd backend
 ```bash
 cd backend
 docker-compose up -d
+```
 
 ### Frontend
 ```bash
