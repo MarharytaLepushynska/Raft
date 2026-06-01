@@ -6,7 +6,7 @@ import type { Task, TaskPriority } from '@/types/task';
 import './TodoPage.css';
 
 type StatusFilter = 'all' | 'active' | 'completed';
-type PriorityFilter = 'all' | TaskPriority;
+const PRIORITIES: TaskPriority[] = ['HIGH', 'MEDIUM', 'LOW'];
 
 function formatDeadline(task: Task): string {
   const date = new Date(`${task.dueDate}T${task.dueTime ?? '00:00'}`);
@@ -19,7 +19,7 @@ export function TodoPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all');
+  const [activePriorities, setActivePriorities] = useState<Set<TaskPriority>>(() => new Set(PRIORITIES));
 
   useEffect(() => {
     let active = true;
@@ -40,6 +40,14 @@ export function TodoPage() {
     setTasks((prev) => prev.map((item) => (item.id === task.id ? updated : item)));
   };
 
+  const togglePriority = (priority: TaskPriority) =>
+    setActivePriorities((prev) => {
+      const next = new Set(prev);
+      if (next.has(priority)) next.delete(priority);
+      else next.add(priority);
+      return next;
+    });
+
   const remaining = tasks.filter((task) => task.status !== 'COMPLETED').length;
 
   const sections = useMemo(() => {
@@ -49,7 +57,7 @@ export function TodoPage() {
 
     const filtered = tasks.filter((task) => {
       if (query && !task.title.toLowerCase().includes(query)) return false;
-      if (priorityFilter !== 'all' && task.priority !== priorityFilter) return false;
+      if (!activePriorities.has(task.priority)) return false;
       if (statusFilter === 'active' && task.status === 'COMPLETED') return false;
       if (statusFilter === 'completed' && task.status !== 'COMPLETED') return false;
       return true;
@@ -65,7 +73,7 @@ export function TodoPage() {
       { key: 'upcoming', title: 'Upcoming', overdue: false, tasks: pick((x) => x.state === 'upcoming' && !isDueOn(x.task, today)) },
       { key: 'completed', title: 'Completed', overdue: false, tasks: pick((x) => x.state === 'done') },
     ];
-  }, [tasks, search, statusFilter, priorityFilter]);
+  }, [tasks, search, statusFilter, activePriorities]);
 
   const visibleSections = sections.filter((section) => section.tasks.length > 0);
 
@@ -102,16 +110,20 @@ export function TodoPage() {
           ))}
         </div>
 
-        <select
-          className="todo__select"
-          value={priorityFilter}
-          onChange={(event) => setPriorityFilter(event.target.value as PriorityFilter)}
-        >
-          <option value="all">All priorities</option>
-          <option value="HIGH">High</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="LOW">Low</option>
-        </select>
+        <div className="todo__priorities">
+          {PRIORITIES.map((priority) => (
+            <button
+              key={priority}
+              type="button"
+              className="todo__priority"
+              data-active={activePriorities.has(priority)}
+              onClick={() => togglePriority(priority)}
+            >
+              <span className={`todo__priority-dot todo__priority-dot--${priority.toLowerCase()}`} />
+              {priorityLabels[priority]}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading ? (

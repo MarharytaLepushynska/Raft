@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { getTasks } from '@/api/tasks';
 import { monthGridDays, toISODate, weekDays } from '@/lib/calendar';
 import { Icon } from '@/lib/icons';
-import { addDays, byDueTime } from '@/lib/tasks';
-import type { Task } from '@/types/task';
+import { addDays, byDueTime, priorityLabels } from '@/lib/tasks';
+import type { Task, TaskPriority } from '@/types/task';
 import './CalendarPage.css';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const PRIORITIES: TaskPriority[] = ['HIGH', 'MEDIUM', 'LOW'];
 const MAX_PER_DAY = 3;
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
@@ -35,10 +36,12 @@ function TimeGrid({
   days,
   tasksByDate,
   today,
+  onPickDay,
 }: {
   days: Date[];
   tasksByDate: Map<string, Task[]>;
   today: string;
+  onPickDay: (date: Date) => void;
 }) {
   const cols = `64px repeat(${days.length}, minmax(0, 1fr))`;
   return (
@@ -48,10 +51,15 @@ function TimeGrid({
         {days.map((date) => {
           const iso = toISODate(date);
           return (
-            <div key={iso} className={`tg__day-head${iso === today ? ' tg__day-head--today' : ''}`}>
+            <button
+              key={iso}
+              type="button"
+              className={`tg__day-head${iso === today ? ' tg__day-head--today' : ''}`}
+              onClick={() => onPickDay(date)}
+            >
               <span className="tg__day-name">{weekdayName(date)}</span>
               <span className="tg__day-num">{date.getDate()}</span>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -99,6 +107,17 @@ export function CalendarPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [view, setView] = useState<View>('month');
   const [focus, setFocus] = useState(() => new Date());
+  const [activePriorities, setActivePriorities] = useState<Set<TaskPriority>>(
+    () => new Set(PRIORITIES),
+  );
+
+  const togglePriority = (priority: TaskPriority) =>
+    setActivePriorities((prev) => {
+      const next = new Set(prev);
+      if (next.has(priority)) next.delete(priority);
+      else next.add(priority);
+      return next;
+    });
 
   useEffect(() => {
     let active = true;
@@ -115,13 +134,14 @@ export function CalendarPage() {
   const tasksByDate = useMemo(() => {
     const map = new Map<string, Task[]>();
     for (const task of tasks) {
+      if (!activePriorities.has(task.priority)) continue;
       const list = map.get(task.dueDate) ?? [];
       list.push(task);
       map.set(task.dueDate, list);
     }
     for (const list of map.values()) list.sort(byDueTime);
     return map;
-  }, [tasks]);
+  }, [tasks, activePriorities]);
 
   const shift = (delta: number) =>
     setFocus((f) => {
@@ -175,6 +195,21 @@ export function CalendarPage() {
         </div>
       </header>
 
+      <div className="calendar__filters">
+        {PRIORITIES.map((priority) => (
+          <button
+            key={priority}
+            type="button"
+            className="calendar__filter"
+            data-active={activePriorities.has(priority)}
+            onClick={() => togglePriority(priority)}
+          >
+            <span className={`calendar__filter-dot calendar__filter-dot--${priority.toLowerCase()}`} />
+            {priorityLabels[priority]}
+          </button>
+        ))}
+      </div>
+
       {view === 'month' ? (
         <div className="calendar__grid">
           {WEEKDAYS.map((weekday) => (
@@ -223,7 +258,15 @@ export function CalendarPage() {
           })}
         </div>
       ) : (
-        <TimeGrid days={view === 'week' ? weekDays(focus) : [focus]} tasksByDate={tasksByDate} today={today} />
+        <TimeGrid
+          days={view === 'week' ? weekDays(focus) : [focus]}
+          tasksByDate={tasksByDate}
+          today={today}
+          onPickDay={(date) => {
+            setFocus(date);
+            setView('day');
+          }}
+        />
       )}
     </div>
   );
