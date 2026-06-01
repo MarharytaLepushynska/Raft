@@ -22,22 +22,6 @@ public class UserService {
         return mapToResponse(user);
     }
 
-    //TODO: використати в AuthService
-    public UserResponse createUser(UserRequest userRequest){
-        if(userRepository.existsByEmail(userRequest.getEmail())){
-            throw new EmailAreadyExsistsException("Email already in use");
-        }
-
-        User user = new User();
-        user.setEmail(userRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setFirstName(userRequest.getFirstName());
-        user.setLastName(userRequest.getLastName());
-        user.setAvatar(userRequest.getAvatar());
-
-        return mapToResponse(userRepository.save(user));
-    }
-
     public UserResponse updateUser(Long id, UserRequest userRequest){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"));
@@ -48,6 +32,7 @@ public class UserService {
         }
 
         user.setEmail(userRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
         user.setAvatar(userRequest.getAvatar());
