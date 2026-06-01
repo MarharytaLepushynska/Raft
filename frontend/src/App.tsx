@@ -1,9 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { DashboardPage } from '@/pages/DashboardPage';
-import { TodoPage } from '@/pages/TodoPage';
-import { CalendarPage } from '@/pages/CalendarPage';
-import { PlaceholderPage } from '@/pages/PlaceholderPage';
+import { DashboardPage } from '@/pages/dashboard/DashboardPage';
+import { TodoPage } from '@/pages/todo/TodoPage';
+import { CalendarPage } from '@/pages/calendar/CalendarPage';
+import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage';
 
 function App() {
   return (
