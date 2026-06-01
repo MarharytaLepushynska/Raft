@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/lib/icons';
 import { getUser } from '@/api/user';
 import type { User } from '@/types/user';
@@ -9,6 +10,7 @@ interface TopbarProps {
 }
 
 export function Topbar({ onMenuClick }: TopbarProps) {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -39,16 +41,16 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       </div>
 
       <div className="actions">
-        <button className="icon-btn" aria-label="Notifications">
+        <button className="icon-btn" aria-label="Notifications" onClick={() => navigate('/inbox')}>
           <Icon name="bell" />
           <span className="dot" />
         </button>
 
-        <div className="user">
+        <button type="button" className="user" onClick={() => navigate('/profile')}>
           <span className="avatar">{initials}</span>
           <span className="username">{user?.firstName}</span>
           <Icon name="chevron-down" size={16} />
-        </div>
+        </button>
       </div>
     </header>
   );

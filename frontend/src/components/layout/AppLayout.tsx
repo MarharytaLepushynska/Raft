@@ -1,20 +1,18 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import './AppLayout.css';
 
-interface AppLayoutProps {
-  children: ReactNode;
-}
-
-export function AppLayout({ children }: AppLayoutProps) {
-  const [activeItem, setActiveItem] = useState('/');
+export function AppLayout() {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
 
-  const handleNavigate = (id: string) => {
-    setActiveItem(id);
+  const handleNavigate = (path: string) => {
+    navigate(path);
     closeMenu();
   };
 
@@ -30,7 +28,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="layout">
       <Sidebar
-        activeItem={activeItem}
+        activeItem={pathname}
         onNavigate={handleNavigate}
         isOpen={isMenuOpen}
         onClose={closeMenu}
@@ -41,7 +39,9 @@ export function AppLayout({ children }: AppLayoutProps) {
       <Topbar onMenuClick={() => setMenuOpen(true)} />
 
       <main className="content">
-        <div className="content-inner">{children}</div>
+        <div className="content-inner">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
