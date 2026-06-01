@@ -5,7 +5,7 @@
 { "id", "firstName", "lastName", "email", "avatar": "| null" }
 ```
 Розбіжності з `User`: `name` → firstName/lastName; `password` не віддавати; id Long→string.
-Імена пофікшено, id теж, пароль не віддається
+Імена пофікшено, пароль не віддається
 !!!Шлях /api/users/me
 
 ## GET /api/tasks
