@@ -63,6 +63,26 @@
   gap: var(--space-3);
 }
 
+.calendar__add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding: 0 var(--space-4);
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.calendar__add:hover {
+  background: var(--color-primary-hover);
+}
+
 .calendar__views {
   display: flex;
   gap: 2px;
@@ -333,12 +353,20 @@
   display: flex;
   align-items: baseline;
   gap: var(--space-1);
+  width: 100%;
   padding: 2px var(--space-1);
   border-left: 3px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-bg);
   font-size: var(--text-xs);
+  text-align: left;
+  cursor: pointer;
   min-width: 0;
+  transition: filter var(--transition);
+}
+
+.tg__chip:hover {
+  filter: brightness(0.96);
 }
 
 .tg__chip--low {

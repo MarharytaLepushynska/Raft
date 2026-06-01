@@ -7,6 +7,18 @@
 
 .todo__toolbar {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.todo__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.todo__filters {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
@@ -68,6 +80,27 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+.todo__add {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding: 0 var(--space-4);
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+.todo__add:hover {
+  background: var(--color-primary-hover);
 }
 
 .todo__priority {
@@ -218,6 +251,8 @@
   flex-direction: column;
   gap: 2px;
   flex: 1;
+  min-width: 0;
+  cursor: pointer;
 }
 
 .todo-task__head {
@@ -228,9 +263,11 @@
 }
 
 .todo-task__title {
+  min-width: 0;
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
+  overflow-wrap: anywhere;
 }
 
 .todo-task__priority {
@@ -256,6 +293,7 @@
 .todo-task__desc {
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .todo-task__meta {
