@@ -33,8 +33,8 @@ public class AuthService {
         User user = new User();
         user.setEmail(userRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setFirstName(userRequest.getFirstName());
-        user.setLastName(userRequest.getLastName());
+        user.setFirstName(userRequest.getFirstName().trim());
+        user.setLastName(userRequest.getLastName().trim());
         user.setAvatar(userRequest.getAvatar());
 
         User saved  = userRepository.save(user);
@@ -60,6 +60,7 @@ public class AuthService {
 
     private UserResponse mapToResponse(User user) {
         UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId().toString());
         userResponse.setEmail(user.getEmail());
         userResponse.setFirstName(user.getFirstName());
         userResponse.setLastName(user.getLastName());

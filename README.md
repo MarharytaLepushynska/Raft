@@ -15,16 +15,16 @@ Raft is a web application for planning and organizing students' personal and aca
 
 ## Getting Started
 
-### Backend
-```bash
-cd backend
-./mvnw spring-boot:run
-```
-
 ### Docker
 ```bash
 cd backend
 docker-compose up -d
+```
+
+### Backend
+```bash
+cd backend
+./mvnw spring-boot:run
 ```
 
 ### Frontend

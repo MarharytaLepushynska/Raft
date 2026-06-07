@@ -33,8 +33,8 @@ public class UserService {
 
         user.setEmail(userRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-        user.setFirstName(userRequest.getFirstName());
-        user.setLastName(userRequest.getLastName());
+        user.setFirstName(userRequest.getFirstName().trim());
+        user.setLastName(userRequest.getLastName().trim());
         user.setAvatar(userRequest.getAvatar());
 
         return mapToResponse(userRepository.save(user));

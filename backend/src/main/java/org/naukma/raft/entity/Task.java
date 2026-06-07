@@ -9,7 +9,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.naukma.raft.enums.TaskPriority;
 import org.naukma.raft.enums.TaskStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "tasks")
@@ -48,8 +50,11 @@ public class Task {
     @Column(nullable = false)
     private TaskPriority priority;
 
+    @Column(nullable = false)
+    private LocalDate dueDate;
+
     @Column
-    private LocalDateTime deadline;
+    private LocalTime dueTime;
 
     @CreationTimestamp
     @Column(nullable = false)

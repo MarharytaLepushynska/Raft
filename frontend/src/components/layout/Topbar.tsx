@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from '@/lib/icons';
-import { getUser } from '@/api/user';
+import { useAuth } from '@/auth/AuthContext';
 import { titleForPath } from '@/config/navigation';
-import type { User } from '@/types/user';
 import './Topbar.css';
 
 interface TopbarProps {
@@ -20,17 +18,7 @@ function timeGreeting(): string {
 export function Topbar({ onMenuClick }: TopbarProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    getUser().then((u) => {
-      if (active) setUser(u);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
+  const { user } = useAuth();
 
   const initials = user ? (user.firstName[0] ?? '') + (user.lastName[0] ?? '') : '';
 

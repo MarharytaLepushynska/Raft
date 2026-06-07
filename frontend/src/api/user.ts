@@ -1,6 +1,6 @@
+import { api } from '@/api/http';
 import type { User } from '@/types/user';
-import { mockUser } from '@/mocks/user';
 
 export async function getUser(): Promise<User> {
-  return Promise.resolve(mockUser);
+  return api.get<User>('/users/me');
 }
