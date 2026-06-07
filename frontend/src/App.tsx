@@ -3,6 +3,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage';
 import { TodoPage } from '@/pages/todo/TodoPage';
 import { CalendarPage } from '@/pages/calendar/CalendarPage';
+import { NotesPage } from '@/pages/notes/NotesPage';
 import { SpacesPage } from '@/pages/spaces/SpacesPage';
 import { WorkspacePage } from '@/pages/spaces/WorkspacePage';
 import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage';
@@ -21,6 +22,7 @@ function App() {
           <Route index element={<DashboardPage />} />
           <Route path="todo" element={<TodoPage />} />
           <Route path="calendar" element={<CalendarPage />} />
+          <Route path="notes" element={<NotesPage />} />
           <Route path="spaces" element={<SpacesPage />} />
           <Route path="spaces/:id" element={<WorkspacePage />} />
           <Route path="*" element={<PlaceholderPage />} />
