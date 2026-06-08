@@ -7,10 +7,13 @@ import org.naukma.raft.dto.request.WorkspaceUpdateRequest;
 import org.naukma.raft.dto.response.MemberResponse;
 import org.naukma.raft.dto.response.WorkspaceDetailResponse;
 import org.naukma.raft.dto.response.WorkspaceResponse;
+import org.naukma.raft.entity.Task;
 import org.naukma.raft.entity.User;
 import org.naukma.raft.entity.Workspace;
 import org.naukma.raft.entity.WorkspaceMember;
 import org.naukma.raft.enums.MemberRole;
+import org.naukma.raft.enums.TaskPriority;
+import org.naukma.raft.enums.TaskStatus;
 import org.naukma.raft.enums.WorkspaceColor;
 import org.naukma.raft.enums.WorkspaceType;
 import org.naukma.raft.errorsHadling.AccessDeniedException;
@@ -23,6 +26,7 @@ import org.naukma.raft.repository.WorkspaceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +65,23 @@ public class WorkspaceService {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        workspaceRepository.save(
+        Workspace personal = workspaceRepository.save(
                 Workspace.builder()
                         .name("Personal")
                         .type(WorkspaceType.PERSONAL)
                         .color(WorkspaceColor.GRAY)
                         .owner(user)
+                        .build()
+        );
+        taskRepository.save(
+                Task.builder()
+                        .creator(user)
+                        .workspace(personal)
+                        .title("Explore Raft")
+                        .description("This is your first task — open it to edit, mark it done, or add your own.")
+                        .status(TaskStatus.TODO)
+                        .priority(TaskPriority.MEDIUM)
+                        .dueDate(LocalDate.now())
                         .build()
         );
     }
