@@ -102,10 +102,18 @@
 }
 
 .notes-section__title {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: var(--text-xl);
     font-weight: var(--weight-bold);
     color: var(--color-text);
+    margin: 0;
+}
+
+.notes-section__subtitle {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-muted);
     margin: 0;
 }
 
@@ -155,7 +163,6 @@
 .notes-pinboard {
     position: relative;
     width: 100%;
-    height: 400px;
     background-color: #f6e3e3;
     background-image: radial-gradient(circle at 1px 1px, rgb(232, 178, 186) 1px, transparent 0);
     background-size: 18px 18px;
@@ -174,6 +181,33 @@
     font-size: var(--text-sm);
     color: rgb(201, 84, 122);
     pointer-events: none;
+}
+
+.pinboard-resize-handle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 16px;
+    cursor: ns-resize;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pinboard-resize-handle::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: rgba(193, 77, 99, 0.35);
+    transition: background var(--transition), width var(--transition);
+}
+
+.pinboard-resize-handle:hover::before {
+    background: rgba(193, 77, 99, 0.7);
+    width: 56px;
 }
 
 .pin-item {
@@ -548,6 +582,48 @@
     font-size: var(--text-sm);
     text-align: center;
     padding: var(--space-6);
+}
+
+.note-card__creator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: var(--radius-full);
+    padding: 2px 8px 2px 3px;
+    max-width: 130px;
+    overflow: hidden;
+}
+
+.note-card__creator-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.note-card__creator-initials {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    font-size: 9px;
+    font-weight: var(--weight-semibold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.note-card__creator-name {
+    font-size: var(--text-xs);
+    color: var(--color-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @media (max-width: 900px) {

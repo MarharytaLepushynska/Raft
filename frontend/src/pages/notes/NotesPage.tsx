@@ -30,6 +30,7 @@ export function NotesPage() {
     const [modalFolder, setModalFolder] = useState<Folder | null | undefined>(undefined);
     const [pins, setPins] = useState<PinItem[]>([]);
     const [draggingId, setDraggingId] = useState<string | null>(null);
+    const [boardHeight, setBoardHeight] = useState(400);
     const boardRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -177,6 +178,22 @@ export function NotesPage() {
         window.addEventListener('mouseup', onUp);
     };
 
+    const handleResizeMouseDown = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const startY = e.clientY;
+        const startHeight = boardHeight;
+        const onMove = (mv: MouseEvent) => {
+            const delta = mv.clientY - startY;
+            setBoardHeight(Math.max(180, Math.min(700, startHeight + delta)));
+        };
+        const onUp = () => {
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('mouseup', onUp);
+        };
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+    };
+
     const selectedFolder = useMemo(
         () => folders.find((f) => f.id === selectedFolderId) ?? null,
         [folders, selectedFolderId],
@@ -260,7 +277,8 @@ export function NotesPage() {
                     </div>
                 </div>
 
-                <div className="notes-pinboard" ref={boardRef}>
+                <div className="notes-pinboard" ref={boardRef} style={{height: boardHeight}}>
+                    <div className="pinboard-resize-handle" onMouseDown={handleResizeMouseDown} />
                     {pins.length === 0 && (
                         <p className="pinboard-empty">
                             Pin notes or photos here — click a note's pin icon or "Add photo"
@@ -295,7 +313,7 @@ export function NotesPage() {
             {/*Folders*/}
             <section className="notes-section">
                 <div className="notes-section__head">
-                    <h2 className="notes-section__title">My folders</h2>
+                    <h2 className="notes-section__title">Folders</h2>
                 </div>
 
                 <div className="notes-filter-bar">
@@ -356,6 +374,10 @@ export function NotesPage() {
 
             {/*Notes*/}
             <section className="notes-section">
+                <div className="notes-section__head">
+                    <h2 className="notes-section__title">Notes</h2>
+                </div>
+
                 <div className="notes-filter-bar">
                     <div className="notes-filter-bar__search">
                         <Icon name="search" size={14}/>
@@ -379,7 +401,7 @@ export function NotesPage() {
                 <div className={`notes__columns${isPersonalFilter ? ' notes__columns--single' : ''}`}>
                     <div className="notes-section notes-section--flex">
                         <div className="notes-section__head">
-                            <h2 className="notes-section__title">My notes</h2>
+                            <h2 className="notes-section__subtitle">My notes</h2>
                             <span className="notes-section__count">{personalNotes.length}</span>
                         </div>
                         {loading ? (
@@ -409,7 +431,7 @@ export function NotesPage() {
                     {!isPersonalFilter && (
                         <div className="notes-section notes-section--flex">
                             <div className="notes-section__head">
-                                <h2 className="notes-section__title">Teammates</h2>
+                                <h2 className="notes-section__subtitle">Teammates</h2>
                                 <span className="notes-section__count">{sharedNotes.length}</span>
                             </div>
                             {loading ? (
@@ -422,16 +444,12 @@ export function NotesPage() {
                                             note={note}
                                             isPinned={pinnedNoteIds.has(note.id)}
                                             showFolder={!hasFolderFilter}
+                                            showCreator
                                             onOpen={() => setModalNote(note)}
                                             onPin={() => pinNote(note)}
                                             onUnpin={() => unpinByNoteId(note.id)}
                                         />
                                     ))}
-                                    <button type="button" className="note-card note-card--new"
-                                            onClick={() => setModalNote(null)}>
-                                        <Icon name="file-plus" size={28}/>
-                                        <span>New note</span>
-                                    </button>
                                 </div>
                             )}
                         </div>
