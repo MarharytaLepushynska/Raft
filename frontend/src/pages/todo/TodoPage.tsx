@@ -4,20 +4,13 @@ import { getWorkspaces } from '@/api/workspaces';
 import { TaskModal } from '@/components/task/TaskModal';
 import { MultiSelectFilter } from '@/components/common/MultiSelectFilter';
 import { Icon } from '@/lib/icons';
-import { byDeadline, getTaskState, isDueOn, priorityColors, priorityLabels, todayISO } from '@/lib/tasks';
+import { byDeadline, formatTaskDue, getTaskState, isDueOn, PRIORITIES, priorityColors, priorityLabels, todayISO } from '@/lib/tasks';
 import { colorHex } from '@/lib/workspaceColors';
-import type { Task, TaskPriority } from '@/types/task';
+import type { Task } from '@/types/task';
 import type { Workspace } from '@/types/workspace';
 import './TodoPage.css';
 
 type StatusFilter = 'all' | 'active' | 'completed';
-const PRIORITIES: TaskPriority[] = ['HIGH', 'MEDIUM', 'LOW'];
-
-function formatDeadline(task: Task): string {
-  const date = new Date(`${task.dueDate}T${task.dueTime ?? '00:00'}`);
-  const day = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  return task.dueTime ? `${day} · ${task.dueTime}` : day;
-}
 
 export function TodoPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -207,7 +200,7 @@ export function TodoPage() {
                       </div>
                       {task.description && <p className="todo-task__desc">{task.description}</p>}
                       <p className={`todo-task__meta${section.overdue ? ' todo-task__meta--overdue' : ''}`}>
-                        {formatDeadline(task)}
+                        {formatTaskDue(task)}
                       </p>
                     </div>
                   </li>

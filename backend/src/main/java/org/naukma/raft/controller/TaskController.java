@@ -34,7 +34,7 @@ public class TaskController {
     @PatchMapping("/{id}")
     public ResponseEntity<TaskResponse> updateTask(@AuthenticationPrincipal CustomUserDetails user,
                                                    @PathVariable Long id,
-                                                   @RequestBody TaskPatchRequest request) {
+                                                   @Valid @RequestBody TaskPatchRequest request) {
         return ResponseEntity.ok(taskService.updateTask(user.getId(), id, request));
     }
 

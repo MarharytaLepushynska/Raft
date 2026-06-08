@@ -1,4 +1,4 @@
-import type { Task, TaskPriority, TaskState } from '@/types/task';
+import type { Task, TaskPriority, TaskStatus, TaskState } from '@/types/task';
 
 export const priorityLabels: Record<TaskPriority, string> = {
   LOW: 'Low',
@@ -11,6 +11,32 @@ export const priorityColors: Record<TaskPriority, string> = {
   MEDIUM: '#e0566a',
   LOW: '#e5737f',
 };
+
+export const PRIORITIES: TaskPriority[] = ['HIGH', 'MEDIUM', 'LOW'];
+
+export function formatTaskDue(task: Task): string {
+  const date = new Date(`${task.dueDate}T${task.dueTime ?? '00:00'}`);
+  const day = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return task.dueTime ? `${day} · ${task.dueTime}` : day;
+}
+
+export const statusLabels: Record<TaskStatus, string> = {
+  TODO: 'To do',
+  IN_PROGRESS: 'In progress',
+  COMPLETED: 'Done',
+};
+
+export const nextStatus: Record<TaskStatus, TaskStatus> = {
+  TODO: 'IN_PROGRESS',
+  IN_PROGRESS: 'COMPLETED',
+  COMPLETED: 'TODO',
+};
+
+const priorityOrder: Record<TaskPriority, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+
+export function byPriority(a: Task, b: Task): number {
+  return priorityOrder[a.priority] - priorityOrder[b.priority];
+}
 
 export function todayISO(now: Date = new Date()): string {
   return now.toLocaleDateString('en-CA');

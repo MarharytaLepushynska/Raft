@@ -6,6 +6,8 @@ import type { Workspace } from '@/types/workspace';
 import './TaskModal.css';
 
 const PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH'];
+const TITLE_MAX = 120;
+const DESCRIPTION_MAX = 255;
 
 interface TaskModalProps {
   task: Task | null;
@@ -73,19 +75,27 @@ export function TaskModal({ task, defaultDate, defaultWorkspaceId, onClose, onCr
       <form className="modal__card" onSubmit={handleSubmit}>
         <h2 className="modal__title">{task ? 'Edit task' : 'New task'}</h2>
 
-        <input
-          className="modal__input"
-          placeholder="Task title"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          autoFocus
-        />
-        <input
-          className="modal__input"
-          placeholder="Description (optional)"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-        />
+        <div className="modal__field-wrap">
+          <input
+            className="modal__input"
+            placeholder="Task title"
+            maxLength={TITLE_MAX}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            autoFocus
+          />
+          <span className="modal__counter">{title.length}/{TITLE_MAX}</span>
+        </div>
+        <div className="modal__field-wrap">
+          <input
+            className="modal__input"
+            placeholder="Description (optional)"
+            maxLength={DESCRIPTION_MAX}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+          <span className="modal__counter">{description.length}/{DESCRIPTION_MAX}</span>
+        </div>
 
         {!task && !defaultWorkspaceId && workspaces.length > 0 && (
           <label className="modal__field modal__field--full">

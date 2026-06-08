@@ -5,14 +5,13 @@ import { TaskModal } from '@/components/task/TaskModal';
 import { MultiSelectFilter } from '@/components/common/MultiSelectFilter';
 import { monthGridDays, toISODate, weekDays } from '@/lib/calendar';
 import { Icon } from '@/lib/icons';
-import { addDays, byDueTime, priorityColors, priorityLabels } from '@/lib/tasks';
+import { addDays, byDueTime, PRIORITIES, priorityColors, priorityLabels } from '@/lib/tasks';
 import { colorHex } from '@/lib/workspaceColors';
-import type { Task, TaskPriority } from '@/types/task';
+import type { Task } from '@/types/task';
 import type { Workspace } from '@/types/workspace';
 import './CalendarPage.css';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const PRIORITIES: TaskPriority[] = ['HIGH', 'MEDIUM', 'LOW'];
 const MAX_PER_DAY = 3;
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 

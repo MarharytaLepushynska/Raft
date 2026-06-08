@@ -45,6 +45,18 @@
   color: var(--color-text);
 }
 
+.modal__field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.modal__counter {
+  align-self: flex-end;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
 .modal__row {
   display: flex;
   flex-wrap: wrap;
