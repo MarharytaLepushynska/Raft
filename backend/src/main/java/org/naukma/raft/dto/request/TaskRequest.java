@@ -34,4 +34,6 @@ public class TaskRequest {
     private TaskStatus status;
 
     private Long workspaceId;
+
+    private Long assigneeId;
 }

@@ -6,6 +6,8 @@ export interface FilterOption {
   id: string;
   label: string;
   color?: string;
+  sublabel?: string;
+  badge?: string;
 }
 
 interface MultiSelectFilterProps {
@@ -109,6 +111,8 @@ export function MultiSelectFilter({
               >
                 {option.color && <span className="msfilter__dot" style={{ background: option.color }} />}
                 <span className="msfilter__option-name">{option.label}</span>
+                {option.sublabel && <span className="msfilter__option-sub">{option.sublabel}</span>}
+                {option.badge && <span className="msfilter__option-badge">{option.badge}</span>}
                 {selected.has(option.id) && <Icon name="check" size={16} />}
               </button>
             ))}

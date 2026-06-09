@@ -5,8 +5,9 @@ import { TaskModal } from '@/components/task/TaskModal';
 import { MultiSelectFilter } from '@/components/common/MultiSelectFilter';
 import { monthGridDays, toISODate, weekDays } from '@/lib/calendar';
 import { Icon } from '@/lib/icons';
-import { addDays, byDueTime, PRIORITIES, priorityColors, priorityLabels } from '@/lib/tasks';
+import { addDays, byDueTime, isMyTask, PRIORITIES, priorityColors, priorityLabels } from '@/lib/tasks';
 import { colorHex } from '@/lib/workspaceColors';
+import { useAuth } from '@/auth/AuthContext';
 import type { Task } from '@/types/task';
 import type { Workspace } from '@/types/workspace';
 import './CalendarPage.css';
@@ -113,6 +114,7 @@ function TimeGrid({
 }
 
 export function CalendarPage() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [view, setView] = useState<View>('month');
   const [focus, setFocus] = useState(() => new Date());
@@ -122,7 +124,9 @@ export function CalendarPage() {
   const [modalTask, setModalTask] = useState<Task | null | undefined>(undefined);
 
   const create = async (input: Omit<Task, 'id'>) => {
-    const task = await createTask(input);
+    const space = workspaces.find((w) => w.id === input.workspaceId);
+    const assigneeId = space?.type === 'SHARED' ? user?.id : undefined;
+    const task = await createTask({ ...input, assigneeId });
     setTasks((prev) => [task, ...prev]);
     setModalTask(undefined);
   };
@@ -158,6 +162,7 @@ export function CalendarPage() {
   const tasksByDate = useMemo(() => {
     const map = new Map<string, Task[]>();
     for (const task of tasks) {
+      if (!isMyTask(task, user?.id)) continue;
       if (selectedPriorities.size > 0 && !selectedPriorities.has(task.priority)) continue;
       if (selectedSpaces.size > 0 && (!task.workspaceId || !selectedSpaces.has(task.workspaceId))) continue;
       const list = map.get(task.dueDate) ?? [];
@@ -166,7 +171,7 @@ export function CalendarPage() {
     }
     for (const list of map.values()) list.sort(byDueTime);
     return map;
-  }, [tasks, selectedPriorities, selectedSpaces]);
+  }, [tasks, selectedPriorities, selectedSpaces, user?.id]);
 
   const shift = (delta: number) =>
     setFocus((f) => {

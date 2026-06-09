@@ -25,4 +25,6 @@ public class TaskPatchRequest {
     private LocalTime dueTime;
 
     private TaskStatus status;
+
+    private Long assigneeId;
 }

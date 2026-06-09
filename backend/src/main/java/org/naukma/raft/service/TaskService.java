@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.naukma.raft.dto.request.TaskPatchRequest;
 import org.naukma.raft.dto.request.TaskRequest;
 import org.naukma.raft.dto.response.TaskResponse;
+import org.naukma.raft.dto.response.UserSummaryResponse;
 import org.naukma.raft.entity.Task;
 import org.naukma.raft.entity.User;
 import org.naukma.raft.entity.Workspace;
 import org.naukma.raft.enums.WorkspaceColor;
 import org.naukma.raft.enums.WorkspaceType;
 import org.naukma.raft.errorsHadling.AccessDeniedException;
+import org.naukma.raft.errorsHadling.ConflictException;
 import org.naukma.raft.errorsHadling.NotFoundException;
 import org.naukma.raft.repository.TaskRepository;
 import org.naukma.raft.repository.UserRepository;
@@ -58,6 +60,7 @@ public class TaskService {
                 .status(request.getStatus())
                 .dueDate(request.getDueDate())
                 .dueTime(request.getDueTime())
+                .assignee(resolveAssignee(workspace, request.getAssigneeId()))
                 .build();
 
         return mapToResponse(taskRepository.save(task));
@@ -73,6 +76,11 @@ public class TaskService {
         if (request.getStatus() != null) task.setStatus(request.getStatus());
         if (request.getDueDate() != null) task.setDueDate(request.getDueDate());
         if (request.getDueTime() != null) task.setDueTime(request.getDueTime());
+        if (request.getAssigneeId() != null) {
+            task.setAssignee(request.getAssigneeId() == 0
+                    ? null
+                    : resolveAssignee(task.getWorkspace(), request.getAssigneeId()));
+        }
 
         return mapToResponse(taskRepository.save(task));
     }
@@ -102,6 +110,18 @@ public class TaskService {
             throw new AccessDeniedException("You do not have access to this task");
         }
         return task;
+    }
+
+    private User resolveAssignee(Workspace workspace, Long assigneeId) {
+        if (assigneeId == null || assigneeId == 0) {
+            return null;
+        }
+        User assignee = userRepository.findById(assigneeId)
+                .orElseThrow(() -> new NotFoundException("Assignee not found"));
+        if (!canAccess(assignee.getId(), workspace)) {
+            throw new ConflictException("Assignee is not a member of this workspace");
+        }
+        return assignee;
     }
 
     private boolean canAccess(Long userId, Workspace workspace) {
@@ -144,9 +164,26 @@ public class TaskService {
                 .dueDate(task.getDueDate())
                 .dueTime(task.getDueTime())
                 .status(task.getStatus())
+                .created(task.getCreated())
                 .workspaceId(workspace.getId().toString())
                 .workspaceName(workspace.getName())
                 .workspaceColor(workspace.getColor())
+                .workspaceType(workspace.getType())
+                .creator(toUserSummary(task.getCreator()))
+                .assignee(toUserSummary(task.getAssignee()))
+                .build();
+    }
+
+    private UserSummaryResponse toUserSummary(User user) {
+        if (user == null) {
+            return null;
+        }
+        return UserSummaryResponse.builder()
+                .id(user.getId().toString())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .avatar(user.getAvatar())
                 .build();
     }
 }

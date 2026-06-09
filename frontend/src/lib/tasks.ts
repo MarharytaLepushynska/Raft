@@ -20,6 +20,11 @@ export function formatTaskDue(task: Task): string {
   return task.dueTime ? `${day} · ${task.dueTime}` : day;
 }
 
+export function isMyTask(task: Task, userId: string | undefined): boolean {
+  if (task.workspaceType === 'PERSONAL') return true;
+  return task.assignee?.id === userId;
+}
+
 export const statusLabels: Record<TaskStatus, string> = {
   TODO: 'To do',
   IN_PROGRESS: 'In progress',

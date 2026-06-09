@@ -1,8 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { priorityLabels, todayISO } from '@/lib/tasks';
+import { formatTaskDue, priorityLabels, statusLabels, todayISO } from '@/lib/tasks';
+import { useAuth } from '@/auth/AuthContext';
 import { getWorkspaces } from '@/api/workspaces';
 import type { Task, TaskPriority } from '@/types/task';
-import type { Workspace } from '@/types/workspace';
+import type { Member, Workspace } from '@/types/workspace';
 import './TaskModal.css';
 
 const PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH'];
@@ -13,20 +14,27 @@ interface TaskModalProps {
   task: Task | null;
   defaultDate?: string;
   defaultWorkspaceId?: string;
+  members?: Member[];
   onClose: () => void;
   onCreate: (input: Omit<Task, 'id'>) => void;
   onUpdate: (id: string, patch: Partial<Task>) => void;
   onDelete: (id: string) => void;
 }
 
-export function TaskModal({ task, defaultDate, defaultWorkspaceId, onClose, onCreate, onUpdate, onDelete }: TaskModalProps) {
+export function TaskModal({ task, defaultDate, defaultWorkspaceId, members, onClose, onCreate, onUpdate, onDelete }: TaskModalProps) {
+  const { user } = useAuth();
+  const [mode, setMode] = useState<'view' | 'edit'>(task ? 'view' : 'edit');
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [title, setTitle] = useState(task?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? '');
   const [priority, setPriority] = useState<TaskPriority>(task?.priority ?? 'MEDIUM');
   const [dueDate, setDueDate] = useState(task?.dueDate ?? defaultDate ?? todayISO());
   const [dueTime, setDueTime] = useState(task?.dueTime ?? '');
+  const [assigneeId, setAssigneeId] = useState(task?.assignee?.id ?? '');
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [workspaceId, setWorkspaceId] = useState('');
+
+  const canAssign = !!members && members.length > 0;
 
   useEffect(() => {
     if (task) return;
@@ -54,6 +62,20 @@ export function TaskModal({ task, defaultDate, defaultWorkspaceId, onClose, onCr
     }
   };
 
+  const cancelEdit = () => {
+    if (!task) {
+      onClose();
+      return;
+    }
+    setTitle(task.title);
+    setDescription(task.description ?? '');
+    setPriority(task.priority);
+    setDueDate(task.dueDate);
+    setDueTime(task.dueTime ?? '');
+    setAssigneeId(task.assignee?.id ?? '');
+    setMode('view');
+  };
+
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     const trimmed = title.trim();
@@ -64,10 +86,98 @@ export function TaskModal({ task, defaultDate, defaultWorkspaceId, onClose, onCr
       priority,
       dueDate,
       dueTime: dueTime || undefined,
+      ...(canAssign ? { assigneeId } : {}),
     };
     if (task) onUpdate(task.id, data);
     else onCreate({ ...data, status: 'TODO', workspaceId: workspaceId || undefined });
   };
+
+  if (confirmingDelete && task) {
+    return (
+      <div className="modal" role="dialog" aria-modal="true">
+        <div className="modal__scrim" onClick={onClose} />
+        <div className="modal__card modal__card--confirm">
+          <h2 className="modal__title">Delete task?</h2>
+          <p className="modal__text">
+            This permanently deletes &ldquo;{task.title}&rdquo;. This can&rsquo;t be undone.
+          </p>
+          <div className="modal__actions">
+            <span className="modal__spacer" />
+            <button type="button" className="modal__btn modal__btn--ghost" onClick={() => setConfirmingDelete(false)}>
+              Cancel
+            </button>
+            <button type="button" className="modal__btn modal__btn--danger-solid" onClick={() => onDelete(task.id)}>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === 'view' && task) {
+    const showCreator = !!task.creator && task.workspaceType !== 'PERSONAL';
+    const createdText = task.created
+      ? new Date(task.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : '';
+    return (
+      <div className="modal" role="dialog" aria-modal="true">
+        <div className="modal__scrim" onClick={onClose} />
+        <div className="modal__card">
+          <h2 className="modal__title">{task.title}</h2>
+
+          <div className="modal__view">
+            <div className="modal__view-row">
+              <span>Status</span>
+              <b>{statusLabels[task.status]}</b>
+            </div>
+            <div className="modal__view-row">
+              <span>Priority</span>
+              <b>{priorityLabels[task.priority]}</b>
+            </div>
+            <div className="modal__view-row">
+              <span>Due</span>
+              <b>{formatTaskDue(task)}</b>
+            </div>
+            {task.workspaceName && (
+              <div className="modal__view-row">
+                <span>Space</span>
+                <b>{task.workspaceName}</b>
+              </div>
+            )}
+            {task.assignee && (
+              <div className="modal__view-row">
+                <span>Assignee</span>
+                <b>{task.assignee.firstName} {task.assignee.lastName}</b>
+              </div>
+            )}
+            {task.description && <p className="modal__view-desc">{task.description}</p>}
+
+            {(showCreator || createdText) && (
+              <p className="modal__view-meta">
+                {showCreator
+                  ? `Added by ${task.creator!.firstName} ${task.creator!.lastName}${createdText ? ` · ${createdText}` : ''}`
+                  : `Created ${createdText}`}
+              </p>
+            )}
+          </div>
+
+          <div className="modal__actions">
+            <button type="button" className="modal__btn modal__btn--danger" onClick={() => setConfirmingDelete(true)}>
+              Delete
+            </button>
+            <span className="modal__spacer" />
+            <button type="button" className="modal__btn modal__btn--ghost" onClick={onClose}>
+              Close
+            </button>
+            <button type="button" className="modal__btn modal__btn--primary" onClick={() => setMode('edit')}>
+              Edit
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal" role="dialog" aria-modal="true">
@@ -110,6 +220,27 @@ export function TaskModal({ task, defaultDate, defaultWorkspaceId, onClose, onCr
           </label>
         )}
 
+        {canAssign && (
+          <div className="modal__field modal__field--full">
+            <div className="modal__field-head">
+              <span>Assignee</span>
+              {user && assigneeId !== user.id && (
+                <button type="button" className="modal__link" onClick={() => setAssigneeId(user.id)}>
+                  Assign to me
+                </button>
+              )}
+            </div>
+            <select value={assigneeId} onChange={(event) => setAssigneeId(event.target.value)}>
+              <option value="">Unassigned</option>
+              {members!.map((member) => (
+                <option key={member.id} value={member.userId}>
+                  {member.firstName} {member.lastName}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="modal__row">
           <label className="modal__field">
             <span>Priority</span>
@@ -142,12 +273,12 @@ export function TaskModal({ task, defaultDate, defaultWorkspaceId, onClose, onCr
 
         <div className="modal__actions">
           {task && (
-            <button type="button" className="modal__btn modal__btn--danger" onClick={() => onDelete(task.id)}>
+            <button type="button" className="modal__btn modal__btn--danger" onClick={() => setConfirmingDelete(true)}>
               Delete
             </button>
           )}
           <span className="modal__spacer" />
-          <button type="button" className="modal__btn modal__btn--ghost" onClick={onClose}>
+          <button type="button" className="modal__btn modal__btn--ghost" onClick={cancelEdit}>
             Cancel
           </button>
           <button type="submit" className="modal__btn modal__btn--primary" disabled={!title.trim()}>

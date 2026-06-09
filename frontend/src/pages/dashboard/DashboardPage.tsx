@@ -3,10 +3,13 @@ import { getTasks } from '@/api/tasks';
 import { TodayTasksWidget } from '@/components/dashboard/TodayTasksWidget';
 import { MiniCalendarWidget } from '@/components/dashboard/MiniCalendarWidget';
 import { SpacesWidget } from '@/components/dashboard/SpacesWidget';
+import { useAuth } from '@/auth/AuthContext';
+import { isMyTask } from '@/lib/tasks';
 import type { Task } from '@/types/task';
 import './DashboardPage.css';
 
 export function DashboardPage() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -28,11 +31,13 @@ export function DashboardPage() {
     };
   }, []);
 
+  const myTasks = tasks.filter((task) => isMyTask(task, user?.id));
+
   return (
     <div className="dashboard">
       <div className="dashboard__grid">
-        <MiniCalendarWidget tasks={tasks} />
-        <TodayTasksWidget tasks={tasks} loading={loading} error={error} />
+        <MiniCalendarWidget tasks={myTasks} />
+        <TodayTasksWidget tasks={myTasks} loading={loading} error={error} />
       </div>
 
       <SpacesWidget />

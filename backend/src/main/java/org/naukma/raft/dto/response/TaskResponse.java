@@ -6,8 +6,10 @@ import lombok.Data;
 import org.naukma.raft.enums.TaskPriority;
 import org.naukma.raft.enums.TaskStatus;
 import org.naukma.raft.enums.WorkspaceColor;
+import org.naukma.raft.enums.WorkspaceType;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
@@ -26,7 +28,14 @@ public class TaskResponse {
 
     private TaskStatus status;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime created;
+
     private String workspaceId;
     private String workspaceName;
     private WorkspaceColor workspaceColor;
+    private WorkspaceType workspaceType;
+
+    private UserSummaryResponse creator;
+    private UserSummaryResponse assignee;
 }

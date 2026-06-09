@@ -14,18 +14,23 @@ export async function createTask(input: Omit<Task, 'id'>): Promise<Task> {
     dueTime: input.dueTime,
     status: input.status,
     workspaceId: input.workspaceId ? Number(input.workspaceId) : null,
+    assigneeId: input.assigneeId ? Number(input.assigneeId) : null,
   });
 }
 
 export async function updateTask(id: string, patch: Partial<Task>): Promise<Task> {
-  return api.patch<Task>(`/tasks/${id}`, {
+  const body: Record<string, unknown> = {
     title: patch.title,
     description: patch.description,
     priority: patch.priority,
     dueDate: patch.dueDate,
     dueTime: patch.dueTime,
     status: patch.status,
-  });
+  };
+  if (patch.assigneeId !== undefined) {
+    body.assigneeId = patch.assigneeId ? Number(patch.assigneeId) : 0;
+  }
+  return api.patch<Task>(`/tasks/${id}`, body);
 }
 
 export async function deleteTask(id: string): Promise<void> {

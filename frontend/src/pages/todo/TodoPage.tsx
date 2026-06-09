@@ -4,7 +4,8 @@ import { getWorkspaces } from '@/api/workspaces';
 import { TaskModal } from '@/components/task/TaskModal';
 import { MultiSelectFilter } from '@/components/common/MultiSelectFilter';
 import { Icon } from '@/lib/icons';
-import { byDeadline, formatTaskDue, getTaskState, isDueOn, PRIORITIES, priorityColors, priorityLabels, todayISO } from '@/lib/tasks';
+import { useAuth } from '@/auth/AuthContext';
+import { byDeadline, formatTaskDue, getTaskState, isDueOn, isMyTask, PRIORITIES, priorityColors, priorityLabels, todayISO } from '@/lib/tasks';
 import { colorHex } from '@/lib/workspaceColors';
 import type { Task } from '@/types/task';
 import type { Workspace } from '@/types/workspace';
@@ -13,6 +14,7 @@ import './TodoPage.css';
 type StatusFilter = 'all' | 'active' | 'completed';
 
 export function TodoPage() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -46,7 +48,9 @@ export function TodoPage() {
   };
 
   const create = async (input: Omit<Task, 'id'>) => {
-    const task = await createTask(input);
+    const space = workspaces.find((w) => w.id === input.workspaceId);
+    const assigneeId = space?.type === 'SHARED' ? user?.id : undefined;
+    const task = await createTask({ ...input, assigneeId });
     setTasks((prev) => [task, ...prev]);
     setModalTask(undefined);
   };
@@ -63,7 +67,7 @@ export function TodoPage() {
     setModalTask(undefined);
   };
 
-  const remaining = tasks.filter((task) => task.status !== 'COMPLETED').length;
+  const remaining = tasks.filter((task) => isMyTask(task, user?.id) && task.status !== 'COMPLETED').length;
 
   const sections = useMemo(() => {
     const now = new Date();
@@ -71,6 +75,7 @@ export function TodoPage() {
     const query = search.trim().toLowerCase();
 
     const filtered = tasks.filter((task) => {
+      if (!isMyTask(task, user?.id)) return false;
       if (query && !task.title.toLowerCase().includes(query)) return false;
       if (selectedPriorities.size > 0 && !selectedPriorities.has(task.priority)) return false;
       if (selectedSpaces.size > 0 && (!task.workspaceId || !selectedSpaces.has(task.workspaceId))) return false;
@@ -89,7 +94,7 @@ export function TodoPage() {
       { key: 'upcoming', title: 'Upcoming', overdue: false, tasks: pick((x) => x.state === 'upcoming' && !isDueOn(x.task, today)) },
       { key: 'completed', title: 'Completed', overdue: false, tasks: pick((x) => x.state === 'done') },
     ];
-  }, [tasks, search, statusFilter, selectedPriorities, selectedSpaces]);
+  }, [tasks, search, statusFilter, selectedPriorities, selectedSpaces, user?.id]);
 
   const visibleSections = sections.filter((section) => section.tasks.length > 0);
 
