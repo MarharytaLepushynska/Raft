@@ -8,8 +8,6 @@ import org.naukma.raft.dto.response.UserSummaryResponse;
 import org.naukma.raft.entity.Task;
 import org.naukma.raft.entity.User;
 import org.naukma.raft.entity.Workspace;
-import org.naukma.raft.enums.WorkspaceColor;
-import org.naukma.raft.enums.WorkspaceType;
 import org.naukma.raft.errorsHadling.AccessDeniedException;
 import org.naukma.raft.errorsHadling.ConflictException;
 import org.naukma.raft.errorsHadling.NotFoundException;
@@ -27,12 +25,11 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-    private static final WorkspaceColor PERSONAL_COLOR = WorkspaceColor.GRAY;
-
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceMemberRepository memberRepository;
+    private final WorkspaceService workspaceService;
 
     @Transactional(readOnly = true)
     public List<TaskResponse> getTasks(Long userId) {
@@ -93,7 +90,7 @@ public class TaskService {
 
     private Workspace resolveWorkspace(User user, Long workspaceId) {
         if (workspaceId == null) {
-            return getOrCreatePersonalWorkspace(user);
+            return workspaceService.getOrCreatePersonalWorkspace(user);
         }
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("Workspace not found"));
@@ -139,19 +136,6 @@ public class TaskService {
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-    }
-
-    private Workspace getOrCreatePersonalWorkspace(User user) {
-        return workspaceRepository
-                .findFirstByOwner_IdAndType(user.getId(), WorkspaceType.PERSONAL)
-                .orElseGet(() -> workspaceRepository.save(
-                        Workspace.builder()
-                                .name("Personal")
-                                .type(WorkspaceType.PERSONAL)
-                                .color(PERSONAL_COLOR)
-                                .owner(user)
-                                .build()
-                ));
     }
 
     private TaskResponse mapToResponse(Task task) {

@@ -11,7 +11,7 @@ import org.naukma.raft.enums.MemberRole;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "workspace_members")
+@Table(name = "workspace_members", uniqueConstraints = @UniqueConstraint(columnNames = {"workspace_id", "user_id"}))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

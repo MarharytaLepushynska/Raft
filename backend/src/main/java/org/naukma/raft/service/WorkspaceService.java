@@ -27,9 +27,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,34 +48,39 @@ public class WorkspaceService {
     public List<WorkspaceResponse> getWorkspaces(Long userId) {
         ensurePersonalWorkspace(userId);
 
-        Map<Long, WorkspaceResponse> result = new LinkedHashMap<>();
+        Map<Long, Workspace> workspaces = new LinkedHashMap<>();
+        Map<Long, MemberRole> roles = new LinkedHashMap<>();
 
         for (Workspace workspace : workspaceRepository.findByOwner_Id(userId)) {
-            result.put(workspace.getId(), toResponse(workspace, MemberRole.ADMIN));
+            workspaces.put(workspace.getId(), workspace);
+            roles.put(workspace.getId(), MemberRole.ADMIN);
         }
         for (WorkspaceMember member : memberRepository.findByUser_Id(userId)) {
             Workspace workspace = member.getWorkspace();
-            result.putIfAbsent(workspace.getId(), toResponse(workspace, member.getRole()));
+            if (workspaces.putIfAbsent(workspace.getId(), workspace) == null) {
+                roles.put(workspace.getId(), member.getRole());
+            }
         }
 
-        return List.copyOf(result.values());
+        Map<Long, Integer> counts = memberCounts(workspaces.keySet());
+
+        return workspaces.values().stream()
+                .map(workspace -> toResponse(
+                        workspace,
+                        roles.get(workspace.getId()),
+                        counts.getOrDefault(workspace.getId(), 0)))
+                .toList();
     }
 
     @Transactional
     public void ensurePersonalWorkspace(Long userId) {
-        if (workspaceRepository.findFirstByOwner_IdAndType(userId, WorkspaceType.PERSONAL).isPresent()) {
+        User user = getUser(userId);
+        Optional<Workspace> existing = workspaceRepository.findFirstByOwner_IdAndType(userId, WorkspaceType.PERSONAL);
+        if (existing.isPresent()) {
+            ensureOwnerMembership(existing.get(), user);
             return;
         }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        Workspace personal = workspaceRepository.save(
-                Workspace.builder()
-                        .name("Personal")
-                        .type(WorkspaceType.PERSONAL)
-                        .color(WorkspaceColor.GRAY)
-                        .owner(user)
-                        .build()
-        );
+        Workspace personal = createPersonalWorkspace(user);
         taskRepository.save(
                 Task.builder()
                         .creator(user)
@@ -84,6 +92,29 @@ public class WorkspaceService {
                         .dueDate(LocalDate.now())
                         .build()
         );
+    }
+
+    @Transactional
+    public Workspace getOrCreatePersonalWorkspace(User user) {
+        return workspaceRepository.findFirstByOwner_IdAndType(user.getId(), WorkspaceType.PERSONAL)
+                .map(workspace -> {
+                    ensureOwnerMembership(workspace, user);
+                    return workspace;
+                })
+                .orElseGet(() -> createPersonalWorkspace(user));
+    }
+
+    private Workspace createPersonalWorkspace(User user) {
+        Workspace personal = workspaceRepository.save(
+                Workspace.builder()
+                        .name("Personal")
+                        .type(WorkspaceType.PERSONAL)
+                        .color(WorkspaceColor.YELLOW)
+                        .owner(user)
+                        .build()
+        );
+        saveMembership(personal, user, MemberRole.ADMIN);
+        return personal;
     }
 
     @Transactional
@@ -101,13 +132,7 @@ public class WorkspaceService {
                         .build()
         );
 
-        memberRepository.save(
-                WorkspaceMember.builder()
-                        .workspace(workspace)
-                        .user(user)
-                        .role(MemberRole.ADMIN)
-                        .build()
-        );
+        saveMembership(workspace, user, MemberRole.ADMIN);
 
         if (type == WorkspaceType.SHARED && request.getMemberLogins() != null) {
             for (String loginValue : request.getMemberLogins()) {
@@ -116,13 +141,7 @@ public class WorkspaceService {
                     boolean alreadyIn = target.getId().equals(user.getId())
                             || memberRepository.existsByWorkspace_IdAndUser_Id(workspace.getId(), target.getId());
                     if (!alreadyIn) {
-                        memberRepository.save(
-                                WorkspaceMember.builder()
-                                        .workspace(workspace)
-                                        .user(target)
-                                        .role(MemberRole.MEMBER)
-                                        .build()
-                        );
+                        saveMembership(workspace, target, MemberRole.MEMBER);
                     }
                 });
             }
@@ -196,15 +215,7 @@ public class WorkspaceService {
         }
 
         MemberRole role = request.getRole() != null ? request.getRole() : MemberRole.MEMBER;
-        WorkspaceMember member = memberRepository.save(
-                WorkspaceMember.builder()
-                        .workspace(workspace)
-                        .user(target)
-                        .role(role)
-                        .build()
-        );
-
-        return toMemberResponse(member);
+        return toMemberResponse(saveMembership(workspace, target, role));
     }
 
     @Transactional
@@ -248,8 +259,27 @@ public class WorkspaceService {
         }
     }
 
+    private void ensureOwnerMembership(Workspace workspace, User owner) {
+        if (!memberRepository.existsByWorkspace_IdAndUser_Id(workspace.getId(), owner.getId())) {
+            saveMembership(workspace, owner, MemberRole.ADMIN);
+        }
+    }
+
+    private WorkspaceMember saveMembership(Workspace workspace, User user, MemberRole role) {
+        return memberRepository.save(
+                WorkspaceMember.builder()
+                        .workspace(workspace)
+                        .user(user)
+                        .role(role)
+                        .build()
+        );
+    }
+
     private WorkspaceResponse toResponse(Workspace workspace, MemberRole role) {
-        int memberCount = (int) Math.max(memberRepository.countByWorkspace_Id(workspace.getId()), 1);
+        return toResponse(workspace, role, (int) memberRepository.countByWorkspace_Id(workspace.getId()));
+    }
+
+    private WorkspaceResponse toResponse(Workspace workspace, MemberRole role, int memberCount) {
         return WorkspaceResponse.builder()
                 .id(workspace.getId().toString())
                 .name(workspace.getName())
@@ -258,6 +288,17 @@ public class WorkspaceService {
                 .role(role)
                 .memberCount(memberCount)
                 .build();
+    }
+
+    private Map<Long, Integer> memberCounts(Collection<Long> workspaceIds) {
+        Map<Long, Integer> counts = new HashMap<>();
+        if (workspaceIds.isEmpty()) {
+            return counts;
+        }
+        for (Object[] row : memberRepository.countByWorkspaceIdIn(workspaceIds)) {
+            counts.put((Long) row[0], ((Long) row[1]).intValue());
+        }
+        return counts;
     }
 
     private WorkspaceColor resolveColor(WorkspaceColor requested) {
