@@ -2,7 +2,7 @@ import {useState, type FormEvent} from 'react';
 import type {Note} from '@/types/note';
 import type {Folder} from '@/types/folder';
 import type {User} from '@/types/user';
-import '../task/TaskModal.css';
+import '../note/NoteModal.css';
 
 interface NoteModalProps {
     note: Note | null;
@@ -60,17 +60,18 @@ export function NoteModal({note, folders, defaultFolderId, currentUser, onClose,
     return (
         <div className="modal" role="dialog" aria-modal="true">
             <div className="modal__scrim" onClick={onClose}/>
-            <form className="modal__card" onSubmit={handleSubmit}>
+            <form className="modal__card note-modal" onSubmit={handleSubmit}>
                 <h2 className="modal__title">{note ? 'Edit note' : 'New note'}</h2>
 
                 <input className="modal__input" placeholder="Note title" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus/>
 
-                <textarea className="modal__textarea" placeholder="Content (optional)" value={content} onChange={(e) => setContent(e.target.value)} rows={5}/>
+                <textarea className="note-modal__textarea" placeholder="Content (optional)" value={content}
+                          onChange={(e) => setContent(e.target.value)} rows={5}/>
 
                 <div className="modal__row">
                     <label className="modal__field">
                         <span>Folder</span>
-                        <select value={folderId} onChange={(e) => setFolderId(e.target.value)}>
+                        <select className="modal__select" value={folderId} onChange={(e) => setFolderId(e.target.value)}>
                             {folders.map((folder) => (
                                 <option key={folder.id} value={folder.id}>
                                     {folder.name}

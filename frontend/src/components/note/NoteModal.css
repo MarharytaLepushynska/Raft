@@ -1,0 +1,32 @@
+.note-modal {
+    max-width: 560px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+    padding: var(--space-5);
+}
+
+.note-modal__textarea {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    font-size: var(--text-sm);
+    padding: var(--space-3);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 120px;
+}
+
+@media (max-width: 640px) {
+    .note-modal {
+        padding: var(--space-4);
+        max-width: calc(100% - var(--space-4));
+        margin: var(--space-2);
+    }
+}
