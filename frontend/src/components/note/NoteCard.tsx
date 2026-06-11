@@ -9,7 +9,8 @@ interface NoteCardProps {
     isPinned: boolean;
     showFolder: boolean;
     showCreator?: boolean;
-    onOpen: () => void;
+    onView: () => void;
+    onEdit: () => void;
     onPin: () => void;
     onUnpin: () => void;
 }
@@ -32,9 +33,9 @@ function CreatorBadge({user}: { user: User }) {
     );
 }
 
-export function NoteCard({note, isPinned, showFolder, showCreator, onOpen, onPin, onUnpin,}: NoteCardProps) {
+export function NoteCard({note, isPinned, showFolder, showCreator, onView, onEdit, onPin, onUnpin,}: NoteCardProps) {
     return (
-        <div className="note-card" onClick={onOpen}>
+        <div className="note-card" onClick={onView}>
             <div className="note-card__head">
                 <span className="note-card__date">{formatDate(note.updatedAt)}</span>
 
@@ -42,7 +43,7 @@ export function NoteCard({note, isPinned, showFolder, showCreator, onOpen, onPin
                     <button type="button" className="note-card__edit"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onOpen();
+                                onEdit();
                             }}
                             aria-label="Edit note">
                         <Icon name="edit" size={14}/>

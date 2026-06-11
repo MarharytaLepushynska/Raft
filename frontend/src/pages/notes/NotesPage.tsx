@@ -4,6 +4,7 @@ import {createFolder, deleteFolder, getFolders, updateFolder} from '@/api/folder
 import {randomBetween, formatDate} from '@/lib/notes';
 import {NoteCard} from '@/components/note/NoteCard';
 import {NoteModal} from '@/components/note/NoteModal';
+import {NoteViewModal} from '@/components/note/NoteViewModal';
 import {FolderModal} from '@/components/folder/FolderModal';
 import { useAuth } from '@/auth/AuthContext';
 import {Icon} from '@/lib/icons';
@@ -27,6 +28,7 @@ export function NotesPage() {
 
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
     const [modalNote, setModalNote] = useState<Note | null | undefined>(undefined);
+    const [viewNote, setViewNote] = useState<Note | null>(null);
     const [modalDefaultFolderId, setModalDefaultFolderId] = useState<string | undefined>(undefined);
     const [modalFolder, setModalFolder] = useState<Folder | null | undefined>(undefined);
     const [pins, setPins] = useState<PinItem[]>([]);
@@ -428,7 +430,8 @@ export function NotesPage() {
                                         note={note}
                                         isPinned={pinnedNoteIds.has(note.id)}
                                         showFolder={!hasFolderFilter}
-                                        onOpen={() => setModalNote(note)}
+                                        onView={() => setViewNote(note)}
+                                        onEdit={() => setModalNote(note)}
                                         onPin={() => pinNote(note)}
                                         onUnpin={() => unpinByNoteId(note.id)}
                                     />
@@ -459,7 +462,8 @@ export function NotesPage() {
                                             isPinned={pinnedNoteIds.has(note.id)}
                                             showFolder={!hasFolderFilter}
                                             showCreator
-                                            onOpen={() => setModalNote(note)}
+                                            onView={() => setViewNote(note)}
+                                            onEdit={() => setModalNote(note)}
                                             onPin={() => pinNote(note)}
                                             onUnpin={() => unpinByNoteId(note.id)}
                                         />
@@ -471,6 +475,14 @@ export function NotesPage() {
                 </div>
             </section>
 
+            {viewNote && (
+                <NoteViewModal
+                    note={viewNote}
+                    onClose={() => setViewNote(null)}
+                    onEdit={() => { setModalNote(viewNote); setViewNote(null); }}
+                    isPersonal={viewNote.creator?.id === currentUserId}
+                />
+            )}
             {modalNote !== undefined && (
                 <NoteModal
                     note={modalNote}
