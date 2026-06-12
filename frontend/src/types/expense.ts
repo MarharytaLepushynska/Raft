@@ -1,6 +1,6 @@
 export interface UserSummaryResponse {
     id: string,
-    userName: string;
+    username: string;
     firstName: string;
     lastName: string;
     avatar: string | null;
