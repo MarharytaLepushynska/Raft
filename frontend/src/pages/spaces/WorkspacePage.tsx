@@ -7,6 +7,7 @@ import { WorkspaceTasks } from './WorkspaceTasks';
 import { WorkspaceMembers } from './WorkspaceMembers';
 import { WorkspaceInfoModal } from './WorkspaceInfoModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
+import { WorkspaceExpenses } from '@/components/workspaceExpenses/WorkspaceExpenses.tsx';
 import type { Member, WorkspaceColor, WorkspaceDetail } from '@/types/workspace';
 import './WorkspacePage.css';
 
@@ -105,6 +106,10 @@ export function WorkspacePage() {
 
       <div className="wpage__columns" data-single={detail.type !== 'SHARED'}>
         <WorkspaceTasks workspaceId={detail.id} detail={detail} currentUserId={user?.id} />
+        <WorkspaceExpenses
+            workspaceId={detail.id}
+            members={detail.members}
+        />
 
         {detail.type === 'SHARED' && (
           <aside className="wpage__side">
