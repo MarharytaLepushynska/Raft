@@ -43,6 +43,7 @@ public class WorkspaceService {
     private final WorkspaceMemberRepository memberRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final AchievementService achievementService;
 
     @Transactional
     public List<WorkspaceResponse> getWorkspaces(Long userId) {
@@ -133,6 +134,8 @@ public class WorkspaceService {
         );
 
         saveMembership(workspace, user, MemberRole.ADMIN);
+
+        achievementService.awardAchievement(userId, "FIRST_WORKSPACE_CREATED");
 
         if (type == WorkspaceType.SHARED && request.getMemberLogins() != null) {
             for (String loginValue : request.getMemberLogins()) {
