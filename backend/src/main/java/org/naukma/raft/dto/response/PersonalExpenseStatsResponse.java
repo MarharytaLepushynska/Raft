@@ -13,5 +13,9 @@ public class PersonalExpenseStatsResponse {
     private BigDecimal totalIOwe;
     private List<DebtSummaryResponse> iOwe;
     private List<DebtSummaryResponse> owedToMe;
+
     private List<ExpenseResponse> history;
+    private int historyPage;
+    private int historyTotalPages;
+    private long historyTotal;
 }

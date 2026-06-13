@@ -10,6 +10,10 @@ import org.naukma.raft.repository.ExpenseMemberRepository;
 import org.naukma.raft.repository.ExpenseRepository;
 import org.naukma.raft.repository.UserRepository;
 import org.naukma.raft.repository.WorkspaceMemberRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -96,7 +100,11 @@ public class ExpenseService {
                 .build();
     }
 
-    public PersonalExpenseStatsResponse getPersonalStats(Long currentUserId, LocalDateTime from, LocalDateTime to) {
+    public PersonalExpenseStatsResponse getPersonalStats(Long currentUserId, LocalDateTime from, LocalDateTime to, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Expense> historyPage = expenseRepository.findByUserInvolvedPaged(currentUserId, pageable);
+
         List<ExpenseMember> myDebts = expenseMemberRepository
                 .findByUserIdAndIsSettledFalse(currentUserId)
                 .stream()
@@ -118,9 +126,7 @@ public class ExpenseService {
                         .build())
                 .toList();
 
-        List<Expense> paidByMe = expenseRepository.findAll().stream()
-                .filter(e -> e.getPaidBy().getId().equals(currentUserId))
-                .toList();
+        List<Expense> paidByMe = expenseRepository.findByPaidById(currentUserId);
 
         Map<User, List<ExpenseMember>> debtsToMe = new HashMap<>();
         for (Expense expense : paidByMe) {
@@ -151,11 +157,16 @@ public class ExpenseService {
                 .map(DebtSummaryResponse::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+
         return PersonalExpenseStatsResponse.builder()
                 .totalIOwe(totalIOwe)
                 .totalOwedToMe(totalOwedToMe)
                 .iOwe(iOwe)
                 .owedToMe(owedToMe)
+                .history(historyPage.getContent()
+                        .stream()
+                        .map(this::mapToResponse)
+                        .toList())
                 .build();
     }
 

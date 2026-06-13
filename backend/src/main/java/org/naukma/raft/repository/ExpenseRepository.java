@@ -1,6 +1,8 @@
 package org.naukma.raft.repository;
 
 import org.naukma.raft.entity.Expense;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +26,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
         ORDER BY e.createdAt DESC
         """)
     List<Expense> findByWorkspaceAndUser(@Param("workspaceId") Long workspaceId, @Param("userId") Long userId);
+
+    @Query("""
+    SELECT DISTINCT e FROM Expense e
+    LEFT JOIN e.splits s
+    WHERE e.paidBy.id = :userId OR s.user.id = :userId
+    ORDER BY e.createdAt DESC
+    """)
+    Page<Expense> findByUserInvolvedPaged(
+            @Param("userId") Long userId, Pageable pageable);
+
+    List<Expense> findByPaidById(Long userId);
 }

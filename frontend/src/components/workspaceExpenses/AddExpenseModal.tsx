@@ -106,8 +106,12 @@ export function AddExpenseModal({ workspaceId, members, onClose, onAdd }: AddMod
 
                 <button
                     type="submit"
-                    className="modal__btn modal__btn--ghost"
-                    
+                    className="modal__btn modal__btn--primary"
+                    disabled={
+                        !title.trim() ||
+                        !amount ||
+                        selectedMembers.length === 0
+                    }
                 >
                     Save
                 </button>

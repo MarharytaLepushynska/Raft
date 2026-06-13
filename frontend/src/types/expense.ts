@@ -47,6 +47,9 @@ export interface PersonalExpenseStatsResponse {
     iOwe: DebtSummaryResponse[];
     owedToMe: DebtSummaryResponse[];
     history: ExpenseResponse[];
+    historyPage: number;
+    historyTotalPages: number;
+    historyTotal: number;
 }
 
 export interface CreateExpenseRequest {
