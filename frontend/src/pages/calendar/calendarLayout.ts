@@ -62,7 +62,7 @@ export function blockHeight(startMin: number, endMin: number): number {
   return Math.max(minutesToPx(endMin - startMin), EVENT_MIN_HEIGHT);
 }
 
-export function columnBox(col: number, cols: number, reserve: boolean, colWidth: number) {
+export function columnBox(col: number, cols: number, reserve: boolean, colWidth = 0) {
   const reserved = reserve ? MORE_WIDTH + COL_GAP : 0;
   const span = `(100% - ${reserved}px)`;
   return {

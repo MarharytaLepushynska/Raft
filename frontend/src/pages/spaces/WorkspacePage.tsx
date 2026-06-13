@@ -4,6 +4,7 @@ import { Icon } from '@/lib/icons';
 import { useAuth } from '@/auth/AuthContext';
 import { deleteWorkspace, getWorkspace, leaveWorkspace } from '@/api/workspaces';
 import { WorkspaceTasks } from './WorkspaceTasks';
+import { WorkspaceTimeline } from './WorkspaceTimeline';
 import { WorkspaceMembers } from './WorkspaceMembers';
 import { WorkspaceInfoModal } from './WorkspaceInfoModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
@@ -104,15 +105,13 @@ export function WorkspacePage() {
     <div className="wpage">
       <div className="wpage__top">{back}</div>
 
-      <div className="wpage__columns" data-single={detail.type !== 'SHARED'}>
+      <div className="wpage__columns">
         <WorkspaceTasks workspaceId={detail.id} detail={detail} currentUserId={user?.id} />
-        <WorkspaceExpenses
-            workspaceId={detail.id}
-            members={detail.members}
-        />
 
-        {detail.type === 'SHARED' && (
-          <aside className="wpage__side">
+        <aside className="wpage__side">
+          <WorkspaceTimeline workspaceId={detail.id} color={detail.color} />
+          <WorkspaceExpenses workspaceId={detail.id} members={detail.members} />
+          {detail.type === 'SHARED' && (
             <WorkspaceMembers
               workspaceId={detail.id}
               members={detail.members}
@@ -120,8 +119,8 @@ export function WorkspacePage() {
               currentUserId={user?.id}
               onChange={(members: Member[]) => setDetail({ ...detail, members })}
             />
-          </aside>
-        )}
+          )}
+        </aside>
       </div>
 
       {infoOpen && (
