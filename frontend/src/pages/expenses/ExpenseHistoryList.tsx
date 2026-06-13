@@ -1,19 +1,38 @@
 import { fmt } from '@/components/workspaceExpenses/utils/format';
 import { Avatar } from '@/components/workspaceExpenses/Avatar';
 import type { ExpenseResponse } from '@/types/expense';
+import {ExpenseDetail} from "@/components/workspaceExpenses/ExpenseDetail.tsx";
+import {useState} from "react";
 
 interface Props {
     expenses: ExpenseResponse[];
+    currentUserId: string;
     currentPage: number;
     totalPages: number;
     onPageChange: (page: number) => void;
+    onSettle: (splitId: string) => Promise<void>;
 }
 
-export function ExpenseHistoryList({expenses, currentPage, totalPages, onPageChange,}: Props) {
+export function ExpenseHistoryList({expenses, currentUserId, currentPage, totalPages, onPageChange, onSettle,}: Props) {
+    const [selected, setSelected] = useState<ExpenseResponse | null>(null);
+
     const fmtDate = (iso: string) =>
         new Date(iso).toLocaleDateString('en-US', {
             month: 'short', day: 'numeric',
         });
+
+    if (selected) {
+        return (
+            <div className="we__list-card">
+                <ExpenseDetail
+                    expense={selected}
+                    currentUserId={currentUserId}
+                    onBack={() => setSelected(null)}
+                    onSettle={onSettle}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="we__list-card">
@@ -24,7 +43,12 @@ export function ExpenseHistoryList({expenses, currentPage, totalPages, onPageCha
             ) : (
                 <div className="we__list">
                     {expenses.map((expense) => (
-                        <div key={expense.id} className="we__list-row">
+                        <button
+                            key={expense.id}
+                            type="button"
+                            className="we__list-row"
+                            onClick={() => setSelected(expense)}
+                        >
                             <Avatar
                                 name={`${expense.paidBy.firstName} ${expense.paidBy.lastName}`}
                                 size={28}
@@ -32,7 +56,7 @@ export function ExpenseHistoryList({expenses, currentPage, totalPages, onPageCha
                             <span className="we__list-name">{expense.title}</span>
                             <span className="we__list-price--date">{fmtDate(expense.createdAt)}</span>
                             <span className="we__list-price">{fmt(expense.amount)}</span>
-                        </div>
+                        </button>
                     ))}
                 </div>
             )}

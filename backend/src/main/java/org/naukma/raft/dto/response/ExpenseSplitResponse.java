@@ -1,5 +1,6 @@
 package org.naukma.raft.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,5 +12,6 @@ public class ExpenseSplitResponse {
     private String id;
     private UserSummaryResponse user;
     private BigDecimal share;
+    @JsonProperty("isSettled")
     private boolean isSettled;
 }

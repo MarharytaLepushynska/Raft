@@ -6,14 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Repository
 public interface ExpenseMemberRepository extends JpaRepository<ExpenseMember, Long> {
     List<ExpenseMember> findByExpenseId(Long expenseId);
 
-    List<ExpenseMember> findByUserIdAndIsSettledFalse(Long userId);
+    List<ExpenseMember> findByUser_IdAndIsSettledFalse(Long userId);
 
     @Query("""
           SELECT s FROM ExpenseMember s

@@ -48,6 +48,8 @@ public class ExpenseService {
             participants = userRepository.findAllById(request.getParticipantIds());
         }
 
+        System.out.println("participantIds from request: " + request.getParticipantIds());
+
         BigDecimal share = request.getAmount()
                 .divide(BigDecimal.valueOf(participants.size()), 2, RoundingMode.HALF_UP);
 
@@ -106,7 +108,7 @@ public class ExpenseService {
         Page<Expense> historyPage = expenseRepository.findByUserInvolvedPaged(currentUserId, pageable);
 
         List<ExpenseMember> myDebts = expenseMemberRepository
-                .findByUserIdAndIsSettledFalse(currentUserId)
+                .findByUser_IdAndIsSettledFalse(currentUserId)
                 .stream()
                 .filter(s -> !s.getExpense().getPaidBy().getId().equals(currentUserId))
                 .toList();
@@ -157,7 +159,6 @@ public class ExpenseService {
                 .map(DebtSummaryResponse::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-
         return PersonalExpenseStatsResponse.builder()
                 .totalIOwe(totalIOwe)
                 .totalOwedToMe(totalOwedToMe)
@@ -167,6 +168,9 @@ public class ExpenseService {
                         .stream()
                         .map(this::mapToResponse)
                         .toList())
+                .historyPage(historyPage.getNumber())
+                .historyTotalPages(historyPage.getTotalPages())
+                .historyTotal(historyPage.getTotalElements())
                 .build();
     }
 

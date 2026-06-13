@@ -1,5 +1,6 @@
 package org.naukma.raft.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public class PersonalExpenseStatsResponse {
     private BigDecimal totalOwedToMe;
     private BigDecimal totalIOwe;
+    @JsonProperty("iOwe")
     private List<DebtSummaryResponse> iOwe;
     private List<DebtSummaryResponse> owedToMe;
 

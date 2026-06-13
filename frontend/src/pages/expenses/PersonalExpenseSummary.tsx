@@ -32,7 +32,7 @@ export function PersonalExpenseSummary({totalOwedToMe, totalIOwe,
             <div className="exp-summary__banner">
                 <span className="exp-summary__banner-label">Your Balance</span>
                 <span className={`exp-summary__banner-value ${net < 0 ? 'exp-summary__banner-value--owe' : ''}`}>
-          {net >= 0 ? ' ' : '-'}{fmt(net)}
+          {fmt(net)}
         </span>
             </div>
         </div>
