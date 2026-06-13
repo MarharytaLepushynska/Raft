@@ -7,7 +7,7 @@ import { searchUsers } from '@/api/user';
 import { WorkspaceCard } from '@/components/workspace/WorkspaceCard';
 import { UserSuggestions } from '@/components/common/UserSuggestions';
 import { colorHex, WORKSPACE_COLOR_NAMES } from '@/lib/workspaceColors';
-import { useUserSuggestions } from '@/hooks/useUserSuggestions';
+import { useUserSuggestions } from '@/hooks/common/useUserSuggestions';
 import type { User } from '@/types/user';
 import type { Workspace, WorkspaceColor, WorkspaceType } from '@/types/workspace';
 import './SpacesPage.css';

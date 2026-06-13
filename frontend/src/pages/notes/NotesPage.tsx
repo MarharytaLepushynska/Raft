@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/auth/AuthContext';
-import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { useWorkspaces } from '@/hooks/workspaces/useWorkspaces';
 import { MultiSelectFilter } from '@/components/common/MultiSelectFilter';
 import { useNotes } from '@/hooks/notes/useNotes';
 import { useFolders } from '@/hooks/notes/useFolders';

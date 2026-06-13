@@ -23,3 +23,7 @@ const FALLBACK = '#853664';
 export function colorHex(color?: WorkspaceColor | null): string {
   return color ? WORKSPACE_COLORS[color] : FALLBACK;
 }
+
+export function colorTint(color: WorkspaceColor | null | undefined, percent: number): string {
+  return `color-mix(in srgb, ${colorHex(color)} ${percent}%, transparent)`;
+}
