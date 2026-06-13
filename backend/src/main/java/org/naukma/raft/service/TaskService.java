@@ -8,6 +8,7 @@ import org.naukma.raft.dto.response.UserSummaryResponse;
 import org.naukma.raft.entity.Task;
 import org.naukma.raft.entity.User;
 import org.naukma.raft.entity.Workspace;
+import org.naukma.raft.enums.TaskStatus;
 import org.naukma.raft.errorsHadling.AccessDeniedException;
 import org.naukma.raft.errorsHadling.ConflictException;
 import org.naukma.raft.errorsHadling.NotFoundException;
@@ -30,6 +31,7 @@ public class TaskService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceMemberRepository memberRepository;
     private final WorkspaceService workspaceService;
+    private final AchievementService achievementService;
 
     @Transactional(readOnly = true)
     public List<TaskResponse> getTasks(Long userId) {
@@ -60,12 +62,21 @@ public class TaskService {
                 .assignee(resolveAssignee(workspace, request.getAssigneeId()))
                 .build();
 
-        return mapToResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+
+        achievementService.awardAchievement(userId, "FIRST_TASK_CREATED");
+
+        if (savedTask.getStatus() == TaskStatus.COMPLETED) {
+            achievementService.awardAchievement(userId, "FIRST_TASK_COMPLETED");
+        }
+
+        return mapToResponse(savedTask);
     }
 
     @Transactional
     public TaskResponse updateTask(Long userId, Long taskId, TaskPatchRequest request) {
         Task task = getAccessibleTask(userId, taskId);
+        boolean wasCompleted = task.getStatus() == TaskStatus.COMPLETED;
 
         if (request.getTitle() != null) task.setTitle(request.getTitle());
         if (request.getDescription() != null) task.setDescription(request.getDescription());
@@ -79,7 +90,13 @@ public class TaskService {
                     : resolveAssignee(task.getWorkspace(), request.getAssigneeId()));
         }
 
-        return mapToResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+
+        if (!wasCompleted && savedTask.getStatus() == TaskStatus.COMPLETED) {
+            achievementService.awardAchievement(userId, "FIRST_TASK_COMPLETED");
+        }
+
+        return mapToResponse(savedTask);
     }
 
     @Transactional
