@@ -21,6 +21,8 @@ export function FolderModal({folder, workspaces, onClose, onCreate, onUpdate, on
     const [workspaceId, setWorkspaceId] = useState(folder?.workspaceId ?? workspaces[0]?.id ?? '');
     const [submitting, setSubmitting] = useState(false);
 
+    const isEditing = !!folder;
+
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         const trimmed = name.trim();
@@ -41,7 +43,7 @@ export function FolderModal({folder, workspaces, onClose, onCreate, onUpdate, on
         if (!folder || !window.confirm('Delete this folder?')) return;
         setSubmitting(true);
         try {
-            await onDelete(folder.id);
+            onDelete(folder.id);
         } finally {
             setSubmitting(false);
         }
@@ -69,20 +71,24 @@ export function FolderModal({folder, workspaces, onClose, onCreate, onUpdate, on
                 </label>
 
                 <div className="modal__row">
-                    <div className="modal__row">
-                        <label className="modal__field">
-                            <span>Workspace</span>
-                            <select
-                                className="modal__select"
-                                value={workspaceId}
-                                onChange={(e) => setWorkspaceId(e.target.value)}
-                            >
-                                {workspaces.map((ws) => (
-                                    <option key={ws.id} value={ws.id}>{ws.name}</option>
-                                ))}
-                            </select>
-                        </label>
-                    </div>
+                    {!isEditing && (
+                        <div className="modal__row">
+                            <label className="modal__field">
+                                <span>Workspace</span>
+                                <select
+                                    className="modal__select"
+                                    value={workspaceId}
+                                    onChange={(e) => setWorkspaceId(e.target.value)}
+                                >
+                                    {workspaces.map((ws) => (
+                                        <option key={ws.id} value={ws.id}>
+                                            {ws.name} {ws.type === 'PERSONAL' && '(Personal)'}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                        </div>
+                    )}
 
                     <label className="modal__field">
                         <span>Type</span>
@@ -97,7 +103,7 @@ export function FolderModal({folder, workspaces, onClose, onCreate, onUpdate, on
                 </div>
 
                 <div className="modal__actions">
-                    {folder && (
+                    {isEditing && (
                         <button type="button" className="modal__btn modal__btn--danger" onClick={handleDelete}
                                 disabled={submitting}>
                             Delete
