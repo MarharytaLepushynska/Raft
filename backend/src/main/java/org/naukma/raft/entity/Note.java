@@ -32,7 +32,7 @@ public class Note {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @CreationTimestamp
