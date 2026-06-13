@@ -17,5 +17,19 @@ public class ProductivityStatisticsResponse {
 
     private long overdueTasks;
 
+    private long dueTodayTasks;
+
+    private long dueThisWeekTasks;
+
     private double completionRate;
+
+    private long upcomingReminders;
+
+    private long earnedAchievements;
+
+    private long totalAchievements;
+
+    private double achievementRate;
+
+    private long unreadNotifications;
 }

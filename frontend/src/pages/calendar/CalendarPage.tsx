@@ -1,127 +1,39 @@
 import { useMemo, useState } from 'react';
 import { TaskModal } from '@/components/task/TaskModal';
+import { EventModal } from '@/components/event/EventModal';
 import { MultiSelectFilter } from '@/components/common/MultiSelectFilter';
 import { monthGridDays, toISODate, weekDays } from '@/lib/calendar';
 import { Icon } from '@/lib/icons';
 import { addDays, byDueTime, defaultAssigneeId, isMyTask, priorityOptions } from '@/lib/tasks';
-import { useTasks } from '@/hooks/useTasks';
-import { useWorkspaces } from '@/hooks/useWorkspaces';
+import { useTasks } from '@/hooks/tasks/useTasks';
+import { useEvents } from '@/hooks/events/useEvents';
+import { useWorkspaces } from '@/hooks/workspaces/useWorkspaces';
 import { capitalize } from '@/lib/utils';
-import { colorHex } from '@/lib/workspaceColors';
 import { useAuth } from '@/auth/AuthContext';
 import type { Task } from '@/types/task';
+import type { Event } from '@/types/event';
+import { coveredDays } from './calendarLayout';
+import { TimeGrid } from './TimeGrid';
+import { MonthGrid } from './MonthGrid';
 import './CalendarPage.css';
 
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const MAX_PER_DAY = 3;
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
-
 type View = 'month' | 'week' | 'day';
-
-function weekdayName(date: Date): string {
-  return WEEKDAYS[(date.getDay() + 6) % 7];
-}
 
 function formatDay(date: Date): string {
   return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
-function Chip({ task, onSelect }: { task: Task; onSelect: (task: Task) => void }) {
-  return (
-    <button
-      type="button"
-      className={`tg__chip${task.status === 'COMPLETED' ? ' tg__chip--done' : ''}`}
-      style={{ borderLeftColor: colorHex(task.workspaceColor) }}
-      onClick={() => onSelect(task)}
-    >
-      {task.dueTime && <span className="tg__chip-time">{task.dueTime}</span>}
-      <span className="tg__chip-title">{task.title}</span>
-    </button>
-  );
-}
-
-function TimeGrid({
-  days,
-  tasksByDate,
-  today,
-  onPickDay,
-  onSelectTask,
-}: {
-  days: Date[];
-  tasksByDate: Map<string, Task[]>;
-  today: string;
-  onPickDay: (date: Date) => void;
-  onSelectTask: (task: Task) => void;
-}) {
-  const cols = `64px repeat(${days.length}, minmax(0, 1fr))`;
-  return (
-    <div className="tg">
-      <div className="tg__head" style={{ gridTemplateColumns: cols }}>
-        <div className="tg__corner" />
-        {days.map((date) => {
-          const iso = toISODate(date);
-          return (
-            <button
-              key={iso}
-              type="button"
-              className={`tg__day-head${iso === today ? ' tg__day-head--today' : ''}`}
-              onClick={() => onPickDay(date)}
-            >
-              <span className="tg__day-name">{weekdayName(date)}</span>
-              <span className="tg__day-num">{date.getDate()}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="tg__allday" style={{ gridTemplateColumns: cols }}>
-        <div className="tg__axis-label">all-day</div>
-        {days.map((date) => {
-          const iso = toISODate(date);
-          const allDay = (tasksByDate.get(iso) ?? []).filter((task) => !task.dueTime);
-          return (
-            <div key={iso} className="tg__cell">
-              {allDay.map((task) => (
-                <Chip key={task.id} task={task} onSelect={onSelectTask} />
-              ))}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="tg__body">
-        {HOURS.map((hour) => (
-          <div key={hour} className="tg__row" style={{ gridTemplateColumns: cols }}>
-            <div className="tg__axis">{String(hour).padStart(2, '0')}:00</div>
-            {days.map((date) => {
-              const iso = toISODate(date);
-              const atHour = (tasksByDate.get(iso) ?? []).filter(
-                (task) => task.dueTime && Number(task.dueTime.slice(0, 2)) === hour,
-              );
-              return (
-                <div key={iso} className="tg__cell">
-                  {atHour.map((task) => (
-                    <Chip key={task.id} task={task} onSelect={onSelectTask} />
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export function CalendarPage() {
   const { user } = useAuth();
   const { tasks, create, update, remove } = useTasks();
+  const { events, create: createEvent, update: updateEvent, remove: removeEvent } = useEvents();
   const { workspaces, spaceOptions } = useWorkspaces();
   const [view, setView] = useState<View>('month');
   const [focus, setFocus] = useState(() => new Date());
   const [selectedPriorities, setSelectedPriorities] = useState<Set<string>>(() => new Set());
   const [selectedSpaces, setSelectedSpaces] = useState<Set<string>>(() => new Set());
   const [modalTask, setModalTask] = useState<Task | null | undefined>(undefined);
+  const [modalEvent, setModalEvent] = useState<Event | null | undefined>(undefined);
 
   const handleCreate = (input: Omit<Task, 'id'>) =>
     create({ ...input, assigneeId: defaultAssigneeId(input.workspaceId, workspaces, user?.id) }).then(() =>
@@ -130,7 +42,17 @@ export function CalendarPage() {
   const handleUpdate = (id: string, patch: Partial<Task>) => update(id, patch).then(() => setModalTask(undefined));
   const handleDelete = (id: string) => remove(id).then(() => setModalTask(undefined));
 
+  const handleEventCreate = (input: Omit<Event, 'id'>) =>
+    createEvent(input).then(() => setModalEvent(undefined));
+  const handleEventUpdate = (id: string, patch: Partial<Event>) =>
+    updateEvent(id, patch).then(() => setModalEvent(undefined));
+  const handleEventDelete = (id: string) => removeEvent(id).then(() => setModalEvent(undefined));
+
   const today = toISODate(new Date());
+  const pickDay = (date: Date) => {
+    setFocus(date);
+    setView('day');
+  };
 
   const tasksByDate = useMemo(() => {
     const map = new Map<string, Task[]>();
@@ -145,6 +67,20 @@ export function CalendarPage() {
     for (const list of map.values()) list.sort(byDueTime);
     return map;
   }, [tasks, selectedPriorities, selectedSpaces, user?.id]);
+
+  const eventsByDay = useMemo(() => {
+    const map = new Map<string, Event[]>();
+    for (const event of events) {
+      if (selectedSpaces.size > 0 && (!event.workspaceId || !selectedSpaces.has(event.workspaceId))) continue;
+      for (const iso of coveredDays(event)) {
+        const list = map.get(iso) ?? [];
+        list.push(event);
+        map.set(iso, list);
+      }
+    }
+    for (const list of map.values()) list.sort((a, b) => a.startTime.localeCompare(b.startTime));
+    return map;
+  }, [events, selectedSpaces]);
 
   const shift = (delta: number) =>
     setFocus((f) => {
@@ -163,8 +99,6 @@ export function CalendarPage() {
             const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             return `${fmt(days[0])} – ${fmt(days[6])}`;
           })();
-
-  const monthDays = monthGridDays(focus.getFullYear(), focus.getMonth());
 
   return (
     <div className="calendar">
@@ -197,7 +131,11 @@ export function CalendarPage() {
           </div>
           <button type="button" className="calendar__add" onClick={() => setModalTask(null)}>
             <Icon name="plus" size={16} />
-            Add
+            Task
+          </button>
+          <button type="button" className="calendar__add" onClick={() => setModalEvent(null)}>
+            <Icon name="plus" size={16} />
+            Event
           </button>
         </div>
       </header>
@@ -223,65 +161,27 @@ export function CalendarPage() {
       </div>
 
       <div className="calendar__scroll">
-      {view === 'month' ? (
-        <div className="calendar__grid">
-          {WEEKDAYS.map((weekday) => (
-            <div key={weekday} className="calendar__weekday">
-              {weekday}
-            </div>
-          ))}
-
-          {monthDays.map((date) => {
-            const iso = toISODate(date);
-            const inMonth = date.getMonth() === focus.getMonth();
-            const dayTasks = tasksByDate.get(iso) ?? [];
-            const extra = dayTasks.length - MAX_PER_DAY;
-            const classes = [
-              'calendar__cell',
-              inMonth ? '' : 'calendar__cell--muted',
-              iso === today ? 'calendar__cell--today' : '',
-            ]
-              .filter(Boolean)
-              .join(' ');
-            return (
-              <button
-                key={iso}
-                type="button"
-                className={classes}
-                onClick={() => {
-                  setFocus(date);
-                  setView('day');
-                }}
-              >
-                <span className="calendar__date">{date.getDate()}</span>
-                <div className="calendar__tasks">
-                  {dayTasks.slice(0, MAX_PER_DAY).map((task) => (
-                    <span
-                      key={task.id}
-                      className={`calendar__task${task.status === 'COMPLETED' ? ' calendar__task--done' : ''}`}
-                    >
-                      <span className="calendar__dot" style={{ background: colorHex(task.workspaceColor) }} />
-                      <span className="calendar__task-title">{task.title}</span>
-                    </span>
-                  ))}
-                  {extra > 0 && <span className="calendar__more">+{extra} more</span>}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      ) : (
-        <TimeGrid
-          days={view === 'week' ? weekDays(focus) : [focus]}
-          tasksByDate={tasksByDate}
-          today={today}
-          onPickDay={(date) => {
-            setFocus(date);
-            setView('day');
-          }}
-          onSelectTask={setModalTask}
-        />
-      )}
+        {view === 'month' ? (
+          <MonthGrid
+            days={monthGridDays(focus.getFullYear(), focus.getMonth())}
+            month={focus.getMonth()}
+            tasksByDate={tasksByDate}
+            eventsByDay={eventsByDay}
+            today={today}
+            onPickDay={pickDay}
+          />
+        ) : (
+          <TimeGrid
+            days={view === 'week' ? weekDays(focus) : [focus]}
+            tasksByDate={tasksByDate}
+            eventsByDay={eventsByDay}
+            today={today}
+            maxCols={view === 'week' ? 3 : Infinity}
+            onPickDay={pickDay}
+            onSelectTask={setModalTask}
+            onSelectEvent={setModalEvent}
+          />
+        )}
       </div>
 
       {modalTask !== undefined && (
@@ -292,6 +192,17 @@ export function CalendarPage() {
           onCreate={handleCreate}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
+        />
+      )}
+
+      {modalEvent !== undefined && (
+        <EventModal
+          event={modalEvent}
+          defaultDate={toISODate(focus)}
+          onClose={() => setModalEvent(undefined)}
+          onCreate={handleEventCreate}
+          onUpdate={handleEventUpdate}
+          onDelete={handleEventDelete}
         />
       )}
     </div>

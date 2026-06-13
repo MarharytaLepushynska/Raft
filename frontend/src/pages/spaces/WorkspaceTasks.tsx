@@ -13,7 +13,7 @@ import {
   priorityOptions,
   statusLabels,
 } from '@/lib/tasks';
-import { useTasks } from '@/hooks/useTasks';
+import { useTasks } from '@/hooks/tasks/useTasks';
 import { capitalize } from '@/lib/utils';
 import type { Task } from '@/types/task';
 import type { WorkspaceDetail } from '@/types/workspace';
