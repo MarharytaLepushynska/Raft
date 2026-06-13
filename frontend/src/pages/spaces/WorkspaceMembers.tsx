@@ -85,7 +85,7 @@ export function WorkspaceMembers({ workspaceId, members, canManage, currentUserI
             <input
               ref={inviteInputRef}
               type="text"
-              placeholder="Invite by email or username"
+              placeholder="Invite by login"
               autoComplete="off"
               value={inviteLogin}
               onChange={(event) => {

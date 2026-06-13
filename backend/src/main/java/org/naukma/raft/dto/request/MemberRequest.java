@@ -6,7 +6,7 @@ import org.naukma.raft.enums.MemberRole;
 
 @Data
 public class MemberRequest {
-    @NotBlank(message = "Email or username is required")
+    @NotBlank(message = "Login is required")
     private String login;
 
     private MemberRole role;

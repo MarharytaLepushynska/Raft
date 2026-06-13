@@ -30,7 +30,7 @@ public class Pin {
     @Column(nullable = false)
     private PinType type;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "LONGTEXT")
     private String imageUrl;
 
     private String title;

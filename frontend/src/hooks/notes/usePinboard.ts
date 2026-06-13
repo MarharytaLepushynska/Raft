@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getPins, createPin, updatePinPosition, deletePin } from '@/api/pins.ts';
 import { randomBetween } from '@/lib/notes.ts';
-import type { PinItem, CreatePinInput, UpdatePinPositionInput } from '@/types/pin.ts';
+import type {PinItem, CreatePinInput, UpdatePinPositionInput, PinType} from '@/types/pin.ts';
 import type { Note } from '@/types/note.ts';
+
+const normalizePin = (pin: PinItem): PinItem => ({
+    ...pin,
+    type: pin.type.toLowerCase() as PinType
+});
 
 export function usePinboard() {
     const [pins, setPins] = useState<PinItem[]>([]);
@@ -16,7 +21,9 @@ export function usePinboard() {
         let active = true;
         getPins()
             .then((data) => {
-                if (active) setPins(data);
+                if (active) {
+                    setPins(data.map(normalizePin));
+                }
             })
             .catch(() => {})
             .finally(() => {
@@ -29,7 +36,7 @@ export function usePinboard() {
         if (pins.some((p) => p.noteId === note.id)) return;
         const input: CreatePinInput = { noteId: note.id, x: randomBetween(4, 68), y: randomBetween(8, 52), rotate: randomBetween(-10, 10) };
         const pin = await createPin(input);
-        setPins((prev) => [...prev, pin]);
+        setPins((prev) => [...prev, normalizePin(pin)]);
     };
 
     const unpinByNoteId = async (noteId: string) => {
@@ -52,7 +59,7 @@ export function usePinboard() {
             const imageUrl = ev.target?.result as string;
             const input: CreatePinInput = { imageUrl, x: randomBetween(4, 60), y: randomBetween(8, 45), rotate: randomBetween(-7, 7) };
             const pin = await createPin(input);
-            setPins((prev) => [...prev, pin]);
+            setPins((prev) => [...prev, normalizePin(pin)]);
         };
         reader.readAsDataURL(file);
         e.target.value = '';

@@ -43,6 +43,7 @@ public class WorkspaceService {
     private final WorkspaceMemberRepository memberRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final AchievementService achievementService;
 
     @Transactional
     public List<WorkspaceResponse> getWorkspaces(Long userId) {
@@ -134,16 +135,15 @@ public class WorkspaceService {
 
         saveMembership(workspace, user, MemberRole.ADMIN);
 
+        achievementService.awardAchievement(userId, "FIRST_WORKSPACE_CREATED");
+
         if (type == WorkspaceType.SHARED && request.getMemberLogins() != null) {
             for (String loginValue : request.getMemberLogins()) {
                 if (loginValue == null || loginValue.isBlank()) continue;
-                userRepository.findByEmailOrUsername(loginValue.trim(), loginValue.trim()).ifPresent(target -> {
-                    boolean alreadyIn = target.getId().equals(user.getId())
-                            || memberRepository.existsByWorkspace_IdAndUser_Id(workspace.getId(), target.getId());
-                    if (!alreadyIn) {
-                        saveMembership(workspace, target, MemberRole.MEMBER);
-                    }
-                });
+                User target = resolveExistingUser(loginValue);
+                if (!isOwnerOrMember(workspace, target)) {
+                    saveMembership(workspace, target, MemberRole.MEMBER);
+                }
             }
         }
 
@@ -207,11 +207,9 @@ public class WorkspaceService {
         Workspace workspace = getWorkspaceEntity(workspaceId);
         requireAdmin(workspace, userId);
 
-        User target = userRepository.findByEmailOrUsername(request.getLogin(), request.getLogin())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+        User target = resolveExistingUser(request.getLogin());
 
-        if (workspace.getOwner().getId().equals(target.getId())
-                || memberRepository.existsByWorkspace_IdAndUser_Id(workspaceId, target.getId())) {
+        if (isOwnerOrMember(workspace, target)) {
             throw new ConflictException("User is already a member");
         }
 
@@ -257,6 +255,17 @@ public class WorkspaceService {
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    private User resolveExistingUser(String login) {
+        String username = login.trim();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found: " + username));
+    }
+
+    private boolean isOwnerOrMember(Workspace workspace, User user) {
+        return workspace.getOwner().getId().equals(user.getId())
+                || memberRepository.existsByWorkspace_IdAndUser_Id(workspace.getId(), user.getId());
     }
 
     private MemberRole requireMember(Workspace workspace, Long userId) {

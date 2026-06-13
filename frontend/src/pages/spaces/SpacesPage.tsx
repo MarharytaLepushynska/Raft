@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from '@/lib/icons';
 import { errorMessage } from '@/api/http';
 import { createWorkspace, getWorkspaces } from '@/api/workspaces';
+import { searchUsers } from '@/api/user';
 import { WorkspaceCard } from '@/components/workspace/WorkspaceCard';
 import { UserSuggestions } from '@/components/common/UserSuggestions';
 import { colorHex, WORKSPACE_COLOR_NAMES } from '@/lib/workspaceColors';
 import { useUserSuggestions } from '@/hooks/useUserSuggestions';
+import type { User } from '@/types/user';
 import type { Workspace, WorkspaceColor, WorkspaceType } from '@/types/workspace';
 import './SpacesPage.css';
 
@@ -27,11 +29,33 @@ export function SpacesPage() {
   const loginInputRef = useRef<HTMLInputElement>(null);
   const suggestions = useUserSuggestions(loginInput);
 
-  const addLogin = (login?: string) => {
-    const value = (login ?? loginInput).trim();
-    if (!value || memberLogins.includes(value)) return;
-    setMemberLogins((prev) => [...prev, value]);
+  const addUser = (user: User) => {
+    if (!memberLogins.includes(user.username)) {
+      setMemberLogins((prev) => [...prev, user.username]);
+    }
     setLoginInput('');
+    setShowSuggest(false);
+    setError('');
+  };
+
+  const matchUser = (users: User[], value: string) =>
+    users.find((u) => u.username.toLowerCase() === value.toLowerCase());
+
+  const addLogin = async () => {
+    const value = loginInput.trim();
+    if (!value) return;
+    const match = matchUser(suggestions, value);
+    if (match) {
+      addUser(match);
+      return;
+    }
+    try {
+      const found = matchUser(await searchUsers(value), value);
+      if (found) addUser(found);
+      else setError(`No user found for "${value}"`);
+    } catch {
+      setError('Could not verify that user');
+    }
   };
 
   const removeLogin = (value: string) =>
@@ -172,12 +196,13 @@ export function SpacesPage() {
                     <input
                       ref={loginInputRef}
                       type="text"
-                      placeholder="Add member by email or username"
+                      placeholder="Add member by login"
                       autoComplete="off"
                       value={loginInput}
                       onChange={(event) => {
                         setLoginInput(event.target.value);
                         setShowSuggest(true);
+                        if (error) setError('');
                       }}
                       onFocus={() => setShowSuggest(true)}
                       onBlur={() => setShowSuggest(false)}
@@ -192,10 +217,7 @@ export function SpacesPage() {
                       <UserSuggestions
                         anchorRef={loginInputRef}
                         users={suggestions.filter((u) => !memberLogins.includes(u.username))}
-                        onPick={(u) => {
-                          addLogin(u.username);
-                          setShowSuggest(false);
-                        }}
+                        onPick={addUser}
                       />
                     )}
                   </div>

@@ -77,6 +77,11 @@
   box-shadow: var(--shadow-focus);
 }
 
+.auth__hint {
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+}
+
 .auth__error {
   background: var(--color-primary-soft);
   color: var(--color-primary-hover);
