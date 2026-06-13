@@ -8,8 +8,11 @@ export function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ firstName: '', lastName: '', username: '', email: '', password: '' });
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const passwordsMismatch = confirmPassword.length > 0 && confirmPassword !== form.password;
 
   const update = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -17,6 +20,10 @@ export function RegisterPage() {
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError('');
+    if (form.password !== confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
     setSubmitting(true);
     try {
       await register({
@@ -97,7 +104,22 @@ export function RegisterPage() {
             />
           </div>
 
-          <button type="submit" className="auth__submit" disabled={submitting}>
+          <div className="auth__field">
+            <label htmlFor="confirmPassword">Confirm password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              required
+              maxLength={72}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              aria-invalid={passwordsMismatch}
+            />
+            {passwordsMismatch && <span className="auth__hint">{"Passwords don't match"}</span>}
+          </div>
+
+          <button type="submit" className="auth__submit" disabled={submitting || passwordsMismatch}>
             {submitting ? 'Creating account…' : 'Create account'}
           </button>
         </form>
