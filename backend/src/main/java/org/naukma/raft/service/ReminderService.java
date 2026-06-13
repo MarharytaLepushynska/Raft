@@ -9,6 +9,7 @@ import org.naukma.raft.entity.Reminder;
 import org.naukma.raft.entity.Task;
 import org.naukma.raft.entity.User;
 import org.naukma.raft.entity.Workspace;
+import org.naukma.raft.enums.NotificationType;
 import org.naukma.raft.errorsHadling.AccessDeniedException;
 import org.naukma.raft.errorsHadling.ConflictException;
 import org.naukma.raft.errorsHadling.NotFoundException;
@@ -32,6 +33,7 @@ public class ReminderService {
     private final TaskRepository taskRepository;
     private final EventRepository eventRepository;
     private final WorkspaceMemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public List<ReminderResponse> getReminders(Long userId) {
@@ -114,7 +116,17 @@ public class ReminderService {
     public int processDueReminders() {
         List<Reminder> dueReminders = reminderRepository.findDueReminders(LocalDateTime.now());
 
-        dueReminders.forEach(reminder -> reminder.setSent(true));
+        dueReminders.forEach(reminder -> {
+            notificationService.createNotification(
+                    reminder.getUser().getId(),
+                    NotificationType.REMINDER,
+                    "Reminder",
+                    buildReminderMessage(reminder),
+                    reminder.getId()
+            );
+
+            reminder.setSent(true);
+        });
 
         reminderRepository.saveAll(dueReminders);
 
@@ -162,6 +174,18 @@ public class ReminderService {
     private Reminder getUserReminder(Long userId, Long reminderId) {
         return reminderRepository.findByIdAndUser_Id(reminderId, userId)
                 .orElseThrow(() -> new NotFoundException("Reminder not found"));
+    }
+
+    private String buildReminderMessage(Reminder reminder) {
+        if (reminder.getTask() != null) {
+            return "Task reminder: " + reminder.getTask().getTitle();
+        }
+
+        if (reminder.getEvent() != null) {
+            return "Event reminder: " + reminder.getEvent().getTitle();
+        }
+
+        return "Reminder time has come";
     }
 
     private ReminderResponse mapToResponse(Reminder reminder) {
