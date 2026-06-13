@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -107,6 +108,17 @@ public class ReminderService {
         if (taskId != null && eventId != null) {
             throw new ConflictException("Reminder can be connected only to one target");
         }
+    }
+
+    @Transactional
+    public int processDueReminders() {
+        List<Reminder> dueReminders = reminderRepository.findDueReminders(LocalDateTime.now());
+
+        dueReminders.forEach(reminder -> reminder.setSent(true));
+
+        reminderRepository.saveAll(dueReminders);
+
+        return dueReminders.size();
     }
 
     private void validateReminderPatchTarget(ReminderPatchRequest request) {
