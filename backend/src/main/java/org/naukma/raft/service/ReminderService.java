@@ -2,6 +2,7 @@ package org.naukma.raft.service;
 
 import lombok.RequiredArgsConstructor;
 import org.naukma.raft.dto.request.ReminderRequest;
+import org.naukma.raft.dto.request.ReminderPatchRequest;
 import org.naukma.raft.dto.response.ReminderResponse;
 import org.naukma.raft.entity.Event;
 import org.naukma.raft.entity.Reminder;
@@ -67,12 +68,49 @@ public class ReminderService {
         return mapToResponse(reminderRepository.save(reminder));
     }
 
+    @Transactional
+    public ReminderResponse updateReminder(Long userId, Long reminderId, ReminderPatchRequest request) {
+        validateReminderPatchTarget(request);
+
+        Reminder reminder = getUserReminder(userId, reminderId);
+
+        if (request.getTaskId() != null) {
+            Task task = getAccessibleTask(userId, request.getTaskId());
+            reminder.setTask(task);
+            reminder.setEvent(null);
+        }
+
+        if (request.getEventId() != null) {
+            Event event = getAccessibleEvent(userId, request.getEventId());
+            reminder.setEvent(event);
+            reminder.setTask(null);
+        }
+
+        if (request.getReminderTime() != null) {
+            reminder.setReminderTime(request.getReminderTime());
+        }
+
+        return mapToResponse(reminderRepository.save(reminder));
+    }
+
+    @Transactional
+    public void deleteReminder(Long userId, Long reminderId) {
+        Reminder reminder = getUserReminder(userId, reminderId);
+        reminderRepository.delete(reminder);
+    }
+
     private void validateReminderTarget(Long taskId, Long eventId) {
         if (taskId == null && eventId == null) {
             throw new ConflictException("Reminder must be connected to task or event");
         }
 
         if (taskId != null && eventId != null) {
+            throw new ConflictException("Reminder can be connected only to one target");
+        }
+    }
+
+    private void validateReminderPatchTarget(ReminderPatchRequest request) {
+        if (request.getTaskId() != null && request.getEventId() != null) {
             throw new ConflictException("Reminder can be connected only to one target");
         }
     }
@@ -107,6 +145,11 @@ public class ReminderService {
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    private Reminder getUserReminder(Long userId, Long reminderId) {
+        return reminderRepository.findByIdAndUser_Id(reminderId, userId)
+                .orElseThrow(() -> new NotFoundException("Reminder not found"));
     }
 
     private ReminderResponse mapToResponse(Reminder reminder) {
