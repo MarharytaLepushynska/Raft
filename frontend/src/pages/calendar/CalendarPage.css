@@ -322,8 +322,9 @@
 
 .tg__chip {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-1);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1px;
   width: 100%;
   padding: 2px var(--space-1);
   border-left: 3px solid var(--color-border);
@@ -346,14 +347,20 @@
 }
 
 .tg__chip-time {
-  flex-shrink: 0;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--color-text-muted);
 }
 
 .tg__chip-title {
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
 }
 
 .tg__body {
@@ -434,7 +441,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  padding: 0 3px;
   border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
   border-radius: var(--radius-sm);
   background: var(--color-primary-soft);

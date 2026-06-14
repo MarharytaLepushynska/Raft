@@ -21,7 +21,7 @@ function weekdayName(date: Date): string {
   return WEEKDAYS[(date.getDay() + 6) % 7];
 }
 
-function Chip({ task, showTime = true, onSelect }: { task: Task; showTime?: boolean; onSelect: (task: Task) => void }) {
+function Chip({ task, onSelect }: { task: Task; onSelect: (task: Task) => void }) {
   return (
     <button
       type="button"
@@ -29,8 +29,8 @@ function Chip({ task, showTime = true, onSelect }: { task: Task; showTime?: bool
       style={{ borderLeftColor: colorHex(task.workspaceColor) }}
       onClick={() => onSelect(task)}
     >
-      {showTime && task.dueTime && <span className="tg__chip-time">{task.dueTime}</span>}
       <span className="tg__chip-title">{task.title}</span>
+      {task.dueTime && <span className="tg__chip-time">{task.dueTime}</span>}
     </button>
   );
 }
@@ -136,12 +136,10 @@ export function TimeGrid({
                 }
                 const { left, width, widthPx } = columnBox(item.col, item.cols, item.reserve, colWidth);
                 const showTime = colWidth === 0 || widthPx >= TIME_MIN_WIDTH;
-                if (item.kind === 'tasks') {
+                if (item.kind === 'task') {
                   return (
                     <div key={item.key} className="tg__task-stack" style={{ top, left, width }}>
-                      {item.tasks.map((task) => (
-                        <Chip key={task.id} task={task} showTime={showTime} onSelect={onSelectTask} />
-                      ))}
+                      <Chip task={item.task} onSelect={onSelectTask} />
                     </div>
                   );
                 }

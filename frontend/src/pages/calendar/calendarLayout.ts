@@ -7,13 +7,12 @@ export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export const HOURS = Array.from({ length: 24 }, (_, i) => i);
 export const HOUR_HEIGHT = 44;
 export const AXIS_WIDTH = 64;
-export const MORE_WIDTH = 16;
+export const MORE_WIDTH = 22;
 export const TIME_MIN_WIDTH = 72;
 
 const DAY_MINUTES = 24 * 60;
 const TASK_DURATION_MIN = 30;
 const EVENT_MIN_HEIGHT = 18;
-const TASK_STACK_STEP = 22;
 const COL_INSET = 2;
 const COL_GAP = 4;
 
@@ -29,6 +28,7 @@ export function eventTimeRange(event: Event): string {
   return `${event.startTime.slice(11, 16)}–${event.endTime.slice(11, 16)}`;
 }
 
+// all ISO dates an event spans, an end at 00:00 counts as the previous day
 export function coveredDays(event: Event): string[] {
   const startISO = event.startTime.slice(0, 10);
   let endISO = event.endTime.slice(0, 10);
@@ -62,6 +62,7 @@ export function blockHeight(startMin: number, endMin: number): number {
   return Math.max(minutesToPx(endMin - startMin), EVENT_MIN_HEIGHT);
 }
 
+// left/width for column col of cols, reserve leaves room for the +N chip
 export function columnBox(col: number, cols: number, reserve: boolean, colWidth = 0) {
   const reserved = reserve ? MORE_WIDTH + COL_GAP : 0;
   const span = `(100% - ${reserved}px)`;
@@ -74,39 +75,36 @@ export function columnBox(col: number, cols: number, reserve: boolean, colWidth 
 
 type LaneItem =
   | { key: string; kind: 'event'; event: Event; startMin: number; endMin: number; lane: number }
-  | { key: string; kind: 'tasks'; tasks: Task[]; startMin: number; endMin: number; lane: number };
+  | { key: string; kind: 'task'; task: Task; startMin: number; endMin: number; lane: number };
 
 export type Block =
   | { key: string; kind: 'event'; event: Event; startMin: number; endMin: number; col: number; cols: number; reserve: boolean }
-  | { key: string; kind: 'tasks'; tasks: Task[]; startMin: number; endMin: number; col: number; cols: number; reserve: boolean }
+  | { key: string; kind: 'task'; task: Task; startMin: number; endMin: number; col: number; cols: number; reserve: boolean }
   | { key: string; kind: 'more'; count: number; startMin: number; endMin: number };
 
+// lay out a day's events + tasks, overlapping items go side by side, extras become +N
 export function layoutDay(iso: string, events: Event[], tasks: Task[], maxCols: number): Block[] {
   const items: LaneItem[] = [];
   for (const event of events) {
     const { startMin, endMin } = daySegment(event, iso);
     items.push({ key: `e${event.id}`, kind: 'event', event, startMin, endMin, lane: 0 });
   }
-  const taskGroups = new Map<number, Task[]>();
+  // tasks have no length - give each 30 min so same-time tasks sit in separate columns
   for (const task of tasks) {
     if (!task.dueTime) continue;
-    const minute = clockMinutes(task.dueTime);
-    const group = taskGroups.get(minute) ?? [];
-    group.push(task);
-    taskGroups.set(minute, group);
+    const startMin = clockMinutes(task.dueTime);
+    const endMin = Math.min(startMin + TASK_DURATION_MIN, DAY_MINUTES);
+    items.push({ key: `t${task.id}`, kind: 'task', task, startMin, endMin, lane: 0 });
   }
-  for (const [startMin, group] of taskGroups) {
-    const stackMin = ((group.length * TASK_STACK_STEP) / HOUR_HEIGHT) * 60;
-    const endMin = Math.min(startMin + Math.max(TASK_DURATION_MIN, stackMin), DAY_MINUTES);
-    items.push({ key: `t${startMin}`, kind: 'tasks', tasks: group, startMin, endMin, lane: 0 });
-  }
-  const rank = (it: LaneItem) => (it.kind === 'tasks' ? 0 : 1);
+  // sort by start time, tasks before events, shorter first
+  const rank = (it: LaneItem) => (it.kind === 'task' ? 0 : 1);
   items.sort((a, b) => a.startMin - b.startMin || rank(a) - rank(b) || a.endMin - b.endMin);
 
   const blocks: Block[] = [];
   let cluster: LaneItem[] = [];
   let clusterEnd = -1;
 
+  // place one cluster - each item takes the first lane that's already free
   const flush = () => {
     if (!cluster.length) return;
     const laneEnds: number[] = [];
@@ -120,6 +118,7 @@ export function layoutDay(iso: string, events: Event[], tasks: Task[], maxCols: 
       }
       item.lane = lane;
     }
+    // more lanes than fit - keep maxCols-1 columns, fold the rest into +N
     const laneCount = laneEnds.length;
     const overflow = laneCount > maxCols;
     const cols = overflow ? maxCols - 1 : laneCount;
@@ -137,7 +136,7 @@ export function layoutDay(iso: string, events: Event[], tasks: Task[], maxCols: 
       if (item.kind === 'event') {
         blocks.push({ key: item.key, kind: 'event', event: item.event, ...placed });
       } else {
-        blocks.push({ key: item.key, kind: 'tasks', tasks: item.tasks, ...placed });
+        blocks.push({ key: item.key, kind: 'task', task: item.task, ...placed });
       }
     }
     if (hidden > 0) {
@@ -147,6 +146,7 @@ export function layoutDay(iso: string, events: Event[], tasks: Task[], maxCols: 
     clusterEnd = -1;
   };
 
+  // build clusters of overlapping items, flush when a gap appears
   for (const item of items) {
     if (cluster.length && item.startMin >= clusterEnd) flush();
     cluster.push(item);
