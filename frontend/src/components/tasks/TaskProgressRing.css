@@ -1,0 +1,116 @@
+.todo-ring {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+}
+
+.todo-ring__title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+    margin: 0 0 var(--space-4);
+}
+
+.todo-ring__wrap {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
+.todo-ring__svg {
+    transform: rotate(-90deg);
+}
+
+.todo-ring__track {
+    stroke: #e7ddd7;
+}
+
+.todo-ring__seg {
+    transition: stroke-dasharray var(--transition);
+}
+
+.todo-ring__seg--done {
+    stroke: #5fb86a;
+}
+
+.todo-ring__seg--progress {
+    stroke: #edb45e;
+}
+
+.todo-ring__center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.todo-ring__pct {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    line-height: 1;
+    color: var(--color-text);
+}
+
+.todo-ring__sub {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+}
+
+.todo-ring__legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+}
+
+.todo-ring__leg {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.todo-ring__leg b {
+    margin-left: auto;
+    color: var(--color-text);
+    font-weight: var(--weight-semibold);
+}
+
+.todo-ring__leg i {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+}
+
+.todo-ring__leg-dot--done {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+    background: #5fb86a;
+}
+
+.todo-ring__leg-dot--progress {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+    background: #edb45e;
+}
+
+.todo-ring__leg-dot--todo {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+    background: #e7ddd7;
+}
