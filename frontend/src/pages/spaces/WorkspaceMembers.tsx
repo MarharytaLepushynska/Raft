@@ -55,9 +55,13 @@ export function WorkspaceMembers({ workspaceId, members, canManage, currentUserI
           const isYou = member.userId === currentUserId;
           return (
             <li key={member.id} className="wpage__member">
-              <span className="wpage__avatar">
-                {(member.firstName[0] ?? '') + (member.lastName[0] ?? '')}
-              </span>
+              {member.avatar ? (
+                <img className="wpage__avatar" src={member.avatar} alt={member.username} />
+              ) : (
+                <span className="wpage__avatar">
+                  {(member.firstName[0] ?? '') + (member.lastName[0] ?? '')}
+                </span>
+              )}
               <div className="wpage__member-info">
                 <span className="wpage__member-name">
                   {member.firstName} {member.lastName}

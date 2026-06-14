@@ -29,6 +29,7 @@ export function DebtSection({ title, amount, debts, canSettle, onSettle }: Props
                             <div className="we__member-row">
                                 <Avatar
                                     name={`${debt.user.firstName} ${debt.user.lastName}`}
+                                    src={debt.user.avatar}
                                     size={28}
                                 />
                                 <div className="we__member-info">

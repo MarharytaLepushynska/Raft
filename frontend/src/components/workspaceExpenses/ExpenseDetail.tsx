@@ -34,6 +34,7 @@ export function ExpenseDetail({ expense, currentUserId, onBack, onSettle }: Prop
                 <span className="we__detail-val">
                     <Avatar
                         name={`${expense.paidBy.firstName} ${expense.paidBy.lastName}`}
+                        src={expense.paidBy.avatar}
                         size={20}
                     />
                     {expense.paidBy.firstName} {expense.paidBy.lastName}
@@ -50,6 +51,7 @@ export function ExpenseDetail({ expense, currentUserId, onBack, onSettle }: Prop
                         <div key={split.id} className="we__member-row">
                             <Avatar
                                 name={`${split.user.firstName} ${split.user.lastName}`}
+                                src={split.user.avatar}
                                 size={28}
                             />
                             <div className="we__member-info">

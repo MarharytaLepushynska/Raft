@@ -42,9 +42,13 @@ export function UserSuggestions({ users, onPick, anchorRef }: UserSuggestionsPro
               onPick(user);
             }}
           >
-            <span className="usuggest__avatar">
-              {(user.firstName[0] ?? '') + (user.lastName[0] ?? '')}
-            </span>
+            {user.avatar ? (
+              <img className="usuggest__avatar" src={user.avatar} alt={user.username} />
+            ) : (
+              <span className="usuggest__avatar">
+                {(user.firstName[0] ?? '') + (user.lastName[0] ?? '')}
+              </span>
+            )}
             <span className="usuggest__text">
               <span className="usuggest__name">
                 {user.firstName} {user.lastName}

@@ -19,6 +19,7 @@ export interface Member {
   username: string;
   firstName: string;
   lastName: string;
+  avatar?: string | null;
   role: MemberRole;
 }
 

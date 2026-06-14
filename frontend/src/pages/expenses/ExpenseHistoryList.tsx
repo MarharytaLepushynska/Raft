@@ -51,6 +51,7 @@ export function ExpenseHistoryList({expenses, currentUserId, currentPage, totalP
                         >
                             <Avatar
                                 name={`${expense.paidBy.firstName} ${expense.paidBy.lastName}`}
+                                src={expense.paidBy.avatar}
                                 size={28}
                             />
                             <span className="we__list-name">{expense.title}</span>

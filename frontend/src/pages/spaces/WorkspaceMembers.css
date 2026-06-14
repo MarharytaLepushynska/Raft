@@ -48,6 +48,7 @@
   font-weight: var(--weight-bold);
   text-transform: uppercase;
   flex-shrink: 0;
+  object-fit: cover;
 }
 
 .wpage__member-info {

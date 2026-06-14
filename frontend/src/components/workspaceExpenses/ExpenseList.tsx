@@ -28,7 +28,7 @@ export function ExpenseList({ expenses, selectedId, currentUserId, onSelect }: P
                         onClick={() => onSelect(expense)}
                     >
 
-                        <Avatar name={`${expense.paidBy.firstName} ${expense.paidBy.lastName}`} size={28} />
+                        <Avatar name={`${expense.paidBy.firstName} ${expense.paidBy.lastName}`} src={expense.paidBy.avatar} size={28} />
                         <span className="we__list-name">{expense.title}</span>
                         <span className={`we__list-price ${iOwe ? 'we__list-price--owe' : ''}`}>
                             {fmt(expense.amount)}

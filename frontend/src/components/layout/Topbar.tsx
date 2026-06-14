@@ -99,7 +99,11 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         </button>
 
         <button type="button" className="user" onClick={() => navigate('/profile')}>
-          <span className="avatar">{initials}</span>
+          {user?.avatar ? (
+            <img className="avatar" src={user.avatar} alt={user.username} />
+          ) : (
+            <span className="avatar">{initials}</span>
+          )}
         </button>
       </div>
     </header>

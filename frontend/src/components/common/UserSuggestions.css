@@ -40,6 +40,7 @@
   font-size: var(--text-xs);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
+  object-fit: cover;
 }
 
 .usuggest__text {
