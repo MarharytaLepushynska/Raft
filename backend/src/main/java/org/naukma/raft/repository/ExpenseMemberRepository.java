@@ -21,4 +21,7 @@ public interface ExpenseMemberRepository extends JpaRepository<ExpenseMember, Lo
           AND e.workspace.id = :workspaceId
           """)
     List<ExpenseMember> findByUserIdAndWorkspaceId(@Param("userId") Long userId, @Param("workspaceId") Long workspaceId);
+
+    long countByUser_Id(Long userId);
+    long countByUser_IdAndIsSettledFalse(Long userId);
 }

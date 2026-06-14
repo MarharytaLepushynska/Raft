@@ -41,4 +41,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             Pageable pageable);
 
     List<Expense> findByPaidById(Long userId);
+
+    long countByPaidById(Long userId);
 }

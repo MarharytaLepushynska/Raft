@@ -28,4 +28,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     void deleteByFolder_Id(Long folderId);
 
     long countByFolder_Id(Long folderId);
+
+    long countByCreatedById(Long userId);
 }
