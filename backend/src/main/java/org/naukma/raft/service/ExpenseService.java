@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,15 +103,18 @@ public class ExpenseService {
                 .build();
     }
 
-    public PersonalExpenseStatsResponse getPersonalStats(Long currentUserId, LocalDateTime from, LocalDateTime to, int page, int size) {
+    public PersonalExpenseStatsResponse getPersonalStats(Long currentUserId, LocalDate from, LocalDate to, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        LocalDateTime fromDateTime = from != null ? from.atStartOfDay() : null;
+        LocalDateTime toDateTime = to != null ? to.atTime(23, 59, 59) : null;
 
-        Page<Expense> historyPage = expenseRepository.findByUserInvolvedPaged(currentUserId, pageable);
+        Page<Expense> historyPage = expenseRepository.findByUserInvolvedPaged(currentUserId, fromDateTime, toDateTime, pageable);
 
         List<ExpenseMember> myDebts = expenseMemberRepository
                 .findByUser_IdAndIsSettledFalse(currentUserId)
                 .stream()
                 .filter(s -> !s.getExpense().getPaidBy().getId().equals(currentUserId))
+                .filter(s -> isInRange(s.getExpense().getCreatedAt(), fromDateTime, toDateTime))
                 .toList();
 
         Map<User, List<ExpenseMember>> debtsByCreditor = myDebts.stream()
@@ -128,7 +132,10 @@ public class ExpenseService {
                         .build())
                 .toList();
 
-        List<Expense> paidByMe = expenseRepository.findByPaidById(currentUserId);
+        List<Expense> paidByMe = expenseRepository.findByPaidById(currentUserId)
+                .stream()
+                .filter(e -> isInRange(e.getCreatedAt(), fromDateTime, toDateTime))
+                .toList();
 
         Map<User, List<ExpenseMember>> debtsToMe = new HashMap<>();
         for (Expense expense : paidByMe) {
@@ -184,6 +191,12 @@ public class ExpenseService {
 
         split.setSettled(true);
         expenseMemberRepository.save(split);
+    }
+
+    private boolean isInRange(LocalDateTime date, LocalDateTime from, LocalDateTime to) {
+        if (from != null && date.isBefore(from)) return false;
+        if (to != null && date.isAfter(to)) return false;
+        return true;
     }
 
     private UserBalanceResponse calculateUserBalance(User user, List<Expense> expenses) {

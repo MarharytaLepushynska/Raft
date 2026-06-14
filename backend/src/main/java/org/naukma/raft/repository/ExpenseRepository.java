@@ -30,11 +30,15 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("""
     SELECT DISTINCT e FROM Expense e
     LEFT JOIN e.splits s
-    WHERE e.paidBy.id = :userId OR s.user.id = :userId
-    ORDER BY e.createdAt DESC
+    WHERE (e.paidBy.id = :userId OR s.user.id = :userId)
+    AND (:from IS NULL OR e.createdAt >= :from)
+    AND (:to IS NULL OR e.createdAt <= :to)
     """)
     Page<Expense> findByUserInvolvedPaged(
-            @Param("userId") Long userId, Pageable pageable);
+            @Param("userId") Long userId,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            Pageable pageable);
 
     List<Expense> findByPaidById(Long userId);
 }
