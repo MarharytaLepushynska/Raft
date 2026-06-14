@@ -85,5 +85,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("weekEnd") LocalDate weekEnd
     );
 
-    long countByAssignedToIdAndStatus(Long userId, TaskStatus status);
+    long countByAssigneeIdAndStatus(Long userId, TaskStatus status);
 }

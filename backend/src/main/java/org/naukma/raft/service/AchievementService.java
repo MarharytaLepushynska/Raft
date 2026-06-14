@@ -56,7 +56,7 @@ public class AchievementService {
     private void checkTasksCompleted(User user, int threshold, String code) {
         if (alreadyEarned(user, code)) return;
 
-        long completedCount = taskRepository.countByAssignedToIdAndStatus(user.getId(), TaskStatus.COMPLETED);
+        long completedCount = taskRepository.countByAssigneeIdAndStatus(user.getId(), TaskStatus.COMPLETED);
         if (completedCount >= threshold) {
             grantAchievement(user, code);
         }
