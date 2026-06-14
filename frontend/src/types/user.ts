@@ -14,3 +14,11 @@ export interface UserSummary {
   lastName: string;
   avatar?: string;
 }
+
+export interface ProfileUpdateRequest {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatar: string | null;
+}

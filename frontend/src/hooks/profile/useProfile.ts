@@ -3,7 +3,7 @@ import { deleteUser } from '@/api/user';
 import { useAuth } from '@/auth/AuthContext';
 
 export function useProfile() {
-    const { user, logout } = useAuth();
+    const { user, logout, updateUser } = useAuth();
     const [saving] = useState(false);
     const [error] = useState<string | null>(null);
 
@@ -12,5 +12,5 @@ export function useProfile() {
         logout();
     };
 
-    return { user, saving, error, remove };
+    return { user, saving, error, remove, updateUser };
 }
