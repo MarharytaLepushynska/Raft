@@ -12,6 +12,7 @@ import {RegisterPage} from '@/pages/auth/RegisterPage';
 import {ProfilePage} from "@/pages/profile/ProfilePage";
 import {ProtectedRoute} from '@/auth/ProtectedRoute';
 import { ExpensesPage } from '@/pages/expenses/ExpensesPage';
+import { HelpPage } from '@/pages/help/HelpPage';
 
 function App() {
     return (
@@ -30,6 +31,7 @@ function App() {
                     <Route path="profile" element={<ProfilePage/>}/>
                     <Route path="*" element={<PlaceholderPage />} />
                     <Route path="expenses" element={<ExpensesPage />} />
+                    <Route path="help" element={<HelpPage />} />
         </Route>
             </Route>
         </Routes>
