@@ -394,3 +394,25 @@
     justify-content: space-between;
     margin-bottom: var(--space-4);
 }
+
+.wpage__add {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    height: var(--control-height);
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    border: none;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    transition: background-color var(--transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.wpage__add:hover {
+    background: var(--color-primary-hover);
+}
