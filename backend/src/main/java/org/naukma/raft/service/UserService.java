@@ -32,12 +32,12 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         String email = request.getEmail().trim().toLowerCase();
-        String username = request.getUsername().trim();
+        String username = request.getUsername().trim().toLowerCase();
 
-        if(!user.getEmail().equals(email) && userRepository.existsByEmail(email)){
+        if(!user.getEmail().equalsIgnoreCase(email) && userRepository.existsByEmailIgnoreCase(email)){
             throw new EmailAreadyExsistsException("Email already in use");
         }
-        if(!username.equals(user.getUsername()) && userRepository.existsByUsername(username)){
+        if(!username.equalsIgnoreCase(user.getUsername()) && userRepository.existsByUsernameIgnoreCase(username)){
             throw new EmailAreadyExsistsException("Username already taken");
         }
 

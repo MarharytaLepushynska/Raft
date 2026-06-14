@@ -259,7 +259,7 @@ public class WorkspaceService {
 
     private User resolveExistingUser(String login) {
         String username = login.trim();
-        return userRepository.findByUsername(username)
+        return userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new NotFoundException("User not found: " + username));
     }
 

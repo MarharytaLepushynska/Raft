@@ -30,13 +30,13 @@ public class AuthService {
     @Transactional
     public AuthResponse register(UserRequest userRequest) {
         String email = userRequest.getEmail().trim().toLowerCase();
-        String username = userRequest.getUsername().trim();
+        String username = userRequest.getUsername().trim().toLowerCase();
 
-        if(userRepository.existsByEmail(email)) {
+        if(userRepository.existsByEmailIgnoreCase(email)) {
             throw new EmailAreadyExsistsException("Email already in use");
         }
 
-        if(userRepository.existsByUsername(username)) {
+        if(userRepository.existsByUsernameIgnoreCase(username)) {
             throw new EmailAreadyExsistsException("Username already taken");
         }
 
@@ -69,7 +69,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(login, loginRequest.getPassword()));
 
-        User user = userRepository.findByEmailOrUsername(login, login)
+        User user = userRepository.findByEmailIgnoreCaseOrUsernameIgnoreCase(login, login)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
