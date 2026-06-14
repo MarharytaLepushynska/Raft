@@ -113,6 +113,10 @@ export function usePinboard() {
         [pins]
     );
 
+    const removePinByNoteId = (noteId: string) => {
+        setPins((prev) => prev.filter((p) => p.noteId !== noteId));
+    };
+
     return {
         pins,
         loading,
@@ -121,6 +125,7 @@ export function usePinboard() {
         boardRef,
         fileInputRef,
         pinnedNoteIds,
+        removePinByNoteId,
         pinNote,
         unpinByNoteId,
         unpinItem,

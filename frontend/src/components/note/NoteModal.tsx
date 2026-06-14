@@ -105,7 +105,7 @@ export function NoteModal({note, folders, defaultFolderId, onClose, onCreate, on
                 )}
 
                 <div className="modal__actions">
-                    {!isEditing && (
+                    {isEditing && (
                         <button
                             type="button"
                             className="modal__btn modal__btn--danger"
