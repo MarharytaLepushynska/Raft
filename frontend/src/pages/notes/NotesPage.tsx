@@ -34,6 +34,7 @@ export function NotesPage() {
         fileInputRef,
         pinnedNoteIds,
         removePinByNoteId,
+        updatePinByNote,
         pinNote,
         unpinByNoteId,
         unpinItem,
@@ -335,7 +336,11 @@ export function NotesPage() {
                     defaultFolderId={noteModal.defaultFolderId}
                     onClose={() => setNoteModal(null)}
                     onCreate={async (input) => { await createNote(input); setNoteModal(null); }}
-                    onUpdate={async (id, input) => { await updateNote(id, input); setNoteModal(null); }}
+                    onUpdate={async (id, input) => {
+                        const updated = await updateNote(id, input);
+                        updatePinByNote(updated);
+                        setNoteModal(null);
+                    }}
                     onDelete={async (id) => { await removeNote(id); removePinByNoteId(id); setNoteModal(null); }}
                 />
             )}
