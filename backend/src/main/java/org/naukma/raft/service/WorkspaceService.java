@@ -338,6 +338,7 @@ public class WorkspaceService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
+                .avatar(user.getAvatar())
                 .role(member.getRole())
                 .build();
     }
