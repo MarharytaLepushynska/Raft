@@ -110,7 +110,7 @@
 }
 
 .notes-section__subtitle {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: var(--text-lg);
     font-weight: var(--weight-bold);
     color: var(--color-text-muted);
@@ -220,7 +220,8 @@
 
 .pin-item--dragging {
     cursor: grabbing;
-    filter: drop-shadow(4px 8px 14px rgba(40, 20, 10, 0.45));
+    filter: none;
+    box-shadow: 4px 8px 14px rgba(40, 20, 10, 0.45);
     z-index: 10;
 }
 
@@ -271,10 +272,11 @@
     width: 160px;
     max-height: 250px;
     overflow: hidden;
+    box-shadow: 3px 5px 12px rgba(40, 20, 10, 0.2);
 }
 
 .pin-item__title {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: var(--text-sm);
     font-weight: var(--weight-semibold);
     color: var(--color-text);
@@ -293,11 +295,8 @@
     -webkit-box-orient: vertical;
 }
 
-.pin-item--image {
-    line-height: 0;
-}
-
 .pin-item__image {
+    line-height: 0;
     display: block;
     width: 180px;
     max-width: 180px;
@@ -317,7 +316,7 @@
 .folder-card {
     position: relative;
     background: var(--color-surface);
-    border: 1.5px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
     padding: var(--space-4) var(--space-4) var(--space-3);
     width: 160px;
@@ -336,7 +335,7 @@
     width: 60px;
     height: 13px;
     background: var(--color-surface);
-    border: 1.5px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-bottom: none;
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
@@ -492,7 +491,7 @@
 }
 
 .note-card__title {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: var(--text-lg);
     font-weight: var(--weight-semibold);
     color: var(--color-text);
@@ -559,7 +558,7 @@
 
 .note-card--new {
     background: transparent;
-    border: 1.5px dashed var(--color-border);
+    border: 2px dashed var(--color-border);
     box-shadow: none;
     align-items: center;
     justify-content: center;
