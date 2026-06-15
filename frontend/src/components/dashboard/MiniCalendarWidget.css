@@ -35,8 +35,9 @@
 
 .mini-cal__grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: var(--space-1);
+  grid-template-columns: repeat(7, minmax(0, 40px));
+  justify-content: center;
+  gap: var(--space-2);
 }
 
 .mini-cal__weekday {
