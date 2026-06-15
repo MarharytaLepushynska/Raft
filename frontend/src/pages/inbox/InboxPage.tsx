@@ -7,6 +7,7 @@ import { NotificationRow } from '@/components/inbox/NotificationRow';
 import { ReminderRow } from '@/components/inbox/ReminderRow';
 import { EmptyState } from '@/components/inbox/EmptyState';
 import { SingleSelectFilter } from '@/components/common/SingleSelectFilter';
+import { MultiSelectFilter } from '@/components/common/MultiSelectFilter';
 import './InboxPage.css';
 
 type Tab = 'all' | 'unread' | 'read';
@@ -17,11 +18,18 @@ export function InboxPage() {
     const { notifications, unreadCount, loading: nLoading, markOne, markAll, remove: removeNotif } = useNotifications();
     const { reminders, loading: rLoading, remove: removeReminder } = useReminders();
 
+    const TYPE_OPTIONS = [
+        { id: 'REMINDER', label: 'Reminder' },
+        { id: 'ACHIEVEMENT', label: 'Achievement' },
+        { id: 'SYSTEM', label: 'System' },
+    ];
+
     const [tab, setTab] = useState<Tab>('all');
     const [reminderTab, setReminderTab] = useState<ReminderTab>('all');
     const [search, setSearch] = useState('');
     const [sort, setSort] = useState<SortKey>('date');
     const [showReminders, setShowReminders] = useState(false);
+    const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
     const [deleteTarget, setDeleteTarget] = useState<{ id: string; kind: 'notif' | 'reminder' } | null>(null);
 
     const loading = nLoading || rLoading;
@@ -30,6 +38,7 @@ export function InboxPage() {
         let list = notifications;
         if (tab === 'unread') list = list.filter(n => !n.read);
         if (tab === 'read') list = list.filter(n => n.read);
+        if (selectedTypes.size > 0) list = list.filter(n => selectedTypes.has(n.type));
         if (search.trim()) {
             const q = search.trim().toLowerCase();
             list = list.filter(n => n.title.toLowerCase().includes(q) || n.message.toLowerCase().includes(q));
@@ -38,7 +47,7 @@ export function InboxPage() {
             list = [...list].sort((a, b) => a.type.localeCompare(b.type));
         }
         return list;
-    }, [notifications, tab, search, sort]);
+    }, [notifications, tab, selectedTypes, search, sort]);
 
     const filteredReminders = useMemo(() => {
         let list = reminders;
@@ -54,10 +63,10 @@ export function InboxPage() {
         return list;
     }, [reminders, reminderTab, search]);
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         if (!deleteTarget) return;
-        if (deleteTarget.kind === 'notif') removeNotif(deleteTarget.id);
-        else removeReminder(deleteTarget.id);
+        if (deleteTarget.kind === 'notif') await removeNotif(deleteTarget.id);
+        else await removeReminder(deleteTarget.id);
         setDeleteTarget(null);
     };
 
@@ -157,6 +166,17 @@ export function InboxPage() {
                         value={sort}
                         onChange={id => setSort(id as SortKey)}
                     />
+
+                    {!showReminders && (
+                        <MultiSelectFilter
+                            options={TYPE_OPTIONS}
+                            selected={selectedTypes}
+                            onChange={setSelectedTypes}
+                            allLabel="All types"
+                            countNoun="types"
+                            icon="bell"
+                        />
+                    )}
                 </div>
             </div>
 
