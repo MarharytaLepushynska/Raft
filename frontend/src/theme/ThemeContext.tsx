@@ -31,7 +31,7 @@ function applyAccent(accent: string) {
   const root = document.documentElement.style;
   root.setProperty('--color-primary', accent);
   root.setProperty('--color-primary-hover', `color-mix(in srgb, ${accent}, #000 16%)`);
-  root.setProperty('--color-primary-soft', `color-mix(in srgb, ${accent} 18%, transparent)`);
+  root.setProperty('--color-primary-soft', `color-mix(in srgb, ${accent} 18%, var(--color-surface))`);
 }
 
 function readMode(): ThemeMode {

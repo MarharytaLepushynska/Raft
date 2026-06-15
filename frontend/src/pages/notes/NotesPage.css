@@ -266,7 +266,7 @@
 }
 
 .pin-item:not(.pin-item--image) {
-    background: var(--color-primary-soft);
+    background: var(--color-note-paper);
     border-radius: 2px;
     padding: 14px var(--space-3) var(--space-3);
     width: 160px;

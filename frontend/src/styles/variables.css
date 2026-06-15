@@ -11,6 +11,7 @@
   --color-primary: #c14d63;
   --color-primary-hover: #a93a52;
   --color-primary-soft: #eecfd5;
+  --color-note-paper: color-mix(in srgb, var(--color-primary) 30%, var(--color-surface));
   --color-primary-contrast: #ffffff;
 
   --color-accent: #9579d4;
