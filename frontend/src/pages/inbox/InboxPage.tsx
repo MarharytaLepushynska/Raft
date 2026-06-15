@@ -10,6 +10,7 @@ import { SingleSelectFilter } from '@/components/common/SingleSelectFilter';
 import './InboxPage.css';
 
 type Tab = 'all' | 'unread' | 'read';
+type ReminderTab = 'all' | 'sent' | 'overdue';
 type SortKey = 'date' | 'type';
 
 export function InboxPage() {
@@ -17,6 +18,7 @@ export function InboxPage() {
     const { reminders, loading: rLoading, remove: removeReminder } = useReminders();
 
     const [tab, setTab] = useState<Tab>('all');
+    const [reminderTab, setReminderTab] = useState<ReminderTab>('all');
     const [search, setSearch] = useState('');
     const [sort, setSort] = useState<SortKey>('date');
     const [showReminders, setShowReminders] = useState(false);
@@ -39,13 +41,18 @@ export function InboxPage() {
     }, [notifications, tab, search, sort]);
 
     const filteredReminders = useMemo(() => {
-        if (!search.trim()) return reminders;
-        const q = search.trim().toLowerCase();
-        return reminders.filter(r =>
-            (r.taskId && r.taskId.toLowerCase().includes(q)) ||
-            (r.eventId && r.eventId.toLowerCase().includes(q))
-        );
-    }, [reminders, search]);
+        let list = reminders;
+        if (reminderTab === 'sent') list = list.filter(r => r.sent);
+        if (reminderTab === 'overdue') list = list.filter(r => !r.sent && new Date(r.reminderTime) < new Date());
+        if (search.trim()) {
+            const q = search.trim().toLowerCase();
+            list = list.filter(r =>
+                (r.taskId && r.taskId.toLowerCase().includes(q)) ||
+                (r.eventId && r.eventId.toLowerCase().includes(q))
+            );
+        }
+        return list;
+    }, [reminders, reminderTab, search]);
 
     const handleDelete = () => {
         if (!deleteTarget) return;
@@ -93,19 +100,35 @@ export function InboxPage() {
                         />
                     </div>
 
-                    <div className="inbox-chips">
-                        {(['all', 'unread', 'read'] as Tab[]).map(t => (
-                            <button
-                                key={t}
-                                type="button"
-                                className="inbox-chip"
-                                data-active={tab === t}
-                                onClick={() => setTab(t)}
-                            >
-                                {t.charAt(0).toUpperCase() + t.slice(1)}
-                            </button>
-                        ))}
-                    </div>
+                    {showReminders ? (
+                        <div className="inbox-chips">
+                            {(['all', 'sent', 'overdue'] as ReminderTab[]).map(t => (
+                                <button
+                                    key={t}
+                                    type="button"
+                                    className="inbox-chip"
+                                    data-active={reminderTab === t}
+                                    onClick={() => setReminderTab(t)}
+                                >
+                                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="inbox-chips">
+                            {(['all', 'unread', 'read'] as Tab[]).map(t => (
+                                <button
+                                    key={t}
+                                    type="button"
+                                    className="inbox-chip"
+                                    data-active={tab === t}
+                                    onClick={() => setTab(t)}
+                                >
+                                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                                </button>
+                            ))}
+                        </div>
+                    )}
 
                     <div className="inbox-chips">
                         <button
