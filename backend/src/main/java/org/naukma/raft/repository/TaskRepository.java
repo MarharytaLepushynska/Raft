@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -86,4 +87,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     );
 
     long countByAssignee_IdAndStatus(Long assigneeId, TaskStatus status);
+
+    List<Task> findByAssignee_IdAndCreatedAfter(Long userId, LocalDateTime from);
+
+    List<Task> findByAssignee_Id(Long userId);
 }

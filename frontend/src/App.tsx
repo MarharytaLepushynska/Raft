@@ -16,6 +16,7 @@ import { HelpPage } from '@/pages/help/HelpPage';
 import { InboxPage } from '@/pages/inbox/InboxPage';
 import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { ChatsPage } from '@/pages/chat/ChatsPage';
+import {StatisticsPage} from "@/pages/statistics/StatisticsPage.tsx";
 
 function App() {
     return (
@@ -38,6 +39,7 @@ function App() {
                     <Route path="inbox" element={<InboxPage />} />
                     <Route path="settings" element={<SettingsPage />} />
                     <Route path="chats" element={<ChatsPage />} />
+                    <Route path="statistics" element={<StatisticsPage />} />
         </Route>
             </Route>
         </Routes>

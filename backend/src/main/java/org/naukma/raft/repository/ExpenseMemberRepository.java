@@ -24,4 +24,6 @@ public interface ExpenseMemberRepository extends JpaRepository<ExpenseMember, Lo
 
     long countByUser_Id(Long userId);
     long countByUser_IdAndIsSettledFalse(Long userId);
+
+    List<ExpenseMember> findByUser_Id(Long userId);
 }
