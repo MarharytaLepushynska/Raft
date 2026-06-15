@@ -9,9 +9,10 @@ interface NoteViewModalProps {
     onClose: () => void;
     onEdit: () => void;
     isPersonal: boolean;
+    editLabel?: string;
 }
 
-export function NoteViewModal({ note, onClose, onEdit, isPersonal }: NoteViewModalProps) {
+export function NoteViewModal({ note, onClose, onEdit, isPersonal, editLabel = 'Edit' }: NoteViewModalProps) {
     return (
         <div className="modal" role="dialog" aria-modal="true">
             <div className="modal__scrim" onClick={onClose} />
@@ -24,9 +25,9 @@ export function NoteViewModal({ note, onClose, onEdit, isPersonal }: NoteViewMod
                         </span>
                     </div>
                     <div className="note-view-modal__actions">
-                        {isPersonal && <button type="button" className="note-view-modal__btn note-view-modal__btn--edit" onClick={onEdit} title="Edit note">
+                        {isPersonal && <button type="button" className="note-view-modal__btn note-view-modal__btn--edit" onClick={onEdit} title={editLabel}>
                             <Icon name="edit" size={15} />
-                            Edit
+                            {editLabel}
                         </button>}
                         <button type="button" className="note-view-modal__btn note-view-modal__btn--close" onClick={onClose} aria-label="Close">
                             <Icon name="close" size={16} />
