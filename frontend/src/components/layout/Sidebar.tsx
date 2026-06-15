@@ -46,7 +46,6 @@ export function Sidebar({ activeItem, onNavigate, isOpen, onClose }: SidebarProp
                   >
                     <Icon name={item.icon} />
                     <span className="label">{item.label}</span>
-                    {item.badge && <span className="badge">{item.badge}</span>}
                   </button>
                 </li>
               ))}

@@ -38,14 +38,14 @@ export function StatisticsPage() {
                             data={stats.taskStats}
                             valueKey="count"
                             yLabel="Number of tasks"
-                            color="#d4537e"
+                            color="#c14d63"
                         />
                         <StatChart
                             title="Expense statistics"
                             data={stats.expenseStats}
                             valueKey="amount"
                             yLabel="Amount spent"
-                            color="#d4537e"
+                            color="#c14d63"
                         />
                     </div>
 
