@@ -4,7 +4,8 @@ import greyIcon from '@/assets/achievements/grey.png';
 const icons = import.meta.glob<{ default: string }>('@/assets/achievements/*.png', { eager: true });
 
 function getIcon(filename: string): string {
-    const match = Object.entries(icons).find(([key]) => key.endsWith(filename));
+    const base = filename.replace(/\.[a-z]+$/i, '');
+    const match = Object.entries(icons).find(([key]) => key.endsWith(`${base}.png`));
     return match ? (match[1] as { default: string }).default : '';
 }
 
