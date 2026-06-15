@@ -16,6 +16,7 @@ import org.naukma.raft.enums.TaskPriority;
 import org.naukma.raft.enums.TaskStatus;
 import org.naukma.raft.enums.WorkspaceColor;
 import org.naukma.raft.enums.WorkspaceType;
+import org.naukma.raft.enums.NotificationType;
 import org.naukma.raft.errorsHadling.AccessDeniedException;
 import org.naukma.raft.errorsHadling.ConflictException;
 import org.naukma.raft.errorsHadling.NotFoundException;
@@ -48,6 +49,7 @@ public class WorkspaceService {
     private final AchievementService achievementService;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatReadStateRepository chatReadStateRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public List<WorkspaceResponse> getWorkspaces(Long userId) {
@@ -141,6 +143,7 @@ public class WorkspaceService {
         saveMembership(workspace, user, MemberRole.ADMIN);
 
         achievementService.awardAchievement(userId, "FIRST_WORKSPACE_CREATED");
+        createWorkspaceCreatedNotification(user, workspace);
 
         if (type == WorkspaceType.SHARED && request.getMemberLogins() != null) {
             for (String loginValue : request.getMemberLogins()) {
@@ -148,6 +151,7 @@ public class WorkspaceService {
                 User target = resolveExistingUser(loginValue);
                 if (!isOwnerOrMember(workspace, target)) {
                     saveMembership(workspace, target, MemberRole.MEMBER);
+                    createAddedToWorkspaceNotification(target, workspace);
                 }
             }
         }
@@ -221,7 +225,11 @@ public class WorkspaceService {
         }
 
         MemberRole role = request.getRole() != null ? request.getRole() : MemberRole.MEMBER;
-        return toMemberResponse(saveMembership(workspace, target, role));
+        WorkspaceMember member = saveMembership(workspace, target, role);
+
+        createAddedToWorkspaceNotification(target, workspace);
+
+        return toMemberResponse(member);
     }
 
     @Transactional
@@ -237,8 +245,10 @@ public class WorkspaceService {
                 .findByWorkspace_IdAndUser_Id(workspaceId, memberUserId)
                 .orElseThrow(() -> new NotFoundException("Member not found"));
 
+        User removedUser = member.getUser();
         memberRepository.delete(member);
         chatReadStateRepository.deleteByWorkspace_IdAndUser_Id(workspaceId, memberUserId);
+        createRemovedFromWorkspaceNotification(removedUser, workspace);
     }
 
     @Transactional
@@ -350,5 +360,35 @@ public class WorkspaceService {
                 .avatar(user.getAvatar())
                 .role(member.getRole())
                 .build();
+    }
+
+    private void createWorkspaceCreatedNotification(User user, Workspace workspace) {
+        notificationService.createNotification(
+                user.getId(),
+                NotificationType.SYSTEM,
+                "Workspace created",
+                "Workspace \"" + workspace.getName() + "\" was created successfully.",
+                workspace.getId()
+        );
+    }
+
+    private void createAddedToWorkspaceNotification(User user, Workspace workspace) {
+        notificationService.createNotification(
+                user.getId(),
+                NotificationType.SYSTEM,
+                "Added to workspace",
+                "You were added to workspace \"" + workspace.getName() + "\".",
+                workspace.getId()
+        );
+    }
+
+    private void createRemovedFromWorkspaceNotification(User user, Workspace workspace) {
+        notificationService.createNotification(
+                user.getId(),
+                NotificationType.SYSTEM,
+                "Removed from workspace",
+                "You were removed from workspace \"" + workspace.getName() + "\".",
+                workspace.getId()
+        );
     }
 }
