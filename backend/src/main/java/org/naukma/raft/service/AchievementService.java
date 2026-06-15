@@ -33,7 +33,7 @@ public class AchievementService {
     private final WorkspaceRepository workspaceRepository;
     private final NotificationService notificationService;
 
-    @Scheduled(cron = "0 0 5 * * *")
+    @Scheduled(fixedRate = 15000)
     public void checkAllUsers() {
         log.info("Starting daily achievement check");
         List<User> users = userRepository.findAll();
