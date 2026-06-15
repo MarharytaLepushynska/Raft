@@ -31,6 +31,7 @@ export const navSections: NavSection[] = [
   {
     title: 'General',
     items: [
+      { label: 'Profile', icon: 'profile', path: '/profile' },
       { label: 'Inbox', icon: 'inbox', path: '/inbox', badge: 3 },
       { label: 'Settings', icon: 'settings', path: '/settings' },
       { label: 'Help', icon: 'help', path: '/help' },
