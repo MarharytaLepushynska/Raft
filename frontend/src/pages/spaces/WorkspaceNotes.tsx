@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getFolders } from '@/api/folders';
 import { getNotes } from '@/api/notes';
-import { Icon } from '@/lib/icons';
-import type { Folder } from '@/types/folder';
+import { formatDate } from '@/lib/notes';
+import { NoteViewModal } from '@/components/note/NoteViewModal';
+import type { Note } from '@/types/note';
 import './WorkspaceNotes.css';
 
 const MAX = 3;
@@ -12,24 +13,24 @@ interface WorkspaceNotesProps {
   workspaceId: string;
 }
 
-type FolderRow = { folder: Folder; count: number };
-
 export function WorkspaceNotes({ workspaceId }: WorkspaceNotesProps) {
   const navigate = useNavigate();
-  const [rows, setRows] = useState<FolderRow[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewNote, setViewNote] = useState<Note | null>(null);
 
   useEffect(() => {
     let active = true;
     Promise.all([getFolders(), getNotes()])
-      .then(([folders, notes]) => {
+      .then(([folders, allNotes]) => {
         if (!active) return;
-        const counts = new Map<string, number>();
-        notes.forEach((note) => counts.set(note.folderId, (counts.get(note.folderId) ?? 0) + 1));
-        const scoped = folders
-          .filter((folder) => folder.workspaceId === workspaceId)
-          .map((folder) => ({ folder, count: counts.get(folder.id) ?? 0 }));
-        setRows(scoped);
+        const folderIds = new Set(
+          folders.filter((folder) => folder.workspaceId === workspaceId).map((folder) => folder.id),
+        );
+        const scoped = allNotes
+          .filter((note) => folderIds.has(note.folderId))
+          .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+        setNotes(scoped);
       })
       .catch(() => {})
       .finally(() => {
@@ -40,8 +41,8 @@ export function WorkspaceNotes({ workspaceId }: WorkspaceNotesProps) {
     };
   }, [workspaceId]);
 
-  const visible = rows.slice(0, MAX);
-  const more = rows.length - visible.length;
+  const visible = notes.slice(0, MAX);
+  const more = notes.length - visible.length;
 
   return (
     <section className="wnotes">
@@ -55,22 +56,33 @@ export function WorkspaceNotes({ workspaceId }: WorkspaceNotesProps) {
       {loading ? (
         <p className="wnotes__muted">Loading&hellip;</p>
       ) : visible.length > 0 ? (
-        <ul className="wnotes__list">
-          {visible.map(({ folder, count }) => (
-            <li key={folder.id}>
-              <button type="button" className="wnotes__row" onClick={() => navigate('/notes')}>
-                <span className="wnotes__folder-name">
-                  <Icon name="folder" size={15} />
-                  <span className="wnotes__folder-label">{folder.name}</span>
-                </span>
-                <span className="wnotes__count">{count}</span>
-              </button>
-            </li>
-          ))}
-          {more > 0 && <li className="wnotes__more">+{more} more</li>}
-        </ul>
+        <>
+          <ul className="wnotes__list">
+            {visible.map((note) => (
+              <li key={note.id}>
+                <button type="button" className="wnotes__row" onClick={() => setViewNote(note)}>
+                  <span className="wnotes__row-title">{note.title}</span>
+                  <span className="wnotes__row-meta">
+                    <span className="wnotes__folder">{note.folderName}</span>
+                    <span className="wnotes__date">{formatDate(note.updatedAt)}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          {more > 0 && <p className="wnotes__more">+{more} more</p>}
+        </>
       ) : (
-        <p className="wnotes__muted">No folders yet.</p>
+        <p className="wnotes__muted">No notes yet.</p>
+      )}
+
+      {viewNote && (
+        <NoteViewModal
+          note={viewNote}
+          isPersonal={viewNote.folderType === 'PERSONAL'}
+          onClose={() => setViewNote(null)}
+          onEdit={() => navigate('/notes')}
+        />
       )}
     </section>
   );
