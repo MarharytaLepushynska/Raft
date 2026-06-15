@@ -89,6 +89,7 @@ public class WorkspaceService {
         taskRepository.save(
                 Task.builder()
                         .creator(user)
+                        .assignee(user)
                         .workspace(personal)
                         .title("Explore Raft")
                         .description("This is your first task — open it to edit, mark it done, or add your own.")
