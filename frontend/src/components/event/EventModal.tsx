@@ -3,8 +3,10 @@ import { todayISO } from '@/lib/tasks';
 import { getWorkspaces } from '@/api/workspaces';
 import { Modal } from '@/components/common/Modal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
+import { ReminderBell } from '@/components/reminder/ReminderBell';
 import type { Event } from '@/types/event';
 import type { Workspace } from '@/types/workspace';
+import type { Reminder } from '@/types/reminder';
 
 const TITLE_MAX = 120;
 const DESCRIPTION_MAX = 255;
@@ -13,13 +15,16 @@ interface EventModalProps {
   event: Event | null;
   defaultDate?: string;
   defaultWorkspaceId?: string;
+  reminder?: Reminder | null;
   onClose: () => void;
   onCreate: (input: Omit<Event, 'id'>) => void;
   onUpdate: (id: string, patch: Partial<Event>) => void;
   onDelete: (id: string) => void;
+  onSetReminder?: (reminderTime: string) => void;
+  onClearReminder?: (id: string) => void;
 }
 
-export function EventModal({ event, defaultDate, defaultWorkspaceId, onClose, onCreate, onUpdate, onDelete }: EventModalProps) {
+export function EventModal({ event, defaultDate, defaultWorkspaceId, reminder, onClose, onCreate, onUpdate, onDelete, onSetReminder, onClearReminder }: EventModalProps) {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [mode, setMode] = useState<'view' | 'edit'>(event ? 'view' : 'edit');
   const [title, setTitle] = useState(event?.title ?? '');
@@ -115,6 +120,17 @@ export function EventModal({ event, defaultDate, defaultWorkspaceId, onClose, on
             <div className="modal__view-row">
               <span>Space</span>
               <b>{event.workspaceName}</b>
+            </div>
+          )}
+          {onSetReminder && (
+            <div className="modal__view-row">
+              <span>Reminder</span>
+              <ReminderBell
+                reminder={reminder ?? null}
+                anchorISO={event.startTime.slice(0, 16)}
+                onSet={onSetReminder}
+                onClear={onClearReminder}
+              />
             </div>
           )}
           {event.description && <p className="modal__view-desc">{event.description}</p>}

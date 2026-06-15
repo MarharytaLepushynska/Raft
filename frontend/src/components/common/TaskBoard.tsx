@@ -19,13 +19,14 @@ interface TaskBoardProps {
   extraFilter?: ReactNode;
   matchExtra?: (task: Task) => boolean;
   renderAssignee?: (task: Task) => ReactNode;
+  renderReminder?: (task: Task) => ReactNode;
   onSelect: (task: Task) => void;
   onCycle: (task: Task) => void;
   onAdd: () => void;
 }
 
 export function TaskBoard({ tasks, loading, emptyText = 'No tasks yet.', showSpace, extraFilter, matchExtra,
-                            renderAssignee, onSelect, onCycle, onAdd,
+                            renderAssignee, renderReminder, onSelect, onCycle, onAdd,
 }: TaskBoardProps) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<TaskStatusFilter>('all');
@@ -92,6 +93,7 @@ export function TaskBoard({ tasks, loading, emptyText = 'No tasks yet.', showSpa
           </p>
           {renderAssignee && <div className="task-row__author">{renderAssignee(task)}</div>}
         </div>
+        {renderReminder && <div className="task-row__reminder">{renderReminder(task)}</div>}
       </li>
     );
   };

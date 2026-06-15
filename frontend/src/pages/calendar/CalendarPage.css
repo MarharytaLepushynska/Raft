@@ -320,7 +320,15 @@
   min-width: 0;
 }
 
+.tg__chip-bell {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  z-index: 3;
+}
+
 .tg__chip {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -383,6 +391,13 @@
     transparent 1px,
     transparent 44px
   );
+}
+
+.tg__event-bell {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  z-index: 3;
 }
 
 .tg__event {

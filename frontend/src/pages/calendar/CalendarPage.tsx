@@ -9,6 +9,7 @@ import { addDays, byDueTime, defaultAssigneeId, isMyTask, priorityOptions } from
 import { useTasks } from '@/hooks/tasks/useTasks';
 import { useEvents } from '@/hooks/events/useEvents';
 import { useWorkspaces } from '@/hooks/workspaces/useWorkspaces';
+import { useReminders } from '@/hooks/inbox/useReminders';
 import { capitalize } from '@/lib/utils';
 import { useAuth } from '@/auth/AuthContext';
 import type { Task } from '@/types/task';
@@ -29,6 +30,7 @@ export function CalendarPage() {
   const { tasks, create, update, remove } = useTasks();
   const { events, create: createEvent, update: updateEvent, remove: removeEvent } = useEvents();
   const { workspaces, spaceOptions } = useWorkspaces();
+  const { reminderForTask, reminderForEvent, setTaskReminder, setEventReminder, remove: removeReminder } = useReminders();
   const [searchParams] = useSearchParams();
   const dateParam = searchParams.get('date');
   const [view, setView] = useState<View>(dateParam ? 'day' : 'month');
@@ -189,6 +191,12 @@ export function CalendarPage() {
             onPickDay={pickDay}
             onSelectTask={setModalTask}
             onSelectEvent={setModalEvent}
+            reminderForEvent={view === 'day' ? reminderForEvent : undefined}
+            onSetEventReminder={view === 'day' ? (event, time) => setEventReminder(event.id, time) : undefined}
+            onClearEventReminder={view === 'day' ? removeReminder : undefined}
+            reminderForTask={view === 'day' ? reminderForTask : undefined}
+            onSetTaskReminder={view === 'day' ? (task, time) => setTaskReminder(task.id, time) : undefined}
+            onClearTaskReminder={view === 'day' ? removeReminder : undefined}
           />
         )}
       </div>
@@ -197,10 +205,13 @@ export function CalendarPage() {
         <TaskModal
           task={modalTask}
           defaultDate={toISODate(focus)}
+          reminder={modalTask ? reminderForTask(modalTask.id) : null}
           onClose={() => setModalTask(undefined)}
           onCreate={handleCreate}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
+          onSetReminder={view === 'week' && modalTask ? (time) => setTaskReminder(modalTask.id, time) : undefined}
+          onClearReminder={removeReminder}
         />
       )}
 
@@ -208,10 +219,13 @@ export function CalendarPage() {
         <EventModal
           event={modalEvent}
           defaultDate={toISODate(focus)}
+          reminder={modalEvent ? reminderForEvent(modalEvent.id) : null}
           onClose={() => setModalEvent(undefined)}
           onCreate={handleEventCreate}
           onUpdate={handleEventUpdate}
           onDelete={handleEventDelete}
+          onSetReminder={view === 'week' && modalEvent ? (time) => setEventReminder(modalEvent.id, time) : undefined}
+          onClearReminder={removeReminder}
         />
       )}
     </div>

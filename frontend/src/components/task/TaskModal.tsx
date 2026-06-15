@@ -1,11 +1,13 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { formatTaskDue, priorityLabels, statusLabels, todayISO } from '@/lib/tasks';
+import { formatTaskDue, priorityLabels, statusLabels, taskAnchorISO, todayISO } from '@/lib/tasks';
 import { useAuth } from '@/auth/AuthContext';
 import { getWorkspaces } from '@/api/workspaces';
 import { Modal } from '@/components/common/Modal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
+import { ReminderBell } from '@/components/reminder/ReminderBell';
 import type { Task, TaskPriority } from '@/types/task';
 import type { Member, Workspace } from '@/types/workspace';
+import type { Reminder } from '@/types/reminder';
 import './TaskModal.css';
 
 const PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH'];
@@ -17,13 +19,16 @@ interface TaskModalProps {
   defaultDate?: string;
   defaultWorkspaceId?: string;
   members?: Member[];
+  reminder?: Reminder | null;
   onClose: () => void;
   onCreate: (input: Omit<Task, 'id'>) => void;
   onUpdate: (id: string, patch: Partial<Task>) => void;
   onDelete: (id: string) => void;
+  onSetReminder?: (reminderTime: string) => void;
+  onClearReminder?: (id: string) => void;
 }
 
-export function TaskModal({ task, defaultDate, defaultWorkspaceId, members, onClose, onCreate, onUpdate, onDelete }: TaskModalProps) {
+export function TaskModal({ task, defaultDate, defaultWorkspaceId, members, reminder, onClose, onCreate, onUpdate, onDelete, onSetReminder, onClearReminder }: TaskModalProps) {
   const { user } = useAuth();
   const [mode, setMode] = useState<'view' | 'edit'>(task ? 'view' : 'edit');
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -101,7 +106,17 @@ export function TaskModal({ task, defaultDate, defaultWorkspaceId, members, onCl
       : '';
     return (
       <Modal onClose={onClose}>
-        <h2 className="modal__title">{task.title}</h2>
+        <div className="modal__head-row">
+          <h2 className="modal__title">{task.title}</h2>
+          {onSetReminder && (
+            <ReminderBell
+              reminder={reminder ?? null}
+              anchorISO={taskAnchorISO(task)}
+              onSet={onSetReminder}
+              onClear={onClearReminder}
+            />
+          )}
+        </div>
 
           <div className="modal__view">
             <div className="modal__view-row">

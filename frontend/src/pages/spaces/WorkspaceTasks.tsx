@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { TaskModal } from '@/components/task/TaskModal';
 import { MultiSelectFilter } from '@/components/common/MultiSelectFilter';
 import { TaskBoard } from '@/components/common/TaskBoard';
-import { nextStatus } from '@/lib/tasks';
+import { ReminderBell } from '@/components/reminder/ReminderBell';
+import { nextStatus, taskAnchorISO } from '@/lib/tasks';
 import { useTasks } from '@/hooks/tasks/useTasks';
+import { useReminders } from '@/hooks/inbox/useReminders';
 import type { Task } from '@/types/task';
 import type { WorkspaceDetail } from '@/types/workspace';
 import './WorkspaceTasks.css';
@@ -16,6 +18,7 @@ interface WorkspaceTasksProps {
 
 export function WorkspaceTasks({ workspaceId, detail, currentUserId }: WorkspaceTasksProps) {
   const { tasks, create, update, remove } = useTasks({ workspaceId });
+  const { reminderForTask, setTaskReminder, remove: removeReminder } = useReminders();
   const [assigneeFilter, setAssigneeFilter] = useState<Set<string>>(new Set());
   const [modalTask, setModalTask] = useState<Task | null | undefined>(undefined);
 
@@ -91,6 +94,14 @@ export function WorkspaceTasks({ workspaceId, detail, currentUserId }: Workspace
             />
           ) : null
         }
+        renderReminder={(task) => (
+          <ReminderBell
+            reminder={reminderForTask(task.id)}
+            anchorISO={taskAnchorISO(task)}
+            onSet={(time) => setTaskReminder(task.id, time)}
+            onClear={removeReminder}
+          />
+        )}
         onSelect={setModalTask}
         onCycle={cycleStatus}
         onAdd={() => setModalTask(null)}

@@ -5,10 +5,12 @@ import { TaskBoard } from '@/components/common/TaskBoard';
 import { TaskAchievements } from '@/components/achievements/TaskAchievements';
 import { TaskProgressRing } from '@/components/tasks/TaskProgressRing';
 import { QuoteCard } from '@/components/tasks/QuoteCard';
+import { ReminderBell } from '@/components/reminder/ReminderBell';
 import { useAuth } from '@/auth/AuthContext';
-import { defaultAssigneeId, isMyTask, nextStatus } from '@/lib/tasks';
+import { defaultAssigneeId, isMyTask, nextStatus, taskAnchorISO } from '@/lib/tasks';
 import { useTasks } from '@/hooks/tasks/useTasks';
 import { useWorkspaces } from '@/hooks/workspaces/useWorkspaces';
+import { useReminders } from '@/hooks/inbox/useReminders';
 import type { Task } from '@/types/task';
 import './TodoPage.css';
 
@@ -16,6 +18,7 @@ export function TodoPage() {
   const { user } = useAuth();
   const { tasks, loading, create, update, remove } = useTasks();
   const { workspaces, spaceOptions } = useWorkspaces();
+  const { reminderForTask, setTaskReminder, remove: removeReminder } = useReminders();
   const [selectedSpaces, setSelectedSpaces] = useState<Set<string>>(() => new Set());
   const [modalTask, setModalTask] = useState<Task | null | undefined>(undefined);
 
@@ -57,6 +60,14 @@ export function TodoPage() {
               />
             ) : null
           }
+          renderReminder={(task) => (
+            <ReminderBell
+              reminder={reminderForTask(task.id)}
+              anchorISO={taskAnchorISO(task)}
+              onSet={(time) => setTaskReminder(task.id, time)}
+              onClear={removeReminder}
+            />
+          )}
           onSelect={setModalTask}
           onCycle={cycleStatus}
           onAdd={() => setModalTask(null)}

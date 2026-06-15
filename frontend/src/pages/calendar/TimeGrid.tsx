@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { toISODate } from '@/lib/calendar';
+import { taskAnchorISO } from '@/lib/tasks';
 import { colorHex, colorTint } from '@/lib/workspaceColors';
+import { ReminderBell } from '@/components/reminder/ReminderBell';
 import type { Task } from '@/types/task';
 import type { Event } from '@/types/event';
+import type { Reminder } from '@/types/reminder';
 import {
   AXIS_WIDTH,
   HOURS,
@@ -21,17 +24,39 @@ function weekdayName(date: Date): string {
   return WEEKDAYS[(date.getDay() + 6) % 7];
 }
 
-function Chip({ task, onSelect }: { task: Task; onSelect: (task: Task) => void }) {
+function Chip({
+  task,
+  onSelect,
+  reminder,
+  onSetReminder,
+  onClearReminder,
+}: {
+  task: Task;
+  onSelect: (task: Task) => void;
+  reminder?: Reminder | null;
+  onSetReminder?: (task: Task, reminderTime: string) => void;
+  onClearReminder?: (id: string) => void;
+}) {
   return (
-    <button
-      type="button"
+    <div
       className={`tg__chip${task.status === 'COMPLETED' ? ' tg__chip--done' : ''}`}
       style={{ borderLeftColor: colorHex(task.workspaceColor) }}
       onClick={() => onSelect(task)}
     >
       <span className="tg__chip-title">{task.title}</span>
       {task.dueTime && <span className="tg__chip-time">{task.dueTime}</span>}
-    </button>
+      {onSetReminder && (
+        <span className="tg__chip-bell">
+          <ReminderBell
+            compact
+            reminder={reminder ?? null}
+            anchorISO={taskAnchorISO(task)}
+            onSet={(time) => onSetReminder(task, time)}
+            onClear={onClearReminder}
+          />
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -44,6 +69,12 @@ export function TimeGrid({
   onPickDay,
   onSelectTask,
   onSelectEvent,
+  reminderForEvent,
+  onSetEventReminder,
+  onClearEventReminder,
+  reminderForTask,
+  onSetTaskReminder,
+  onClearTaskReminder,
 }: {
   days: Date[];
   tasksByDate: Map<string, Task[]>;
@@ -53,6 +84,12 @@ export function TimeGrid({
   onPickDay: (date: Date) => void;
   onSelectTask: (task: Task) => void;
   onSelectEvent: (event: Event) => void;
+  reminderForEvent?: (eventId: string) => Reminder | null;
+  onSetEventReminder?: (event: Event, reminderTime: string) => void;
+  onClearEventReminder?: (id: string) => void;
+  reminderForTask?: (taskId: string) => Reminder | null;
+  onSetTaskReminder?: (task: Task, reminderTime: string) => void;
+  onClearTaskReminder?: (id: string) => void;
 }) {
   const bodyRef = useRef<HTMLDivElement>(null);
   const [colWidth, setColWidth] = useState(0);
@@ -96,7 +133,14 @@ export function TimeGrid({
           return (
             <div key={iso} className="tg__cell">
               {allDay.map((task) => (
-                <Chip key={task.id} task={task} onSelect={onSelectTask} />
+                <Chip
+                  key={task.id}
+                  task={task}
+                  onSelect={onSelectTask}
+                  reminder={reminderForTask?.(task.id) ?? null}
+                  onSetReminder={onSetTaskReminder}
+                  onClearReminder={onClearTaskReminder}
+                />
               ))}
             </div>
           );
@@ -139,14 +183,19 @@ export function TimeGrid({
                 if (item.kind === 'task') {
                   return (
                     <div key={item.key} className="tg__task-stack" style={{ top, left, width }}>
-                      <Chip task={item.task} onSelect={onSelectTask} />
+                      <Chip
+                        task={item.task}
+                        onSelect={onSelectTask}
+                        reminder={reminderForTask?.(item.task.id) ?? null}
+                        onSetReminder={onSetTaskReminder}
+                        onClearReminder={onClearTaskReminder}
+                      />
                     </div>
                   );
                 }
                 return (
-                  <button
+                  <div
                     key={item.key}
-                    type="button"
                     className="tg__event"
                     style={{
                       top,
@@ -161,7 +210,18 @@ export function TimeGrid({
                   >
                     <span className="tg__event-title">{item.event.title}</span>
                     {showTime && <span className="tg__event-time">{eventTimeRange(item.event)}</span>}
-                  </button>
+                    {reminderForEvent && onSetEventReminder && (
+                      <span className="tg__event-bell">
+                        <ReminderBell
+                          compact
+                          reminder={reminderForEvent(item.event.id)}
+                          anchorISO={item.event.startTime.slice(0, 16)}
+                          onSet={(time) => onSetEventReminder(item.event, time)}
+                          onClear={onClearEventReminder}
+                        />
+                      </span>
+                    )}
+                  </div>
                 );
               })}
             </div>

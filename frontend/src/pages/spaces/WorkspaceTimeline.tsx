@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '@/lib/icons';
 import { EventModal } from '@/components/event/EventModal';
+import { ReminderBell } from '@/components/reminder/ReminderBell';
 import { toISODate } from '@/lib/calendar';
 import { addDays } from '@/lib/tasks';
 import { colorHex, colorTint } from '@/lib/workspaceColors';
 import { useEvents } from '@/hooks/events/useEvents';
+import { useReminders } from '@/hooks/inbox/useReminders';
 import type { Event } from '@/types/event';
 import type { WorkspaceColor } from '@/types/workspace';
 import { HOURS, HOUR_HEIGHT, blockHeight, columnBox, coveredDays, eventTimeRange, layoutDay, minutesToPx } from '@/pages/calendar/calendarLayout';
@@ -19,6 +21,7 @@ interface WorkspaceTimelineProps {
 
 export function WorkspaceTimeline({ workspaceId, color }: WorkspaceTimelineProps) {
   const { events, create, update, remove } = useEvents({ workspaceId });
+  const { reminderForEvent, setEventReminder, remove: removeReminder } = useReminders();
   const [day, setDay] = useState(() => new Date());
   const [modalEvent, setModalEvent] = useState<Event | null | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -84,9 +87,8 @@ export function WorkspaceTimeline({ workspaceId, color }: WorkspaceTimelineProps
               if (item.kind !== 'event') return null;
               const { left, width } = columnBox(item.col, item.cols, item.reserve);
               return (
-                <button
+                <div
                   key={item.key}
-                  type="button"
                   className="wtl__event"
                   style={{
                     top: minutesToPx(item.startMin),
@@ -101,7 +103,16 @@ export function WorkspaceTimeline({ workspaceId, color }: WorkspaceTimelineProps
                 >
                   <span className="wtl__event-title">{item.event.title}</span>
                   <span className="wtl__event-time">{eventTimeRange(item.event)}</span>
-                </button>
+                  <span className="wtl__event-bell">
+                    <ReminderBell
+                      compact
+                      reminder={reminderForEvent(item.event.id)}
+                      anchorISO={item.event.startTime.slice(0, 16)}
+                      onSet={(time) => setEventReminder(item.event.id, time)}
+                      onClear={removeReminder}
+                    />
+                  </span>
+                </div>
               );
             })}
             {dayEvents.length === 0 && <p className="wtl__empty">No events this day</p>}
