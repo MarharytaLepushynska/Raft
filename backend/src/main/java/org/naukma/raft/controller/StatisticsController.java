@@ -2,6 +2,8 @@ package org.naukma.raft.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.naukma.raft.dto.response.ProductivityStatisticsResponse;
+import org.naukma.raft.dto.response.stats.StatisticsResponse;
+import org.naukma.raft.enums.StatsPeriod;
 import org.naukma.raft.security.CustomUserDetails;
 import org.naukma.raft.service.StatisticsService;
 import org.springframework.http.ResponseEntity;
@@ -20,5 +22,13 @@ public class StatisticsController {
             @AuthenticationPrincipal CustomUserDetails user
     ) {
         return ResponseEntity.ok(statisticsService.getProductivityStatistics(user.getId()));
+    }
+
+    @GetMapping
+    public ResponseEntity<StatisticsResponse> getStatistics(
+            @RequestParam(defaultValue = "WEEK") StatsPeriod period,
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        return ResponseEntity.ok(statisticsService.getStatistics(user.getId(), period));
     }
 }
