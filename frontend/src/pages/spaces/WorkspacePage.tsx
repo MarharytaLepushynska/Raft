@@ -5,6 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { deleteWorkspace, getWorkspace, leaveWorkspace } from '@/api/workspaces';
 import { WorkspaceTasks } from './WorkspaceTasks';
 import { WorkspaceTimeline } from './WorkspaceTimeline';
+import { WorkspaceNotes } from './WorkspaceNotes';
 import { WorkspaceMembers } from './WorkspaceMembers';
 import { WorkspaceInfoModal } from './WorkspaceInfoModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
@@ -110,6 +111,7 @@ export function WorkspacePage() {
 
         <aside className="wpage__side">
           <WorkspaceTimeline workspaceId={detail.id} color={detail.color} />
+          <WorkspaceNotes workspaceId={detail.id} />
           <WorkspaceExpenses workspaceId={detail.id} members={detail.members} />
           {detail.type === 'SHARED' && (
             <WorkspaceMembers
