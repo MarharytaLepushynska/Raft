@@ -15,6 +15,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     background: var(--color-bg);
+    color: var(--color-text-secondary);
     font-size: var(--text-sm);
     padding: var(--space-3);
     transition: border-color 0.2s, box-shadow 0.2s;

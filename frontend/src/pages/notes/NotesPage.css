@@ -163,8 +163,8 @@
 .notes-pinboard {
     position: relative;
     width: 100%;
-    background-color: #f6e3e3;
-    background-image: radial-gradient(circle at 1px 1px, rgb(232, 178, 186) 1px, transparent 0);
+    background-color: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+    background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--color-primary) 30%, transparent) 1px, transparent 0);
     background-size: 18px 18px;
     border-radius: var(--radius-xl);
     overflow: hidden;
@@ -179,7 +179,7 @@
     align-items: center;
     justify-content: center;
     font-size: var(--text-sm);
-    color: rgb(201, 84, 122);
+    color: color-mix(in srgb, var(--color-primary) 65%, var(--color-text-muted));
     pointer-events: none;
 }
 

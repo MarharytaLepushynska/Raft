@@ -45,6 +45,8 @@ svg {
 }
 
 input,
+textarea,
+select,
 button {
   font: inherit;
   color: inherit;

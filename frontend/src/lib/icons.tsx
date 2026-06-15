@@ -2,7 +2,7 @@ import {
   LayoutDashboard, FolderKanban, NotebookPen, ListChecks, Calendar, BarChart3, Boxes, MessagesSquare,
   Wallet, Inbox, Settings, HelpCircle, LogOut, Search, Bell, Plus, ChevronDown, ChevronLeft, ChevronRight,
   Menu, X, Check, Folder, FolderPlus, FilePlus, Pencil, Pin, PinOff, MoreHorizontal, Trash2, MailCheck,
-  Award, type LucideIcon,
+  Award, Sun, Moon, Monitor, type LucideIcon,
 } from 'lucide-react';
 
 const icons = {
@@ -38,6 +38,9 @@ const icons = {
   trash: Trash2,
   read: MailCheck,
   achievement: Award,
+  sun: Sun,
+  moon: Moon,
+  system: Monitor,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof icons;
