@@ -37,6 +37,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Service responsible for workspace management.
+ *
+ * Handles personal and shared workspaces, membership, roles, access control,
+ * system notifications and cleanup of related workspace data.
+ */
 @Service
 @RequiredArgsConstructor
 public class WorkspaceService {
@@ -51,6 +57,14 @@ public class WorkspaceService {
     private final ChatReadStateRepository chatReadStateRepository;
     private final NotificationService notificationService;
 
+    /**
+     * Returns all workspaces available to the user.
+     *
+     * Ensures that the user has a personal workspace before returning the list.
+     *
+     * @param userId ID of the current user
+     * @return list of workspace responses
+     */
     @Transactional
     public List<WorkspaceResponse> getWorkspaces(Long userId) {
         ensurePersonalWorkspace(userId);
@@ -79,6 +93,14 @@ public class WorkspaceService {
                 .toList();
     }
 
+    /**
+     * Ensures that the user has a personal workspace.
+     *
+     * If the personal workspace does not exist, it is created together with
+     * an initial onboarding task.
+     *
+     * @param userId ID of the user
+     */
     @Transactional
     public void ensurePersonalWorkspace(Long userId) {
         User user = getUser(userId);
@@ -102,6 +124,12 @@ public class WorkspaceService {
         );
     }
 
+    /**
+     * Returns the user's personal workspace or creates it if it does not exist.
+     *
+     * @param user user entity
+     * @return personal workspace
+     */
     @Transactional
     public Workspace getOrCreatePersonalWorkspace(User user) {
         return workspaceRepository.findFirstByOwner_IdAndType(user.getId(), WorkspaceType.PERSONAL)
@@ -112,6 +140,16 @@ public class WorkspaceService {
                 .orElseGet(() -> createPersonalWorkspace(user));
     }
 
+    /**
+     * Creates a new shared or personal workspace.
+     *
+     * The creator becomes an admin member. For shared workspaces, initial members
+     * can be added by username, and system notifications are created for them.
+     *
+     * @param userId ID of the current user
+     * @param request workspace creation data
+     * @return created workspace response
+     */
     private Workspace createPersonalWorkspace(User user) {
         Workspace personal = workspaceRepository.save(
                 Workspace.builder()
@@ -159,6 +197,13 @@ public class WorkspaceService {
         return toResponse(workspace, MemberRole.ADMIN);
     }
 
+    /**
+     * Returns detailed workspace information, including members and current user's role.
+     *
+     * @param userId ID of the current user
+     * @param workspaceId workspace ID
+     * @return workspace details
+     */
     @Transactional(readOnly = true)
     public WorkspaceDetailResponse getWorkspace(Long userId, Long workspaceId) {
         Workspace workspace = getWorkspaceEntity(workspaceId);
@@ -181,6 +226,16 @@ public class WorkspaceService {
                 .build();
     }
 
+    /**
+     * Updates workspace settings.
+     *
+     * Only workspace admins can edit workspace name or color.
+     *
+     * @param userId ID of the current user
+     * @param workspaceId workspace ID
+     * @param request workspace update data
+     * @return updated workspace response
+     */
     @Transactional
     public WorkspaceResponse updateWorkspace(Long userId, Long workspaceId, WorkspaceUpdateRequest request) {
         Workspace workspace = getWorkspaceEntity(workspaceId);
@@ -197,6 +252,15 @@ public class WorkspaceService {
         return toResponse(workspaceRepository.save(workspace), role);
     }
 
+    /**
+     * Deletes a shared workspace.
+     *
+     * Personal workspaces cannot be deleted. Before deleting a workspace,
+     * related chat messages, chat read states, tasks and memberships are removed.
+     *
+     * @param userId ID of the current user
+     * @param workspaceId workspace ID
+     */
     @Transactional
     public void deleteWorkspace(Long userId, Long workspaceId) {
         Workspace workspace = getWorkspaceEntity(workspaceId);
@@ -213,6 +277,16 @@ public class WorkspaceService {
         workspaceRepository.delete(workspace);
     }
 
+    /**
+     * Adds a new member to a workspace.
+     *
+     * Only admins can add members. The added user receives a system notification.
+     *
+     * @param userId ID of the current user
+     * @param workspaceId workspace ID
+     * @param request member creation data
+     * @return created member response
+     */
     @Transactional
     public MemberResponse addMember(Long userId, Long workspaceId, MemberRequest request) {
         Workspace workspace = getWorkspaceEntity(workspaceId);
@@ -232,6 +306,15 @@ public class WorkspaceService {
         return toMemberResponse(member);
     }
 
+    /**
+     * Removes a member from a workspace.
+     *
+     * The workspace owner cannot be removed. Removed users receive a system notification.
+     *
+     * @param userId ID of the current user
+     * @param workspaceId workspace ID
+     * @param memberUserId ID of the user to remove
+     */
     @Transactional
     public void removeMember(Long userId, Long workspaceId, Long memberUserId) {
         Workspace workspace = getWorkspaceEntity(workspaceId);
@@ -251,6 +334,14 @@ public class WorkspaceService {
         createRemovedFromWorkspaceNotification(removedUser, workspace);
     }
 
+    /**
+     * Allows a user to leave a shared workspace.
+     *
+     * Workspace owners cannot leave their own workspace.
+     *
+     * @param userId ID of the current user
+     * @param workspaceId workspace ID
+     */
     @Transactional
     public void leaveWorkspace(Long userId, Long workspaceId) {
         Workspace workspace = getWorkspaceEntity(workspaceId);
@@ -266,27 +357,61 @@ public class WorkspaceService {
         chatReadStateRepository.deleteByWorkspace_IdAndUser_Id(workspaceId, userId);
     }
 
+    /**
+     * Finds a workspace by ID.
+     *
+     * @param workspaceId ID of the workspace to find
+     * @return found workspace entity
+     */
     private Workspace getWorkspaceEntity(Long workspaceId) {
         return workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new NotFoundException("Workspace not found"));
     }
 
+    /**
+     * Finds a user by ID.
+     *
+     * @param userId ID of the user to find
+     * @return found user entity
+     */
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
+    /**
+     * Resolves an existing user by username.
+     *
+     * The username is trimmed before searching.
+     *
+     * @param login username provided in the request
+     * @return found user entity
+     */
     private User resolveExistingUser(String login) {
         String username = login.trim();
         return userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new NotFoundException("User not found: " + username));
     }
 
+    /**
+     * Checks whether a user is already the owner or a member of a workspace.
+     *
+     * @param workspace workspace to check
+     * @param user user to check
+     * @return true if the user owns or belongs to the workspace
+     */
     private boolean isOwnerOrMember(Workspace workspace, User user) {
         return workspace.getOwner().getId().equals(user.getId())
                 || memberRepository.existsByWorkspace_IdAndUser_Id(workspace.getId(), user.getId());
     }
 
+    /**
+     * Requires the user to be a workspace member and returns their role.
+     *
+     * @param workspace workspace entity
+     * @param userId ID of the current user
+     * @return user's role in the workspace
+     */
     private MemberRole requireMember(Workspace workspace, Long userId) {
         if (workspace.getOwner().getId().equals(userId)) {
             return MemberRole.ADMIN;
@@ -296,18 +421,41 @@ public class WorkspaceService {
                 .orElseThrow(() -> new AccessDeniedException("You do not have access to this workspace"));
     }
 
+    /**
+     * Requires the user to have admin permissions in a workspace.
+     *
+     * @param workspace workspace entity
+     * @param userId ID of the current user
+     */
     private void requireAdmin(Workspace workspace, Long userId) {
         if (requireMember(workspace, userId) != MemberRole.ADMIN) {
             throw new AccessDeniedException("Only admins can manage members");
         }
     }
 
+    /**
+     * Ensures that the workspace owner is also saved as a workspace member.
+     *
+     * If the owner does not have a membership record yet,
+     * the method creates one with the ADMIN role.
+     *
+     * @param workspace workspace entity
+     * @param owner workspace owner
+     */
     private void ensureOwnerMembership(Workspace workspace, User owner) {
         if (!memberRepository.existsByWorkspace_IdAndUser_Id(workspace.getId(), owner.getId())) {
             saveMembership(workspace, owner, MemberRole.ADMIN);
         }
     }
 
+    /**
+     * Saves a workspace membership with the selected role.
+     *
+     * @param workspace workspace where the user is added
+     * @param user user who becomes a workspace member
+     * @param role member role in the workspace
+     * @return saved workspace member entity
+     */
     private WorkspaceMember saveMembership(Workspace workspace, User user, MemberRole role) {
         return memberRepository.save(
                 WorkspaceMember.builder()
@@ -318,10 +466,30 @@ public class WorkspaceService {
         );
     }
 
+    /**
+     * Converts a Workspace entity into a WorkspaceResponse DTO.
+     *
+     * Member count is loaded from the repository.
+     *
+     * @param workspace workspace entity to convert
+     * @param role current user's role in the workspace
+     * @return workspace response DTO
+     */
     private WorkspaceResponse toResponse(Workspace workspace, MemberRole role) {
         return toResponse(workspace, role, (int) memberRepository.countByWorkspace_Id(workspace.getId()));
     }
 
+    /**
+     * Converts a Workspace entity into a WorkspaceResponse DTO.
+     *
+     * This overload accepts a precomputed member count to avoid extra database queries
+     * when many workspaces are mapped at once.
+     *
+     * @param workspace workspace entity to convert
+     * @param role current user's role in the workspace
+     * @param memberCount number of workspace members
+     * @return workspace response DTO
+     */
     private WorkspaceResponse toResponse(Workspace workspace, MemberRole role, int memberCount) {
         return WorkspaceResponse.builder()
                 .id(workspace.getId().toString())
@@ -333,6 +501,14 @@ public class WorkspaceService {
                 .build();
     }
 
+    /**
+     * Calculates member counts for multiple workspaces.
+     *
+     * The result maps workspace ID to the number of members in that workspace.
+     *
+     * @param workspaceIds IDs of workspaces to count members for
+     * @return map of workspace IDs to member counts
+     */
     private Map<Long, Integer> memberCounts(Collection<Long> workspaceIds) {
         Map<Long, Integer> counts = new HashMap<>();
         if (workspaceIds.isEmpty()) {
@@ -344,10 +520,26 @@ public class WorkspaceService {
         return counts;
     }
 
+    /**
+     * Resolves workspace color.
+     *
+     * If no color was requested, the default workspace color is used.
+     *
+     * @param requested requested workspace color
+     * @return requested color or default color
+     */
     private WorkspaceColor resolveColor(WorkspaceColor requested) {
         return requested != null ? requested : DEFAULT_COLOR;
     }
 
+    /**
+     * Converts a WorkspaceMember entity into a MemberResponse DTO.
+     *
+     * The response includes membership ID, user profile data and member role.
+     *
+     * @param member workspace member entity to convert
+     * @return member response DTO
+     */
     private MemberResponse toMemberResponse(WorkspaceMember member) {
         User user = member.getUser();
         return MemberResponse.builder()
@@ -362,6 +554,12 @@ public class WorkspaceService {
                 .build();
     }
 
+    /**
+     * Creates a system notification after workspace creation.
+     *
+     * @param user notification recipient
+     * @param workspace created workspace
+     */
     private void createWorkspaceCreatedNotification(User user, Workspace workspace) {
         notificationService.createNotification(
                 user.getId(),
@@ -372,6 +570,12 @@ public class WorkspaceService {
         );
     }
 
+    /**
+     * Creates a system notification when a user is added to a workspace.
+     *
+     * @param user notification recipient
+     * @param workspace workspace where the user was added
+     */
     private void createAddedToWorkspaceNotification(User user, Workspace workspace) {
         notificationService.createNotification(
                 user.getId(),
@@ -382,6 +586,12 @@ public class WorkspaceService {
         );
     }
 
+    /**
+     * Creates a system notification when a user is removed from a workspace.
+     *
+     * @param user notification recipient
+     * @param workspace workspace from which the user was removed
+     */
     private void createRemovedFromWorkspaceNotification(User user, Workspace workspace) {
         notificationService.createNotification(
                 user.getId(),

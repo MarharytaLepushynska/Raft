@@ -19,6 +19,13 @@ import java.util.List;
 
 import java.time.LocalDateTime;
 
+/**
+ * Service responsible for checking, granting and returning user achievements.
+ *
+ * This service periodically checks all users and verifies whether they meet
+ * the conditions for achievements related to completed tasks, created expenses,
+ * shared workspaces, notes, settled expenses and account age.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -33,6 +40,11 @@ public class AchievementService {
     private final WorkspaceRepository workspaceRepository;
     private final NotificationService notificationService;
 
+    /**
+     * Periodically checks all users for newly earned achievements.
+     *
+     * This method is executed automatically by Spring Scheduler.
+     */
     @Scheduled(fixedRate = 15000)
     public void checkAllUsers() {
         log.info("Starting daily achievement check");
@@ -43,6 +55,11 @@ public class AchievementService {
         log.info("Achievement check completed for {} users", users.size());
     }
 
+    /**
+     * Runs all achievement checks for a specific user.
+     *
+     * @param user user whose progress should be checked
+     */
     public void checkAchievementsForUser(User user) {
         checkTasksCompleted(user, 10, "TASKS_10");
         checkTasksCompleted(user, 50, "TASKS_50");
@@ -53,6 +70,13 @@ public class AchievementService {
         checkFirstWeek(user);
     }
 
+    /**
+     * Checks whether the user has completed at least the required number of tasks.
+     *
+     * @param user user being checked
+     * @param threshold required number of completed tasks
+     * @param code achievement code to grant if the condition is met
+     */
     private void checkTasksCompleted(User user, int threshold, String code) {
         if (alreadyEarned(user, code)) return;
 
@@ -64,6 +88,13 @@ public class AchievementService {
         }
     }
 
+    /**
+     * Checks whether the user has created at least the required number of expenses.
+     *
+     * @param user user being checked
+     * @param threshold required number of created expenses
+     * @param code achievement code to grant if the condition is met
+     */
     private void checkExpensesCreated(User user, int threshold, String code) {
         if (alreadyEarned(user, code)) return;
 
@@ -73,6 +104,11 @@ public class AchievementService {
         }
     }
 
+    /**
+     * Checks whether the user has created at least one shared workspace.
+     *
+     * @param user user being checked
+     */
     private void checkWorkspaceCreated(User user) {
         String code = "WORKSPACE_CREATED";
         if (alreadyEarned(user, code)) return;
@@ -84,6 +120,13 @@ public class AchievementService {
         }
     }
 
+    /**
+     * Checks whether the user has created at least the required number of notes.
+     *
+     * @param user user being checked
+     * @param threshold required number of created notes
+     * @param code achievement code to grant if the condition is met
+     */
     private void checkNotesCreated(User user, int threshold, String code) {
         if (alreadyEarned(user, code)) return;
 
@@ -93,6 +136,14 @@ public class AchievementService {
         }
     }
 
+    /**
+     * Checks whether all expense splits assigned to the user are settled.
+     *
+     * The achievement is granted only if the user has at least one split
+     * and none of them remain unsettled.
+     *
+     * @param user user being checked
+     */
     private void checkAllSettled(User user) {
         String code = "ALL_SETTLED";
         if (alreadyEarned(user, code)) return;
@@ -105,6 +156,11 @@ public class AchievementService {
         }
     }
 
+    /**
+     * Checks whether the user's account is older than one week.
+     *
+     * @param user user being checked
+     */
     private void checkFirstWeek(User user) {
         String code = "FIRST_WEEK";
         if (alreadyEarned(user, code)) return;
@@ -114,12 +170,25 @@ public class AchievementService {
         }
     }
 
+    /**
+     * Checks whether the user has already earned the achievement with the given code.
+     *
+     * @param user user being checked
+     * @param code achievement code
+     * @return true if the achievement has already been earned
+     */
     private boolean alreadyEarned(User user, String code) {
         return userAchievementRepository
                 .findByUser_IdAndAchievement_Code(user.getId(), code)
                 .isPresent();
     }
 
+    /**
+     * Grants an achievement to the user and creates an achievement notification.
+     *
+     * @param user user who earned the achievement
+     * @param code achievement code
+     */
     private void grantAchievement(User user, String code) {
         Achievement achievement = achievementRepository.findByCode(code)
                 .orElseThrow(() -> new IllegalStateException("Unknown achievement code: " + code));
@@ -141,6 +210,12 @@ public class AchievementService {
         );
     }
 
+    /**
+     * Returns all available achievements and marks which of them were earned by the user.
+     *
+     * @param userId ID of the current user
+     * @return list of all achievements with earned status
+     */
     @Transactional(readOnly = true)
     public List<AchievementResponse> getAchievements(Long userId) {
         List<UserAchievement> earnedAchievements =
@@ -152,6 +227,12 @@ public class AchievementService {
                 .toList();
     }
 
+    /**
+     * Returns only achievements already earned by the user.
+     *
+     * @param userId ID of the current user
+     * @return list of earned achievements
+     */
     @Transactional(readOnly = true)
     public List<AchievementResponse> getEarnedAchievements(Long userId) {
         return userAchievementRepository.findByUser_IdOrderByEarnedAtDesc(userId)
@@ -163,6 +244,13 @@ public class AchievementService {
                 .toList();
     }
 
+    /**
+     * Converts an achievement entity into a response DTO and adds earned metadata.
+     *
+     * @param achievement achievement entity
+     * @param earnedAchievements list of achievements earned by the user
+     * @return response DTO for the achievement
+     */
     private AchievementResponse mapToResponse(
             Achievement achievement,
             List<UserAchievement> earnedAchievements
@@ -183,6 +271,15 @@ public class AchievementService {
                 .build();
     }
 
+    /**
+     * Grants a specific achievement to a user if it exists and was not earned before.
+     *
+     * This method is used by other services when a specific action should immediately
+     * unlock an achievement, for example creating the first task or workspace.
+     *
+     * @param userId ID of the user
+     * @param code achievement code
+     */
     @Transactional
     public void awardAchievement(Long userId, String code) {
         if (userAchievementRepository.existsByUser_IdAndAchievement_Code(userId, code)) {

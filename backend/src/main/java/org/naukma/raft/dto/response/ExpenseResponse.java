@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Payload detailing a recorded workspace transaction entry and its joint ledger allocations.
+ */
 @Data
 @Builder
 public class ExpenseResponse {

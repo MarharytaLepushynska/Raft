@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 import org.naukma.raft.enums.PinType;
 
+/**
+ * Model defining styling metrics and attachments for a widget node pinned onto a canvas layout.
+ */
 @Data
 @Builder
 public class PinResponse {

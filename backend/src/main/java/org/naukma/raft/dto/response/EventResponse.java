@@ -7,6 +7,9 @@ import org.naukma.raft.enums.WorkspaceColor;
 
 import java.time.LocalDateTime;
 
+/**
+ * Formatted payload modeling a timeline block entry inside the calendar dashboard.
+ */
 @Data
 @Builder
 public class EventResponse {

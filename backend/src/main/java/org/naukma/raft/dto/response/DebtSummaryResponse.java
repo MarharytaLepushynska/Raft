@@ -6,6 +6,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Balance overview tracking a calculated debt relationship between two workspace profiles.
+ */
 @Data
 @Builder
 public class DebtSummaryResponse {

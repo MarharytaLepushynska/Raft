@@ -6,6 +6,9 @@ import org.naukma.raft.enums.NotificationType;
 
 import java.time.LocalDateTime;
 
+/**
+ * Context payload containing push feed alert details triggered for a user account view.
+ */
 @Data
 @Builder
 public class NotificationResponse {

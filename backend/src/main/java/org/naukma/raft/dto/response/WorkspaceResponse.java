@@ -6,6 +6,9 @@ import org.naukma.raft.enums.MemberRole;
 import org.naukma.raft.enums.WorkspaceColor;
 import org.naukma.raft.enums.WorkspaceType;
 
+/**
+ * Overview layout outlining a single collaborative work space card row.
+ */
 @Data
 @Builder
 public class WorkspaceResponse {

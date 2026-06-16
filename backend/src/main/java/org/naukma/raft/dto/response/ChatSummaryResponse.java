@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * Summary row mapping chat activity previews and unread badges for dashboard displays.
+ */
 @Data
 @Builder
 public class ChatSummaryResponse {

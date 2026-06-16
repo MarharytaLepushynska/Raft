@@ -7,6 +7,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Complete personal balance sheet detailing user transactions and collective debt pools.
+ */
 @Data
 @Builder
 public class PersonalExpenseStatsResponse {

@@ -15,17 +15,37 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Service responsible for user profile operations.
+ *
+ * Handles reading, updating, searching and deleting users.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
+    /**
+     * Returns user profile data by ID.
+     *
+     * @param id user ID
+     * @return user response DTO
+     */
     public UserResponse getUserById(Long id){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         return mapToResponse(user);
     }
 
+    /**
+     * Updates user profile data.
+     *
+     * Email and username are checked for uniqueness before saving.
+     *
+     * @param id ID of the user to update
+     * @param request profile update data
+     * @return updated user response
+     */
     @Transactional
     public UserResponse updateUser(Long id, ProfileUpdateRequest request){
         User user = userRepository.findById(id)
@@ -54,6 +74,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Searches users by name or username and excludes the current user from results.
+     *
+     * @param query search query
+     * @param excludeUserId ID of the user that should not appear in results
+     * @return list of user summaries
+     */
     public List<UserSummaryResponse> searchUsers(String query, Long excludeUserId){
         String q = query == null ? "" : query.trim();
         if(q.isEmpty()) { return List.of(); }
@@ -64,12 +91,26 @@ public class UserService {
                 .toList();
     }
 
+    /**
+     * Deletes a user by ID.
+     *
+     * @param id ID of the user to delete
+     */
     public void deleteUser(Long id){
         userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         userRepository.deleteById(id);
     }
 
+    /**
+     * Converts a User entity into a full UserResponse DTO.
+     *
+     * This response is used for profile-related operations
+     * where the user's full public profile data is needed.
+     *
+     * @param user user entity to convert
+     * @return full user response DTO
+     */
     private UserResponse mapToResponse(User user){
         UserResponse response = new UserResponse();
         response.setId(user.getId().toString());
@@ -81,6 +122,15 @@ public class UserService {
         return response;
     }
 
+    /**
+     * Converts a User entity into a short user summary DTO.
+     *
+     * This response is used when user data is embedded into other responses,
+     * such as tasks, notes, members or expenses.
+     *
+     * @param user user entity to convert
+     * @return short user summary response
+     */
     private UserSummaryResponse toSummary(User user){
         return UserSummaryResponse.builder()
                 .id(user.getId().toString())

@@ -12,6 +12,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * Detailed representation of a planning task card, complete with assignment contexts.
+ */
 @Data
 @Builder
 public class TaskResponse {

@@ -7,6 +7,9 @@ import org.naukma.raft.enums.FolderType;
 
 import java.time.LocalDateTime;
 
+/**
+ * Representation model showcasing a saved text document or canvas draft element.
+ */
 @Data
 @Builder
 public class NoteResponse {

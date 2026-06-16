@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * Outlines an individual split breakdown tracking a specific user's share of a bill.
+ */
 @Data
 @Builder
 public class ExpenseSplitResponse {
