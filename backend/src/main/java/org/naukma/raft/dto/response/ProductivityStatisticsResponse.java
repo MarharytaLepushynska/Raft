@@ -3,6 +3,9 @@ package org.naukma.raft.dto.response;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * Comprehensive analytical metric sheets tracking user performance and goal progression profiles.
+ */
 @Data
 @Builder
 public class ProductivityStatisticsResponse {

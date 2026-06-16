@@ -2,6 +2,9 @@ package org.naukma.raft.dto.response;
 
 import lombok.Data;
 
+/**
+ * Primary container holding full user account information for self-view layouts.
+ */
 @Data
 public class UserResponse {
     private String id;

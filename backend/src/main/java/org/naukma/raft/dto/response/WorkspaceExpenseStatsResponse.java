@@ -6,6 +6,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Aggregated transaction pool analysis tracking total expenditures and member standing rows.
+ */
 @Data
 @Builder
 public class WorkspaceExpenseStatsResponse {

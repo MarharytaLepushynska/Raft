@@ -19,6 +19,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service responsible for user authentication and registration.
+ *
+ * Handles account creation, login, password encoding, JWT generation,
+ * personal workspace initialization and welcome notification creation.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -29,6 +35,16 @@ public class AuthService {
     private final WorkspaceService workspaceService;
     private final NotificationService notificationService;
 
+    /**
+     * Registers a new user in the system.
+     *
+     * The method normalizes email and username, checks their uniqueness,
+     * saves the user, creates a personal workspace, creates a welcome notification
+     * and returns an authentication token.
+     *
+     * @param userRequest registration data
+     * @return authentication response with JWT token and user data
+     */
     @Transactional
     public AuthResponse register(UserRequest userRequest) {
         String email = userRequest.getEmail().trim().toLowerCase();
@@ -65,6 +81,12 @@ public class AuthService {
         return new AuthResponse(token, mapToResponse(saved));
     }
 
+    /**
+     * Authenticates a user by email or username and returns a JWT token.
+     *
+     * @param loginRequest login credentials
+     * @return authentication response with JWT token and user data
+     */
     public AuthResponse login(LoginRequest loginRequest) {
         String login = loginRequest.getLogin().trim();
 
@@ -81,6 +103,11 @@ public class AuthService {
     }
 
 
+    /**
+     * Creates a system welcome notification for a newly registered user.
+     *
+     * @param user newly registered user
+     */
     private void createWelcomeNotification(User user) {
         notificationService.createNotification(
                 user.getId(),
@@ -91,6 +118,12 @@ public class AuthService {
         );
     }
 
+    /**
+     * Converts a user entity into a response DTO.
+     *
+     * @param user user entity
+     * @return user response DTO
+     */
     private UserResponse mapToResponse(User user) {
         UserResponse userResponse = new UserResponse();
         userResponse.setId(user.getId().toString());

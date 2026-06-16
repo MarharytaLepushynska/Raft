@@ -24,6 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.time.LocalDateTime;
 
+/**
+ * Service responsible for user reminders.
+ *
+ * Reminders can be attached either to tasks or events and are later processed
+ * by the scheduler when their reminder time comes.
+ */
 @Service
 @RequiredArgsConstructor
 public class ReminderService {
@@ -35,6 +41,12 @@ public class ReminderService {
     private final WorkspaceMemberRepository memberRepository;
     private final NotificationService notificationService;
 
+    /**
+     * Returns reminders created by the user, ordered by reminder time.
+     *
+     * @param userId ID of the current user
+     * @return list of reminder responses
+     */
     @Transactional(readOnly = true)
     public List<ReminderResponse> getReminders(Long userId) {
         return reminderRepository.findByUser_IdOrderByReminderTimeAsc(userId)
@@ -43,6 +55,13 @@ public class ReminderService {
                 .toList();
     }
 
+    /**
+     * Creates a new reminder connected to either a task or an event.
+     *
+     * @param userId ID of the current user
+     * @param request reminder creation data
+     * @return created reminder response
+     */
     @Transactional
     public ReminderResponse createReminder(Long userId, ReminderRequest request) {
         validateReminderTarget(request.getTaskId(), request.getEventId());
@@ -71,6 +90,16 @@ public class ReminderService {
         return mapToResponse(reminderRepository.save(reminder));
     }
 
+    /**
+     * Updates an existing reminder owned by the user.
+     *
+     * A reminder can be reassigned to a task or an event, but not both at once.
+     *
+     * @param userId ID of the current user
+     * @param reminderId ID of the reminder to update
+     * @param request partial reminder update data
+     * @return updated reminder response
+     */
     @Transactional
     public ReminderResponse updateReminder(Long userId, Long reminderId, ReminderPatchRequest request) {
         validateReminderPatchTarget(request);
@@ -96,12 +125,25 @@ public class ReminderService {
         return mapToResponse(reminderRepository.save(reminder));
     }
 
+    /**
+     * Deletes a reminder owned by the user.
+     *
+     * @param userId ID of the current user
+     * @param reminderId ID of the reminder to delete
+     */
     @Transactional
     public void deleteReminder(Long userId, Long reminderId) {
         Reminder reminder = getUserReminder(userId, reminderId);
         reminderRepository.delete(reminder);
     }
 
+    /**
+     * Validates that a reminder is connected to exactly one target:
+     * either a task or an event.
+     *
+     * @param taskId optional task ID
+     * @param eventId optional event ID
+     */
     private void validateReminderTarget(Long taskId, Long eventId) {
         if (taskId == null && eventId == null) {
             throw new ConflictException("Reminder must be connected to task or event");
@@ -112,6 +154,13 @@ public class ReminderService {
         }
     }
 
+    /**
+     * Processes reminders whose reminder time has already come.
+     *
+     * For each due reminder, the method creates a notification and marks the reminder as sent.
+     *
+     * @return number of processed reminders
+     */
     @Transactional
     public int processDueReminders() {
         List<Reminder> dueReminders = reminderRepository.findDueReminders(LocalDateTime.now());
@@ -133,12 +182,30 @@ public class ReminderService {
         return dueReminders.size();
     }
 
+    /**
+     * Validates that a reminder patch request does not connect the reminder
+     * to both a task and an event at the same time.
+     *
+     * A reminder can be attached to only one target.
+     *
+     * @param request reminder update request
+     */
     private void validateReminderPatchTarget(ReminderPatchRequest request) {
         if (request.getTaskId() != null && request.getEventId() != null) {
             throw new ConflictException("Reminder can be connected only to one target");
         }
     }
 
+    /**
+     * Finds a task and checks whether the current user has access to it.
+     *
+     * Access is allowed if the user owns the task workspace
+     * or is a member of that workspace.
+     *
+     * @param userId ID of the current user
+     * @param taskId ID of the task to find
+     * @return accessible task entity
+     */
     private Task getAccessibleTask(Long userId, Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new NotFoundException("Task not found"));
@@ -150,6 +217,16 @@ public class ReminderService {
         return task;
     }
 
+    /**
+     * Finds an event and checks whether the current user has access to it.
+     *
+     * Access is allowed if the user owns the event workspace
+     * or is a member of that workspace.
+     *
+     * @param userId ID of the current user
+     * @param eventId ID of the event to find
+     * @return accessible event entity
+     */
     private Event getAccessibleEvent(Long userId, Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event not found"));
@@ -161,21 +238,53 @@ public class ReminderService {
         return event;
     }
 
+    /**
+     * Checks whether a user has access to a workspace.
+     *
+     * A user has access if they are the workspace owner
+     * or a member of that workspace.
+     *
+     * @param userId ID of the current user
+     * @param workspace workspace to check
+     * @return true if the user can access the workspace
+     */
     private boolean canAccess(Long userId, Workspace workspace) {
         return workspace.getOwner().getId().equals(userId)
                || memberRepository.existsByWorkspace_IdAndUser_Id(workspace.getId(), userId);
     }
 
+    /**
+     * Finds a user by ID.
+     *
+     * @param userId ID of the user to find
+     * @return found user entity
+     */
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
+    /**
+     * Finds a reminder that belongs to the current user.
+     *
+     * This prevents users from reading, updating or deleting reminders
+     * created by other users.
+     *
+     * @param userId ID of the current user
+     * @param reminderId ID of the reminder to find
+     * @return reminder entity owned by the user
+     */
     private Reminder getUserReminder(Long userId, Long reminderId) {
         return reminderRepository.findByIdAndUser_Id(reminderId, userId)
                 .orElseThrow(() -> new NotFoundException("Reminder not found"));
     }
 
+    /**
+     * Builds the notification message for a due reminder.
+     *
+     * @param reminder due reminder
+     * @return notification message text
+     */
     private String buildReminderMessage(Reminder reminder) {
         if (reminder.getTask() != null) {
             return "Task reminder: " + reminder.getTask().getTitle();
@@ -188,6 +297,15 @@ public class ReminderService {
         return "Reminder time has come";
     }
 
+    /**
+     * Converts a Reminder entity into a ReminderResponse DTO.
+     *
+     * The response includes reminder target IDs, reminder time
+     * and information about whether the reminder was already sent.
+     *
+     * @param reminder reminder entity to convert
+     * @return reminder response DTO
+     */
     private ReminderResponse mapToResponse(Reminder reminder) {
         return ReminderResponse.builder()
                 .id(reminder.getId().toString())

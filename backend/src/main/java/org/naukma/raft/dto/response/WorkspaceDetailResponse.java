@@ -11,6 +11,9 @@ import org.naukma.raft.enums.WorkspaceType;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Deep view payload containing meta configurations and the active member roster for a specific space.
+ */
 @Data
 @Builder
 public class WorkspaceDetailResponse {

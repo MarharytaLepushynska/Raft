@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
 
+/**
+ * Central interceptor that catches exceptions across controllers and maps them into uniform error payloads.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /** Returns unauthorized error status when login credentials fail. */
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity
@@ -20,6 +24,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(401, "Invalid email or password"));
     }
 
+    /** Returns not found status code when a targeted folder, task, or note item is missing. */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex) {
         return ResponseEntity
@@ -27,6 +32,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(404, ex.getMessage()));
     }
 
+    /** Returns forbidden error frame when access boundaries block execution. */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity
@@ -34,6 +40,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(403, ex.getMessage()));
     }
 
+    /** Catches duplicate identifier exceptions during user registration. */
     @ExceptionHandler(EmailAreadyExsistsException.class)
     public ResponseEntity<ErrorResponse> handleEmailExists(EmailAreadyExsistsException ex) {
         return ResponseEntity
@@ -41,6 +48,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(409, ex.getMessage()));
     }
 
+    /** Maps state validation mismatches directly to conflict response boundaries. */
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex) {
         return ResponseEntity
@@ -48,6 +56,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(409, ex.getMessage()));
     }
 
+    /** Intercepts malformed or unparseable input structures sent inside request bodies. */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleUnreadable(HttpMessageNotReadableException ex) {
         return ResponseEntity
@@ -55,6 +64,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(400, "Malformed or invalid request body"));
     }
 
+    /** Compiles framework validation failures into clear error messages. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult()
@@ -68,6 +78,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(400, message));
     }
 
+    /** Fallback handler that catches all unhandled internal server anomalies. */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
         return ResponseEntity

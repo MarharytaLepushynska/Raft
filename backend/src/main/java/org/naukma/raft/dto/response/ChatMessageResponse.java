@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * Context container representing a message entry fetched from a group chat room.
+ */
 @Data
 @Builder
 public class ChatMessageResponse {

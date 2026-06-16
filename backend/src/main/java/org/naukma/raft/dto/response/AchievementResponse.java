@@ -5,6 +5,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * Data payload returned to display an achievement and its completion status for the user.
+ */
 @Data
 @Builder
 public class AchievementResponse {

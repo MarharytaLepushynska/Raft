@@ -26,6 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for shared workspace expenses.
+ *
+ * Handles expense creation, participant splitting, workspace expense statistics,
+ * personal debt summaries and split settlement.
+ */
 @Service
 @RequiredArgsConstructor
 public class ExpenseService {
@@ -34,6 +40,16 @@ public class ExpenseService {
     private final WorkspaceMemberRepository memberRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Creates a new shared expense in a workspace.
+     *
+     * The expense amount is split equally between selected participants
+     * or all workspace members if no participant list is provided.
+     *
+     * @param request expense creation data
+     * @param currentUserId ID of the user who paid for the expense
+     * @return created expense response
+     */
     public ExpenseResponse createExpense(CreateExpenseRequest request, Long currentUserId) {
         memberRepository.findByWorkspace_IdAndUser_Id(request.getWorkspaceId(), currentUserId)
                 .orElseThrow(() -> new AccessDeniedException("You are not a member of this workspace"));
@@ -81,6 +97,15 @@ public class ExpenseService {
         return mapToResponse(expenseRepository.save(expense));
     }
 
+    /**
+     * Returns expense statistics for a workspace.
+     *
+     * Includes total expenses, member balances and recent expenses.
+     *
+     * @param workspaceId workspace ID
+     * @param currentUserId ID of the current user
+     * @return workspace expense statistics
+     */
     public WorkspaceExpenseStatsResponse getWorkspaceStats(Long workspaceId, Long currentUserId) {
         memberRepository.findByWorkspace_IdAndUser_Id(workspaceId, currentUserId)
                 .orElseThrow(() -> new NotFoundException("You are not a member of this workspace"));
@@ -103,6 +128,18 @@ public class ExpenseService {
                 .build();
     }
 
+    /**
+     * Returns personal expense statistics for the current user.
+     *
+     * Includes debts the user owes, debts owed to the user and paged expense history.
+     *
+     * @param currentUserId ID of the current user
+     * @param from optional start date filter
+     * @param to optional end date filter
+     * @param page page number
+     * @param size page size
+     * @return personal expense statistics
+     */
     public PersonalExpenseStatsResponse getPersonalStats(Long currentUserId, LocalDate from, LocalDate to, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         LocalDateTime fromDateTime = from != null ? from.atStartOfDay() : null;
@@ -181,6 +218,12 @@ public class ExpenseService {
                 .build();
     }
 
+    /**
+     * Marks an expense split as settled by the assigned user.
+     *
+     * @param splitId ID of the split to settle
+     * @param currentUserId ID of the current user
+     */
     public void settleSplit(Long splitId, Long currentUserId) {
         ExpenseMember split = expenseMemberRepository.findById(splitId)
                 .orElseThrow(() -> new NotFoundException("Split not found"));
@@ -193,12 +236,27 @@ public class ExpenseService {
         expenseMemberRepository.save(split);
     }
 
+    /**
+     * Checks whether a date is within the optional date range.
+     *
+     * @param date date to check
+     * @param from optional start date-time
+     * @param to optional end date-time
+     * @return true if the date is within the range
+     */
     private boolean isInRange(LocalDateTime date, LocalDateTime from, LocalDateTime to) {
         if (from != null && date.isBefore(from)) return false;
         if (to != null && date.isAfter(to)) return false;
         return true;
     }
 
+    /**
+     * Calculates how much a user paid, owes and their resulting balance.
+     *
+     * @param user workspace member
+     * @param expenses workspace expenses
+     * @return user balance response
+     */
     private UserBalanceResponse calculateUserBalance(User user, List<Expense> expenses) {
         BigDecimal totalPaid = expenses.stream()
                 .filter(e -> e.getPaidBy().getId().equals(user.getId()))
@@ -219,6 +277,15 @@ public class ExpenseService {
                 .build();
     }
 
+    /**
+     * Converts an Expense entity into an ExpenseResponse DTO.
+     *
+     * The response includes the main expense data, the user who paid for it,
+     * all expense splits with settlement status, and the creation date.
+     *
+     * @param expense expense entity to convert
+     * @return response DTO with expense details
+     */
     private ExpenseResponse mapToResponse(Expense expense) {
 
         return ExpenseResponse.builder()
@@ -238,6 +305,15 @@ public class ExpenseService {
                 .build();
     }
 
+    /**
+     * Converts a User entity into a short user summary DTO.
+     *
+     * This method is used inside expense responses to avoid returning
+     * the full user entity and expose only basic profile information.
+     *
+     * @param user user entity to convert
+     * @return short user summary response
+     */
     private UserSummaryResponse mapUserToSummary(User user) {
         return UserSummaryResponse.builder()
                 .id(String.valueOf(user.getId()))
@@ -247,6 +323,13 @@ public class ExpenseService {
                 .build();
     }
 
+    /**
+     * Returns all expenses from a workspace accessible to the current user.
+     *
+     * @param workspaceId workspace ID
+     * @param userId current user ID
+     * @return list of workspace expenses
+     */
     public List<ExpenseResponse> getWorkspaceExpenses(Long workspaceId, Long userId) {
         memberRepository.findByWorkspace_IdAndUser_Id(workspaceId, userId)
                 .orElseThrow(() -> new AccessDeniedException("Not a member of this workspace"));

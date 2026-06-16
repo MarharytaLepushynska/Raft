@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 import org.naukma.raft.enums.MemberRole;
 
+/**
+ * Detailed profile summary of a registered collaborator enrolled within a workspace environment.
+ */
 @Data
 @Builder
 public class MemberResponse {

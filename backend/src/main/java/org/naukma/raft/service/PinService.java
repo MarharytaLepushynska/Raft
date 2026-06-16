@@ -19,6 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Service responsible for managing user pins.
+ *
+ * A pin can represent either a note or an image item placed by the user.
+ */
 @Service
 @RequiredArgsConstructor
 public class PinService {
@@ -30,6 +35,12 @@ public class PinService {
 
     private static final int MAX_PINS_PER_USER = 20;
 
+    /**
+     * Returns all pins created by the user.
+     *
+     * @param userId ID of the current user
+     * @return list of pin responses
+     */
     @Transactional(readOnly = true)
     public List<PinResponse> getPins(Long userId) {
         return pinRepository.findByUserId(userId)
@@ -38,6 +49,16 @@ public class PinService {
                 .toList();
     }
 
+    /**
+     * Creates a new pin for a note or image.
+     *
+     * Exactly one target must be provided: either a note ID or an image URL.
+     * The method also checks the maximum number of pins per user.
+     *
+     * @param userId ID of the current user
+     * @param request pin creation data
+     * @return created pin response
+     */
     @Transactional
     public PinResponse createPin(Long userId, PinRequest request) {
         User user = userRepository.findById(userId)
@@ -76,6 +97,14 @@ public class PinService {
         return mapToResponse(saved);
     }
 
+    /**
+     * Updates the position and rotation of a user's own pin.
+     *
+     * @param userId ID of the current user
+     * @param pinId ID of the pin to update
+     * @param request new pin position data
+     * @return updated pin response
+     */
     @Transactional
     public PinResponse updatePinPosition(Long userId, Long pinId, PinRequest request) {
         Pin pin = pinRepository.findById(pinId)
@@ -89,6 +118,12 @@ public class PinService {
         return mapToResponse(pinRepository.save(pin));
     }
 
+    /**
+     * Deletes a user's own pin.
+     *
+     * @param userId ID of the current user
+     * @param pinId ID of the pin to delete
+     */
     @Transactional
     public void deletePin(Long userId, Long pinId) {
         Pin pin = pinRepository.findById(pinId)
@@ -99,11 +134,27 @@ public class PinService {
         pinRepository.delete(pin);
     }
 
+    /**
+     * Checks whether the user can access the workspace that contains the pinned note.
+     *
+     * @param userId ID of the current user
+     * @param note note being pinned
+     * @return true if the user can access the note
+     */
     private boolean canAccessNote(Long userId, Note note) {
         var workspace = note.getFolder().getWorkspace();
         return workspace.getOwner().getId().equals(userId) || memberRepository.existsByWorkspace_IdAndUser_Id(workspace.getId(), userId);
     }
 
+    /**
+     * Converts a Pin entity into a PinResponse DTO.
+     *
+     * For note pins, the response includes note ID, title and content.
+     * For image pins, the response includes image URL, title and text.
+     *
+     * @param pin pin entity to convert
+     * @return pin response DTO
+     */
     private PinResponse mapToResponse(Pin pin) {
         PinResponse.PinResponseBuilder builder = PinResponse.builder()
                 .id(pin.getId().toString())

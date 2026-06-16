@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * Representation framework defining scheduled alarms linked to tasks or calendar blocks.
+ */
 @Data
 @Builder
 public class ReminderResponse {

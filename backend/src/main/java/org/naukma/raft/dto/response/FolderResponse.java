@@ -9,6 +9,9 @@ import org.naukma.raft.enums.WorkspaceType;
 
 import java.time.LocalDateTime;
 
+/**
+ * Representation of an asset binder used to catalog tasks or documents on view structures.
+ */
 @Data
 @Builder
 public class FolderResponse {
