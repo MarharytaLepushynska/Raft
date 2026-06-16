@@ -221,7 +221,6 @@
 .pin-item--dragging {
     cursor: grabbing;
     filter: none;
-    box-shadow: 4px 8px 14px rgba(40, 20, 10, 0.45);
     z-index: 10;
 }
 
@@ -298,7 +297,7 @@
 .pin-item__image {
     line-height: 0;
     display: block;
-    width: 180px;
+    width: auto;
     max-width: 180px;
     height: auto;
     max-height: 220px;
