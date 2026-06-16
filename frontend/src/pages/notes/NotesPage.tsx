@@ -123,7 +123,7 @@ export function NotesPage() {
                                 <Icon name="close" size={11} />
                             </button>
                             {pin.type === 'image' ? (
-                                <img src={pin.imageUrl} alt="pinned" className="pin-item__image" draggable={false} />
+                                <img src={pin.imageUrl} alt="pinned" className="pin-item__image" draggable={false} onDragStart={(e) => e.preventDefault()} />
                             ) : (
                                 <>
                                     {pin.title && <p className="pin-item__title">{pin.title}</p>}

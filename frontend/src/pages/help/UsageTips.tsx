@@ -1,11 +1,16 @@
 import { Icon } from '@/lib/icons';
 
 const TIPS = [
-    'Use chats to share yours thoughts with workspace members.',
-    'Set reminders for task to not forget them.',
-    'Pin important notes to your dashboard for quick access.',
-    'Create shared folders to collaborate with your team.',
-    'Filter tasks by priority to focus on what matters most.',
+    'Use workspace chats to share your thoughts with team members.',
+    'Set reminders for tasks to stay on top of deadlines.',
+    'Pin important notes to your dashboard for instant access.',
+    'Create shared folders to collaborate seamlessly with your team.',
+    'Filter tasks by priority to focus on what truly matters.',
+    'Mark expenses as settled directly from the debt list – no extra clicks.',
+    'Customise your app with accent colors and dark/light theme in Settings.',
+    'Earn achievements by creating notes, completing tasks, and settling debts.',
+    'Track shared expenses per workspace – perfect for trips or household bills.',
+    'Add images to your pinboard for visual reminders or inspiration.',
 ];
 
 export function UsageTips() {

@@ -9,34 +9,76 @@ const FAQ_ITEMS = [
         answer: 'In a shared workspace, open the Expenses tab and click "+ Add expense". Choose who participates — the cost splits equally between selected members.',
     },
     {
-        question: 'Рецепт панкейків',
-        answer: 'Інгредієнти' +
-            '\n200 мл молока 2,5%' +
-            '\n200 г борошна ' +
-            '\n1 яйце ' +
-            '\n1 ст. л. цукру ' +
-            '\n50 г вершкового масла ' +
-            '\n0,5 ч. л. розпушувача ' +
-            '\n50 мл меду для подачі\n' +
-            '\nКРОК 1: Дістаньте з холодильника молоко, щоб воно трохи нагрілося. У глибоку миску вбийте 1 яйце, додайте столову ложкою цукру і збийте за допомогою віничка або блендера з цією насадкою.' +
-            '\nКРОК 2: Додайте 200 мл молока кімнатної температури, продовжуючи збивати.' +
-            '\nКРОК 3: Змішайте 200 г борошна з ½ ч. л. розпушувача, додайте у молочно-яєчну суміш і знову ретельно збийте.' +
-            '\nКРОК 4: Розтопіть 50 г масла зручним для вас способом - на маленькому вогні, водяній бані чи у мікрохвильовці. Влийте у тісто та добре розмішайте до повного поглинання. У вас має вийти однорідне тісто, приблизно як сметана середньої густини. Накрийте миску плівкою і поставте холодильника на 20 хв.' +
-            '\nКРОК 5: Вийміть охолоджене тісто, коли поставите пательню розігріватися. Виливайте суміш ополоником в центр розігрітої сковорідки. Смажте з обох боків до золотистої кірочки. Викладайте гіркою, поливайте медом чи кленовим сиропом і подавайте до столу.',
+        question: 'Who can edit or delete a folder?',
+        answer: 'Only the folder creator and the workspace owner can edit or delete a folder. Regular members can view but not modify folders.',
     },
     {
-        question: 'Видри та камінці',
-        answer: 'Раніше біологи припускали, що подібні ігри допомагають видрам відточувати свої навички у видобутку їжі з раковин молюсків. Однак нове дослідження показало цікаву закономірність, яка ставить під питання попереднє припущення. Річ у тім, що молодняк і старі видри частіше жонглювали камінням, ніж дорослі особини репродуктивного віку, але при цьому не демонстрували більшої спритності при відкриванні раковин.' +
-            '\nНа думку авторів дослідження, гра з камінчиками висловлює хвилювання і нетерплячість тварин в очікуванні годування. Видри набагато частіше перекочують і підкидають камені саме тоді, коли голодні.',
+        question: 'Who can edit or delete a note in a shared workspace?',
+        answer: 'Only the note creator can edit or delete a note. Other members can view but not modify notes created by others.',
     },
     {
-        question: 'Що таке адронний колайдер',
-        answer: ' Це найбільший у світі прискорювач елементарних частинок. Його головна мета — розігнати протони або важкі іони майже до швидкості світла та зіштовхнути їх між собою, щоб вивчити фундаментальні закони фізики та структуру матерії.',
+        question: 'How do I create a new workspace?',
+        answer: 'Click on the "Spaces" menu in the sidebar, then click plus button. You can create either a personal workspace (only for you) or a shared workspace (invite members).',
     },
     {
-        question: 'Interesting facts about Twilight',
-        answer: 'Emmett has a bag of eggs in the cafeteria scene. Completely random and it was actually the actor’s lunch that day. So he’s just carrying a plastic bag with like probably 10 hard boiled eggs' +
-            '\nRosalie is wearing the random leather glove to cook dinner because the actress had actually cut her hand in a previous take of smashing the bowl.',
+        question: 'How can I invite members to my shared workspace?',
+        answer: 'answer: \'When creating a new shared workspace, you can add member in the "Members" field. Enter the username of the person you want to invite.',
+    },
+    {
+        question: 'What are achievements and how do I earn them?',
+        answer: 'Achievements are rewards for completing certain actions. For example: create 5 notes, complete 10 tasks, add 15 expenses, or settle all debts. You can see your progress in your profile.',
+    },
+    {
+        question: 'How does the pinboard work?',
+        answer: 'You can pin any note or image to your dashboard for quick access. Click the pin icon on a note, or use the "Add photo" button on the pinboard to upload an image.',
+    },
+    {
+        question: 'Can I change the app theme and accent color?',
+        answer: 'Yes! Go to Settings → Appearance. You can switch between light, dark, or system theme, and choose from several accent colors (Rose, Coral, Green, etc.).',
+    },
+    {
+        question: 'What is the difference between personal and shared folders?',
+        answer: 'Personal folders are visible only to you. Shared folders are visible to all members of the workspace, and any member can add notes to them (but only the folder owner or workspace admin can edit/delete the folder).',
+    },
+    {
+        question: 'How do I change the theme or accent color?',
+        answer: 'Go to Settings → Appearance. Under "Theme", choose Light, Dark, or System (follows your device). Under "Accent color", pick from options like Rose, Coral, Green, etc. The change applies immediately.',
+    },
+    {
+        question: 'How do I set a reminder for a task?',
+        answer: 'Open a task, click on the reminder icon (bell). You can choose "10 minutes before", "1 hour before", or pick a custom date and time. The reminder will appear as a notification.',
+    },
+    {
+        question: 'How do I remove a pinned image or note from the pinboard?',
+        answer: 'Hover over the pinned item – a small "×" (close) icon appears in the top-right corner. Click it to remove the pin. You can also unpin from the note card by clicking the pin icon again.',
+    },
+    {
+        question: 'How do I settle a debt in shared expenses?',
+        answer: 'Go to the Expenses page, find the debt under "Owed by me". Click the "Settle" button next to the person you owe. The debt will be marked as paid and removed from your list.',
+    },
+    {
+        question: 'What are task priorities and how do I use them?',
+        answer: 'Tasks can have priorities: High, Medium, or Low. When creating or editing a task, select the priority. You can then filter tasks by priority to focus on what matters most.',
+    },
+    {
+        question: 'How do I search for notes or folders?',
+        answer: 'On the Notes page, use the search bar at the top of each section. You can search for notes by title or content, and folders by name. For notes, you can also filter by folder.',
+    },
+    {
+        question: 'Can I use personal notes in a shared workspace?',
+        answer: 'Yes, you can create personal folders inside any workspace. Personal folders are visible only to you, even if the workspace is shared. Shared folders are visible to all members.',
+    },
+    {
+        question: 'How can I see who created a note?',
+        answer: 'On the Notes page, note cards show the creator’s avatar and username for teammates’ notes. Your own notes are displayed in the "My notes" section without extra labels.',
+    },
+    {
+        question: 'Is it possible to recover a deleted note or folder?',
+        answer: 'Currently, deleted notes and folders are permanently removed and cannot be restored. Please double-check before deleting.',
+    },
+    {
+        question: 'Where can I see my activity history?',
+        answer: 'You can see recent tasks, notes, and expenses on the Dashboard and respective pages. Achievements also track your progress.',
     },
 ];
 

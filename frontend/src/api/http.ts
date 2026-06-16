@@ -4,7 +4,9 @@
  * Every other `api/*` module is built on the exported `api` object below.
  */
 
-const BASE_URL = '/api';
+const BASE_URL = import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : '/api';
 const TOKEN_KEY = 'raft_token';
 
 /** Error thrown for any non-OK response; carries the HTTP `status`. */
