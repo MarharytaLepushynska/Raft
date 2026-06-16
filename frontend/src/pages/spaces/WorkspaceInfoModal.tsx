@@ -18,6 +18,7 @@ interface WorkspaceInfoModalProps {
   onLeave: () => void;
 }
 
+/** Modal showing a space's details, switching to an edit form, with delete (owner) or leave (member) actions. */
 export function WorkspaceInfoModal({ detail, canEdit, onClose, onUpdated, onDelete, onLeave }: WorkspaceInfoModalProps) {
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(detail.name);

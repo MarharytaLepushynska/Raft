@@ -6,6 +6,7 @@ interface Props {
     onFilter: () => void;
 }
 
+/** From/to date inputs for the expense history, with a Clear shortcut once a range is set. */
 export function ExpenseDateFilter({ from, to, onFromChange, onToChange, onFilter }: Props) {
     return (
         <div className="exp-filter">

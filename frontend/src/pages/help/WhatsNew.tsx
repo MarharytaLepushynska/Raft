@@ -29,6 +29,7 @@ const UPDATES = [
     },
 ];
 
+/** Sidebar block listing recent app updates, newest first. */
 export function WhatsNew() {
     return (
         <div className="help-sidebar-block">

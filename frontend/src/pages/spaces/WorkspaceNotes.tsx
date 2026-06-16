@@ -11,12 +11,14 @@ import type { Folder } from '@/types/folder';
 import './WorkspaceNotes.css';
 
 const MAX = 4;
+// no-op for NoteModal's required update/delete handlers - here it only creates
 const notUsed = async () => {};
 
 interface WorkspaceNotesProps {
   workspaceId: string;
 }
 
+/** A preview of the workspace's notes as sticky cards, with a quick-add and a link to the full Notes page. */
 export function WorkspaceNotes({ workspaceId }: WorkspaceNotesProps) {
   const navigate = useNavigate();
   const [notes, setNotes] = useState<Note[]>([]);

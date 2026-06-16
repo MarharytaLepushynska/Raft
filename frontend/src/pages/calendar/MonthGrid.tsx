@@ -7,13 +7,8 @@ import { WEEKDAYS } from './calendarLayout';
 const MAX_PER_DAY = 3;
 const MAX_EVENTS_PER_DAY = 3;
 
-export function MonthGrid({
-  days,
-  month,
-  tasksByDate,
-  eventsByDay,
-  today,
-  onPickDay,
+/** Month view: a grid of day cells, each listing its tasks and events (with a "+N more" overflow). */
+export function MonthGrid({ days, month, tasksByDate, eventsByDay, today, onPickDay,
 }: {
   days: Date[];
   month: number;

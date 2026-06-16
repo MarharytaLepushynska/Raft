@@ -20,6 +20,7 @@ import {NoteAchievements} from "@/components/achievements/NoteAchievements.tsx";
 type NoteModalState = { note: Note | null; defaultFolderId?: string } | null;
 type FolderModalState = { folder: Folder | null } | null;
 
+/** The Notes page: a draggable pinboard, folders, and notes split into my own and teammates'. */
 export function NotesPage() {
     const { user, loading: authLoading } = useAuth();
     const { workspaces, spaceOptions } = useWorkspaces();

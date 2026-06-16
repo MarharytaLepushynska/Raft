@@ -13,6 +13,7 @@ const TIPS = [
     'Add images to your pinboard for visual reminders or inspiration.',
 ];
 
+/** Sidebar block listing short tips for using the app. */
 export function UsageTips() {
     return (
         <div className="help-sidebar-block">

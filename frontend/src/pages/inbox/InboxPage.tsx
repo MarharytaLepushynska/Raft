@@ -16,6 +16,7 @@ type Tab = 'all' | 'unread' | 'read';
 type ReminderTab = 'all' | 'sent' | 'overdue';
 type SortKey = 'date' | 'type';
 
+/** The Inbox page: notifications and reminders, each with their own tabs, search, sort and type filters. */
 export function InboxPage() {
     const { notifications, unreadCount, loading: nLoading, markOne, markAll, remove: removeNotif } = useNotifications();
     const { reminders, loading: rLoading, remove: removeReminder } = useReminders();

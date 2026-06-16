@@ -9,6 +9,7 @@ import { ExpenseAchievements } from '@/components/achievements/ExpenseAchievemen
 import {useEffect, useState} from "react";
 import { useAuth } from '@/auth/AuthContext';
 
+/** The personal Expenses page: who owes whom, achievements, and a paged history with date filtering. */
 export function ExpensesPage() {
     const { user } = useAuth();
     const [stats, setStats] = useState<PersonalExpenseStatsResponse | null>(null);

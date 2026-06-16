@@ -4,6 +4,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { errorMessage } from '@/api/http';
 import './AuthPage.css';
 
+/** Login page: sign in with a username or email and password. */
 export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();

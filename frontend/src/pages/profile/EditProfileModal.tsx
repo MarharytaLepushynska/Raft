@@ -10,6 +10,7 @@ interface Props {
     onSave: (updated: User) => void;
 }
 
+/** Modal for editing your name, username, email and avatar. */
 export function EditProfileModal({ user, onClose, onSave }: Props) {
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);

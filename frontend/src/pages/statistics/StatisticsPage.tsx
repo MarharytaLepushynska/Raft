@@ -7,6 +7,7 @@ import { TopWorkspacesList } from '@/components/stats/TopWorkspacesList';
 import { AchievementsList } from '@/components/achievements/AchievementsList';
 import './StatisticsPage.css';
 
+/** The Statistics page: task and expense charts for the chosen period, top workspaces, and achievements. */
 export function StatisticsPage() {
     const [period, setPeriod] = useState<StatsPeriod>('WEEK');
     const [stats, setStats] = useState<StatisticsResponse | null>(null);

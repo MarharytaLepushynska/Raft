@@ -18,6 +18,7 @@ interface WorkspaceTimelineProps {
   color: WorkspaceColor | null;
 }
 
+/** A single-day event timeline for the workspace, reusing the calendar's day layout. */
 export function WorkspaceTimeline({ workspaceId, color }: WorkspaceTimelineProps) {
   const { events, create, update, remove } = useEvents({ workspaceId });
   const { reminderForEvent, setEventReminder, remove: removeReminder } = useReminders();
@@ -38,6 +39,7 @@ export function WorkspaceTimeline({ workspaceId, color }: WorkspaceTimelineProps
 
   const blocks = useMemo(() => layoutDay(iso, dayEvents, [], Infinity), [iso, dayEvents]);
 
+  // start the day scrolled to the morning instead of midnight
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = minutesToPx(START_HOUR * 60);
   }, [iso]);

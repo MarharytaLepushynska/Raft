@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { titleForPath } from '@/config/navigation';
 import './PlaceholderPage.css';
 
+/** Stand-in page for routes that aren't built yet: shows the nav title and a "coming soon" note. */
 export function PlaceholderPage() {
   const { pathname } = useLocation();
 

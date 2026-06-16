@@ -4,6 +4,7 @@ import './ProfilePage.css';
 import {useState} from "react";
 import {EditProfileModal} from "@/pages/profile/EditProfileModal.tsx";
 
+/** The Profile page: user details with an edit modal, achievements, and account deletion. */
 export function ProfilePage() {
     const { user, remove, updateUser } = useProfile();
     const [editOpen, setEditOpen] = useState(false);

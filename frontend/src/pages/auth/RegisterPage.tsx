@@ -4,6 +4,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { errorMessage } from '@/api/http';
 import './AuthPage.css';
 
+/** Registration page: create an account, then land logged in. */
 export function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();

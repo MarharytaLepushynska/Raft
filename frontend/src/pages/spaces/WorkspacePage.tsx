@@ -13,6 +13,7 @@ import { WorkspaceExpenses } from '@/components/workspaceExpenses/WorkspaceExpen
 import type { Member, WorkspaceColor, WorkspaceDetail } from '@/types/workspace';
 import './WorkspacePage.css';
 
+/** A single workspace: tasks plus a side column of events, notes, expenses and members, with info/delete/leave modals. */
 export function WorkspacePage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ export function WorkspacePage() {
     };
   }, [id]);
 
+  // open the info modal straight away when arriving with ?edit=1, then drop the param
   useEffect(() => {
     if (searchParams.get('edit') === '1' && detail) {
       // eslint-disable-next-line react-hooks/set-state-in-effect

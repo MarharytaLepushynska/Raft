@@ -82,6 +82,7 @@ const FAQ_ITEMS = [
     },
 ];
 
+/** The Help page: a contact link and FAQ, with "what's new" and usage tips in the sidebar. */
 export function HelpPage() {
     return (
         <div className="help">

@@ -13,6 +13,7 @@ interface Props {
     onSettle: (splitId: string) => Promise<void>;
 }
 
+/** Paged list of my past expenses, drilling into one with `ExpenseDetail` on click. */
 export function ExpenseHistoryList({expenses, currentUserId, currentPage, totalPages, onPageChange, onSettle,}: Props) {
     const [selected, setSelected] = useState<ExpenseResponse | null>(null);
 

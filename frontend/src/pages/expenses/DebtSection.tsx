@@ -10,6 +10,7 @@ interface Props {
     onSettle?: (splitId: string) => Promise<void>;
 }
 
+/** One debt list (owed to me or by me): people with their totals, with a per-expense Settle when `canSettle`. */
 export function DebtSection({ title, amount, debts, canSettle, onSettle }: Props) {
     return (
         <div className="we__list-card exp-debt">
@@ -45,6 +46,7 @@ export function DebtSection({ title, amount, debts, canSettle, onSettle }: Props
                             </div>
 
                             {canSettle && onSettle && debt.relatedExpenses.map((expense) => {
+                                // skip expenses where my share is already settled
                                 const mySplit = expense.splits.find(
                                     (s) => !s.isSettled
                                 );

@@ -25,6 +25,7 @@ function formatDay(date: Date): string {
   return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
+/** The Calendar page: month/week/day views of tasks and events, with filters and create/edit modals. */
 export function CalendarPage() {
   const { user } = useAuth();
   const { tasks, create, update, remove } = useTasks();

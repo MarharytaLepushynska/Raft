@@ -5,6 +5,7 @@ interface Props {
     answer: string;
 }
 
+/** A single FAQ entry that expands to show its answer when clicked. */
 export function FaqItem({ question, answer }: Props) {
     const [open, setOpen] = useState(false);
 

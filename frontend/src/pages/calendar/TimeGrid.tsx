@@ -7,17 +7,8 @@ import type { Task } from '@/types/task';
 import type { Event } from '@/types/event';
 import type { Reminder } from '@/types/reminder';
 import {
-  AXIS_WIDTH,
-  HOURS,
-  HOUR_HEIGHT,
-  MORE_WIDTH,
-  TIME_MIN_WIDTH,
-  WEEKDAYS,
-  blockHeight,
-  columnBox,
-  eventTimeRange,
-  layoutDay,
-  minutesToPx,
+  AXIS_WIDTH, HOURS, HOUR_HEIGHT, MORE_WIDTH, TIME_MIN_WIDTH, WEEKDAYS,
+  blockHeight, columnBox, eventTimeRange, layoutDay, minutesToPx,
 } from './calendarLayout';
 
 function weekdayName(date: Date): string {
@@ -60,21 +51,10 @@ function Chip({
   );
 }
 
+/** Week/day view: an hourly grid with events as blocks and timed tasks as chips, plus an all-day row. */
 export function TimeGrid({
-  days,
-  tasksByDate,
-  eventsByDay,
-  today,
-  maxCols,
-  onPickDay,
-  onSelectTask,
-  onSelectEvent,
-  reminderForEvent,
-  onSetEventReminder,
-  onClearEventReminder,
-  reminderForTask,
-  onSetTaskReminder,
-  onClearTaskReminder,
+  days, tasksByDate, eventsByDay, today, maxCols, onPickDay, onSelectTask, onSelectEvent, reminderForEvent,
+  onSetEventReminder, onClearEventReminder, reminderForTask, onSetTaskReminder, onClearTaskReminder,
 }: {
   days: Date[];
   tasksByDate: Map<string, Task[]>;

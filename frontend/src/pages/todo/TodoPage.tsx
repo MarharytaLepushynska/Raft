@@ -14,6 +14,7 @@ import { useReminders } from '@/hooks/inbox/useReminders';
 import type { Task } from '@/types/task';
 import './TodoPage.css';
 
+/** The To-Do page: my tasks in a board (filterable by space), with the achievements and progress side panel. */
 export function TodoPage() {
   const { user } = useAuth();
   const { tasks, loading, create, update, remove } = useTasks();

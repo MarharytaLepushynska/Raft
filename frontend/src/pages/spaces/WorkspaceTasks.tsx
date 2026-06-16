@@ -16,6 +16,7 @@ interface WorkspaceTasksProps {
   currentUserId?: string;
 }
 
+/** The workspace task board, with assignee filtering and claiming for shared spaces. */
 export function WorkspaceTasks({ workspaceId, detail, currentUserId }: WorkspaceTasksProps) {
   const { tasks, create, update, remove } = useTasks({ workspaceId });
   const { reminderForTask, setTaskReminder, remove: removeReminder } = useReminders();
@@ -24,6 +25,7 @@ export function WorkspaceTasks({ workspaceId, detail, currentUserId }: Workspace
 
   const shared = detail.type === 'SHARED';
 
+  // advance the status, and claim an unassigned task for myself once it starts moving
   const cycleStatus = (task: Task) => {
     const next = nextStatus[task.status];
     const patch: Partial<Task> = { status: next };

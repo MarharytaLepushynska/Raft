@@ -9,6 +9,7 @@ import type { ChatSummary } from '@/types/chat';
 import type { Workspace } from '@/types/workspace';
 import './ChatsPage.css';
 
+/** The Chats page: a list of shared-space chats next to the open conversation. */
 export function ChatsPage() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
@@ -61,6 +62,7 @@ export function ChatsPage() {
     setSummaries((prev) => prev.map((chat) => (chat.workspaceId === id ? { ...chat, unreadCount: 0 } : chat)));
   };
 
+  // on narrow screens go back to the list, on wide ones just collapse it
   const toggleList = () => {
     if (window.matchMedia('(max-width: 720px)').matches) {
       setChatOpen(false);

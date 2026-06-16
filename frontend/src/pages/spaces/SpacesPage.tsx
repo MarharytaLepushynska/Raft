@@ -12,6 +12,7 @@ import type { User } from '@/types/user';
 import type { Workspace, WorkspaceColor, WorkspaceType } from '@/types/workspace';
 import './SpacesPage.css';
 
+/** The Spaces page: a searchable grid of workspaces and a modal to create a new one. */
 export function SpacesPage() {
   const navigate = useNavigate();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -41,6 +42,7 @@ export function SpacesPage() {
   const matchUser = (users: User[], value: string) =>
     users.find((u) => u.username.toLowerCase() === value.toLowerCase());
 
+  // add the typed login, trying the loaded suggestions first and falling back to a fresh search
   const addLogin = async () => {
     const value = loginInput.trim();
     if (!value) return;

@@ -11,6 +11,7 @@ interface Props {
     onFilter: () => void;
 }
 
+/** Header of the Expenses page: the date filter and a net balance banner. */
 export function PersonalExpenseSummary({totalOwedToMe, totalIOwe,
                                            from, to,
                                            onFromChange, onToChange, onFilter,}: Props) {

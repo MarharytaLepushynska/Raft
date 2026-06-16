@@ -13,6 +13,7 @@ import type { Task } from '@/types/task';
 import type { Event } from '@/types/event';
 import './DashboardPage.css';
 
+/** The home dashboard: a greeting and the widget grid (tasks, events, calendar, notes, stats, spaces). */
 export function DashboardPage() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);

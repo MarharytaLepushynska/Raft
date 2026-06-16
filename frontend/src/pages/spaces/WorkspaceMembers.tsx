@@ -16,6 +16,7 @@ interface WorkspaceMembersProps {
   onChange: (members: Member[]) => void;
 }
 
+/** The members widget for a shared space: lists people and, for admins, invites and removes them. */
 export function WorkspaceMembers({ workspaceId, members, canManage, currentUserId, onChange }: WorkspaceMembersProps) {
   const [inviteLogin, setInviteLogin] = useState('');
   const [memberError, setMemberError] = useState('');
