@@ -4,6 +4,7 @@ import './TaskProgressRing.css';
 const R = 62;
 const C = 2 * Math.PI * R;
 
+/** Circular progress ring showing the share of completed tasks. */
 export function TaskProgressRing({ tasks }: { tasks: Task[] }) {
     const total = tasks.length;
     if (total === 0) return null;

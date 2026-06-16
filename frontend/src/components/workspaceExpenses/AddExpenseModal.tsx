@@ -11,6 +11,7 @@ interface AddModalProps {
     onAdd(request: CreateExpenseRequest): Promise<void>;
 }
 
+/** Modal to add an expense: title, amount, and which members split it. */
 export function AddExpenseModal({ workspaceId, members, onClose, onAdd }: AddModalProps) {
     const [title, setTitle] = useState("");
     const [amount, setAmount] = useState("");

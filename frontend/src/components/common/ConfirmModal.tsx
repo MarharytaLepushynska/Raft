@@ -9,6 +9,7 @@ interface ConfirmModalProps {
   onCancel: () => void;
 }
 
+/** A reusable confirm/cancel dialog, shown before deletes and other destructive actions. */
 export function ConfirmModal({ title, text, confirmLabel, onConfirm, onCancel }: ConfirmModalProps) {
   return (
     <Modal variant="confirm" onClose={onCancel}>

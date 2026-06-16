@@ -20,6 +20,7 @@ interface Props {
     members: Member[];
 }
 
+/** The expenses tab of a shared workspace: balances summary, expense list/detail, and adding new ones. */
 export function WorkspaceExpenses({workspaceId, members}: Props) {
     const { user } = useAuth();
     const [expenses, setExpenses] = useState<ExpenseResponse[]>([]);

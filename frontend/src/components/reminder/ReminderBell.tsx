@@ -19,6 +19,7 @@ const PRESETS: { label: string; ms: number }[] = [
   { label: '1 day before', ms: 24 * 60 * 60_000 },
 ];
 
+/** Builds the "X before" preset times from the anchor, keeping only those still in the future. */
 function buildPresets(anchorISO: string | undefined): { label: string; value: string }[] {
   if (!anchorISO) return [];
   const anchor = new Date(anchorISO);
@@ -33,6 +34,7 @@ function formatWhen(iso: string): string {
   return new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+/** Bell button that opens a popover to add, reschedule, or remove a reminder for a task or event. */
 export function ReminderBell({ reminder, anchorISO, compact, onSet, onClear }: ReminderBellProps) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);

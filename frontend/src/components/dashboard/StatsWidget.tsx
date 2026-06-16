@@ -5,6 +5,7 @@ import { fmt } from '@/components/workspaceExpenses/utils/format';
 import type { StatisticsResponse } from '@/types/statistics';
 import './StatsWidget.css';
 
+/** Dashboard "This week" widget: tasks created and total spent. */
 export function StatsWidget() {
   const [stats, setStats] = useState<StatisticsResponse | null>(null);
   const [loading, setLoading] = useState(true);

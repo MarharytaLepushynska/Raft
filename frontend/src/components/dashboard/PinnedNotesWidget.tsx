@@ -7,6 +7,7 @@ import './PinnedNotesWidget.css';
 
 const MAX = 4;
 
+/** Dashboard widget: up to 4 pinned notes shown as stickies, linking to the notes page. */
 export function PinnedNotesWidget() {
   const navigate = useNavigate();
   const [pins, setPins] = useState<PinItem[]>([]);

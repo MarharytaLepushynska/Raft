@@ -28,6 +28,7 @@ function menuPosition(event: { clientX: number; clientY: number }): { x: number;
   };
 }
 
+/** Groups consecutive messages from the same sender together. */
 function groupMessages(messages: ChatMessage[]): ChatMessage[][] {
   const groups: ChatMessage[][] = [];
   for (const message of messages) {
@@ -52,6 +53,7 @@ function dayLabel(iso: string): string {
   return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
+/** The chat panel: message bubbles with date dividers, a copy/edit/delete menu, and the compose box. */
 export function ChatPanel({ workspaceId, workspaceName, workspaceColor, collapsed, onToggleList }: ChatPanelProps) {
   const { messages, send, edit, remove } = useChat(workspaceId);
   const [text, setText] = useState('');

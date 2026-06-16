@@ -7,6 +7,7 @@ import './SpacesWidget.css';
 
 const MAX = 3;
 
+/** Dashboard section: a few recent workspaces as cards, linking to the spaces page. */
 export function SpacesWidget() {
   const navigate = useNavigate();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);

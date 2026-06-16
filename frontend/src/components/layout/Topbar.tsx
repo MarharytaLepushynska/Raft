@@ -19,6 +19,7 @@ function timeGreeting(): string {
   return 'Good evening';
 }
 
+/** Top bar: a time-based greeting, the notifications bell, and the profile avatar. */
 export function Topbar({ onMenuClick }: TopbarProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();

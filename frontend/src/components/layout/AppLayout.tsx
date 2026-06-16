@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import './AppLayout.css';
 
+/** App shell: the sidebar, top bar, and routed page content, plus the mobile menu toggle. */
 export function AppLayout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();

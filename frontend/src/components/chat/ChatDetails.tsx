@@ -14,6 +14,7 @@ interface ChatDetailsProps {
   onClose: () => void;
 }
 
+/** Finds the member who sent the most messages. */
 function mostActive(messages: ChatMessage[]): { name: string; count: number } | null {
   const counts = new Map<string, { name: string; count: number }>();
   for (const message of messages) {
@@ -31,6 +32,7 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+/** Modal with the space's chat details: members (admins first), the most active member, and an "open space" button. */
 export function ChatDetails({ workspaceId, messages, onClose }: ChatDetailsProps) {
   const { user } = useAuth();
   const navigate = useNavigate();

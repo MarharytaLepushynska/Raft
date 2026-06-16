@@ -13,6 +13,7 @@ interface UpcomingEventsWidgetProps {
   events: Event[];
 }
 
+/** Dashboard widget: the next upcoming events with their day and time. */
 export function UpcomingEventsWidget({ events }: UpcomingEventsWidgetProps) {
   const now = new Date();
   const todayDate = toISODate(now);

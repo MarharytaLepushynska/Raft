@@ -12,6 +12,7 @@ interface NoteViewModalProps {
     editLabel?: string;
 }
 
+/** Read-only modal showing a note's content, with an Edit button when allowed. */
 export function NoteViewModal({ note, onClose, onEdit, isPersonal, editLabel = 'Edit' }: NoteViewModalProps) {
     return (
         <div className="modal" role="dialog" aria-modal="true">

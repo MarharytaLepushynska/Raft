@@ -15,6 +15,7 @@ interface StickyNotesProps {
   onOpen: (id: string) => void;
 }
 
+/** Shows notes as sticky notes on a board, each at a slight angle, with an optional "+N more" tile. */
 export function StickyNotes({ items, more = 0, onOpen }: StickyNotesProps) {
   return (
     <>

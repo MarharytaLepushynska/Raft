@@ -9,6 +9,7 @@ interface Props {
     onSelect: (expense: ExpenseResponse) => void;
 }
 
+/** Selectable list of a workspace's expenses, showing who paid and your share. */
 export function ExpenseList({ expenses, selectedId, currentUserId, onSelect }: Props) {
     if (expenses.length === 0) {
         return <p className="we__list-empty">No expenses yet. Add the first one!</p>;

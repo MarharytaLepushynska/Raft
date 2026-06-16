@@ -8,6 +8,7 @@ interface ModalProps {
   onSubmit?: (event: FormEvent) => void;
 }
 
+/** Base modal: a scrim that closes on click plus a centered card (optionally rendered as a `<form>`). */
 export function Modal({ onClose, children, variant, as, onSubmit }: ModalProps) {
   const cardClass = variant === 'confirm' ? 'modal__card modal__card--confirm' : 'modal__card';
   return (

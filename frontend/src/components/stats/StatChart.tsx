@@ -19,6 +19,7 @@ interface Props {
     color?: string;
 }
 
+/** Draws one statistics series as bars, tinted with the current accent color. */
 export function StatChart({ title, data, valueKey, yLabel, color }: Props) {
     const { accent } = useTheme();
     const chartColor = color ?? accent;

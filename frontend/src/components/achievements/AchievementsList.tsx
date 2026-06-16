@@ -2,6 +2,7 @@ import { useAchievements } from '@/hooks/profile/useAchievements';
 import { AchievementCard } from './AchievementCard';
 import './AchievementsList.css';
 
+/** Grid of all achievements with a header showing how many are earned. */
 export function AchievementsList() {
     const { achievements, earned, loading } = useAchievements();
 

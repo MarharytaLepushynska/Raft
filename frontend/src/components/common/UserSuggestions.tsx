@@ -9,6 +9,7 @@ interface UserSuggestionsProps {
   anchorRef: RefObject<HTMLElement | null>;
 }
 
+/** Autocomplete list of users, rendered in a portal and positioned under the anchor input (follows it on scroll/resize). */
 export function UserSuggestions({ users, onPick, anchorRef }: UserSuggestionsProps) {
   const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
 

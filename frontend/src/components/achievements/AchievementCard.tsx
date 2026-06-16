@@ -3,6 +3,7 @@ import greyIcon from '@/assets/achievements/grey.png';
 
 const icons = import.meta.glob<{ default: string }>('@/assets/achievements/*.png', { eager: true });
 
+/** Resolves the backend icon name to a bundled PNG, ignoring its stored extension (DB has .svg, assets are .png). */
 function getIcon(filename: string): string {
     const base = filename.replace(/\.[a-z]+$/i, '');
     const match = Object.entries(icons).find(([key]) => key.endsWith(`${base}.png`));
@@ -13,6 +14,7 @@ interface Props {
     achievement: Achievement;
 }
 
+/** One achievement card: its colored icon when earned, a grey one when locked. */
 export function AchievementCard({ achievement }: Props) {
     const iconSrc = achievement.earned ? getIcon(achievement.icon) : greyIcon;
 

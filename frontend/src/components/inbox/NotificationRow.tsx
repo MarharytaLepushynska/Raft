@@ -9,6 +9,7 @@ interface NotificationRowProps {
     onDelete: (id: string) => void;
 }
 
+/** One inbox notification row; tap it to reveal the Read/Delete actions. */
 export function NotificationRow({ notification, onRead, onDelete }: NotificationRowProps) {
     const [swiped, setSwiped] = useState(false);
 

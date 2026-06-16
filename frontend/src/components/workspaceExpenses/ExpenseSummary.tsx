@@ -5,6 +5,7 @@ interface Props {
     currentUserId: string;
 }
 
+/** Header summary of a workspace's expenses: the total and the current user's balance. */
 export function ExpenseSummary({ stats, currentUserId }: Props) {
     const myBalance = stats.balances.find((b) => b.user.id === currentUserId);
 

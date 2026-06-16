@@ -13,6 +13,7 @@ interface MiniCalendarWidgetProps {
   events?: Event[];
 }
 
+/** Dashboard widget: a compact month grid that dots the days having tasks or events. */
 export function MiniCalendarWidget({ tasks, events = [] }: MiniCalendarWidgetProps) {
   const now = new Date();
   const year = now.getFullYear();

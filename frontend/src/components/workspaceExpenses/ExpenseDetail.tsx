@@ -9,6 +9,7 @@ interface Props {
     onSettle: (splitId: string) => Promise<void>;
 }
 
+/** Details of one expense: who paid, the per-person split, and a button to settle your share. */
 export function ExpenseDetail({ expense, currentUserId, onBack, onSettle }: Props) {
     const fmtDate = (iso: string) =>
         new Date(iso).toLocaleDateString('en-US', {

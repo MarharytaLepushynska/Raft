@@ -10,6 +10,7 @@ const THEME_OPTIONS: { value: ThemeMode; label: string; icon: IconName }[] = [
   { value: 'system', label: 'System', icon: 'system' },
 ];
 
+/** Settings section for choosing the theme (light/dark/system) and the accent color. */
 export function AppearanceSettings() {
   const { mode, accent, setMode, setAccent, reset } = useTheme();
   const isDefault = mode === 'system' && accent.toLowerCase() === DEFAULT_ACCENT.toLowerCase();

@@ -14,6 +14,7 @@ interface SingleSelectFilterProps {
   icon?: IconName;
 }
 
+/** A dropdown for picking a single option (e.g. the sort order). Closes after a pick or on outside click. */
 export function SingleSelectFilter({ options, value, onChange, icon }: SingleSelectFilterProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);

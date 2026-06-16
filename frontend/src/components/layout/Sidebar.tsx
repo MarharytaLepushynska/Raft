@@ -14,6 +14,7 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+/** Side navigation: the menu links (with an unread badge on Inbox) and the log-out button. */
 export function Sidebar({ activeItem, onNavigate, isOpen, onClose }: SidebarProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();

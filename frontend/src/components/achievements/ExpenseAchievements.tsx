@@ -8,12 +8,14 @@ const TASK_THRESHOLDS: Record<string, number> = {
 
 const ICONS = import.meta.glob<{ default: string }>('@/assets/achievements/*.png', { eager: true });
 
+/** Maps an achievement's stored icon name to its bundled PNG. */
 function iconSrc(file: string): string {
     const base = file.replace(/\.[^.]+$/, '');
     const entry = Object.entries(ICONS).find(([key]) => key.endsWith(`/${base}.png`));
     return entry ? entry[1].default : '';
 }
 
+/** Expense-count achievements (e.g. 15 expenses), with a progress bar toward each goal. */
 export function ExpenseAchievements({ expensesCount }: { expensesCount: number }) {
     const { achievements } = useAchievements();
 

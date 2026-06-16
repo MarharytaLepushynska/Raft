@@ -25,6 +25,10 @@ interface TaskBoardProps {
   onAdd: () => void;
 }
 
+/**
+ * The shared task board: a searchable, sortable list grouped into
+ * Overdue / Today / Upcoming / Completed, with a progress bar.
+ */
 export function TaskBoard({ tasks, loading, emptyText = 'No tasks yet.', showSpace, extraFilter, matchExtra,
                             renderAssignee, renderReminder, onSelect, onCycle, onAdd,
 }: TaskBoardProps) {

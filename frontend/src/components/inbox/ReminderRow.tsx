@@ -9,6 +9,7 @@ interface ReminderRowProps {
     onDelete: (id: string) => void;
 }
 
+/** One reminder row with Overdue/Sent badges; tap it to reveal Delete. */
 export function ReminderRow({ reminder, title, onDelete }: ReminderRowProps) {
     const [swiped, setSwiped] = useState(false);
     const overdue = new Date(reminder.reminderTime) < new Date() && !reminder.sent;

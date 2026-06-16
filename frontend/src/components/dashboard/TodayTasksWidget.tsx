@@ -17,6 +17,7 @@ interface TodayTasksWidgetProps {
   onComplete?: (id: string) => void;
 }
 
+/** Dashboard widget: today's tasks on a timeline (up to 5), each with a quick complete button. */
 export function TodayTasksWidget({ tasks, loading, error, onComplete }: TodayTasksWidgetProps) {
   const now = new Date();
 

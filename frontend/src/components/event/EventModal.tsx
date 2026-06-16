@@ -24,6 +24,7 @@ interface EventModalProps {
   onClearReminder?: (id: string) => void;
 }
 
+/** Modal to view, create, edit, or delete a calendar event. */
 export function EventModal({ event, defaultDate, defaultWorkspaceId, reminder, onClose, onCreate, onUpdate, onDelete, onSetReminder, onClearReminder }: EventModalProps) {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [mode, setMode] = useState<'view' | 'edit'>(event ? 'view' : 'edit');

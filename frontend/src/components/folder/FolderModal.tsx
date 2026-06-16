@@ -15,6 +15,7 @@ interface FolderModalProps {
     onDelete: (id: string) => void;
 }
 
+/** Modal to create, edit, or delete a note folder (and pick its workspace and type). */
 export function FolderModal({folder, workspaces, onClose, onCreate, onUpdate, onDelete}: FolderModalProps) {
     const [name, setName] = useState(folder?.name ?? '');
     const [type, setType] = useState<FolderType>(folder?.folderType ?? 'PERSONAL');

@@ -13,6 +13,7 @@ const QUOTES = [
     'This task won’t complete itself. I asked.',
 ];
 
+/** Picks one random quote on mount and shows it on the todo page. */
 export function QuoteCard() {
     const [quote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)]);
 

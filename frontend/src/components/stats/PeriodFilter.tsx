@@ -11,6 +11,7 @@ interface Props {
     onChange: (value: StatsPeriod) => void;
 }
 
+/** Week / Month / Year toggle for the statistics period. */
 export function PeriodFilter({ value, onChange }: Props) {
     return (
         <div className="period-filter">

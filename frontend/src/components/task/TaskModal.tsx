@@ -28,6 +28,7 @@ interface TaskModalProps {
   onClearReminder?: (id: string) => void;
 }
 
+/** Modal to view a task or create/edit/delete one, including its assignee and reminder. */
 export function TaskModal({ task, defaultDate, defaultWorkspaceId, members, reminder, onClose, onCreate, onUpdate, onDelete, onSetReminder, onClearReminder }: TaskModalProps) {
   const { user } = useAuth();
   const [mode, setMode] = useState<'view' | 'edit'>(task ? 'view' : 'edit');

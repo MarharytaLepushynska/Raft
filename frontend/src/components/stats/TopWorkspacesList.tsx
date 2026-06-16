@@ -4,6 +4,7 @@ interface Props {
     workspaces: WorkspaceTaskCountResponse[];
 }
 
+/** List of workspaces ranked by how many tasks are assigned in them. */
 export function TopWorkspacesList({ workspaces }: Props) {
     return (
         <div className="top-workspaces">

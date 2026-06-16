@@ -17,6 +17,7 @@ interface NoteModalProps {
     onDelete: (id: string) => Promise<void>;
 }
 
+/** Modal to create, edit, or delete a note (and pick its folder). */
 export function NoteModal({note, folders, defaultFolderId, onClose, onCreate, onUpdate, onDelete,}: NoteModalProps) {
     const [title, setTitle] = useState(note?.title ?? '');
     const [content, setContent] = useState(note?.content ?? '');

@@ -19,6 +19,7 @@ interface MultiSelectFilterProps {
   icon?: IconName;
 }
 
+/** A dropdown to pick several options at once, with search, an "all" shortcut, and close-on-outside-click. */
 export function MultiSelectFilter({
   options,
   selected,

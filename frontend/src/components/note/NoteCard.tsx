@@ -33,6 +33,7 @@ function CreatorBadge({user}: { user: UserSummary }) {
     );
 }
 
+/** A note card with a content preview, plus pin/edit/view actions and an optional folder and creator. */
 export function NoteCard({note, isPinned, showFolder, showCreator, onView, onEdit, onPin, onUnpin,}: NoteCardProps) {
     return (
         <div className="note-card" onClick={onView}>
