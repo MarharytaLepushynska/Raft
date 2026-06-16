@@ -11,7 +11,7 @@ export function markChatRead(workspaceId: string): Promise<void> {
   return api.post<void>(`/chats/workspaces/${workspaceId}/read`);
 }
 
-/** Fetches the latest `limit` messages of a workspace chat (newest-capped). */
+/** Fetches the latest `limit` messages of a workspace chat. */
 export function getMessages(workspaceId: string, limit = 50): Promise<ChatMessage[]> {
   return api.get<ChatMessage[]>(`/chats/workspaces/${workspaceId}/messages?limit=${limit}`);
 }

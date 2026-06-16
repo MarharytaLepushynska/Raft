@@ -1,9 +1,8 @@
 /**
  * Theme system: light/dark/system mode and a custom accent color.
  *
- * Both are persisted in localStorage and applied to `<html>` (via the
- * `data-theme` attribute and CSS custom properties), so they survive reloads
- * and drive the whole stylesheet.
+ * Both are saved in localStorage and applied to `<html>` (via the `data-theme`
+ * attribute and CSS variables), so they persist across reloads.
  */
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
@@ -15,7 +14,7 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 const THEME_KEY = 'raft-theme';
 const ACCENT_KEY = 'raft-accent';
 
-/** Theme state and actions exposed through {@link useTheme}. */
+/** Theme state and actions exposed through useTheme. */
 interface ThemeContextValue {
   mode: ThemeMode;
   accent: string;
@@ -53,7 +52,7 @@ function readMode(): ThemeMode {
   return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
 }
 
-/** Reads the saved accent, defaulting to {@link DEFAULT_ACCENT}. */
+/** Reads the saved accent, or DEFAULT_ACCENT if none. */
 function readAccent(): string {
   return localStorage.getItem(ACCENT_KEY) ?? DEFAULT_ACCENT;
 }
@@ -65,8 +64,8 @@ applyAccent(readAccent());
 /**
  * Provides theme state and keeps `<html>` in sync.
  *
- * Re-applies the theme/accent whenever they change, and — while in `system`
- * mode — listens for OS light/dark changes and updates live.
+ * Re-applies the theme/accent whenever they change. While in `system` mode it
+ * also listens for OS light/dark changes and updates live.
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>(readMode);
@@ -110,7 +109,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/** Accesses the theme context; throws if used outside a {@link ThemeProvider}. */
+/** Reads the theme context; throws if used outside a ThemeProvider. */
 // eslint-disable-next-line react-refresh/only-export-components
 export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);

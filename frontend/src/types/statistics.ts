@@ -15,7 +15,7 @@ export interface WorkspaceTaskCountResponse {
     taskCount: number;
 }
 
-/** Everything the statistics page needs: task & expense series plus top workspaces. */
+/** Data for the statistics page: task and expense series plus the top workspaces. */
 export interface StatisticsResponse {
     taskStats: ChartPointResponse[];
     expenseStats: ChartPointResponse[];

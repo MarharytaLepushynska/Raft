@@ -8,7 +8,7 @@ export interface User {
   avatar?: string;
 }
 
-/** Lightweight public user info (no email), embedded in messages, members, etc. */
+/** Public user info (no email), used in messages, members, etc. */
 export interface UserSummary {
   id: string;
   username: string;

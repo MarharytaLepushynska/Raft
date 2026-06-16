@@ -1,8 +1,8 @@
 /*
- * Design tokens — the single source of truth for the whole UI.
+ * Design tokens used across the whole UI.
  * `:root` holds the light theme; the `[data-theme="dark"]` block below
- * overrides only the tokens that differ. `--color-primary*` are also set
- * at runtime by the accent picker (see ThemeContext).
+ * overrides only the tokens that differ. The `--color-primary*` values are
+ * also set at runtime by the accent picker (see ThemeContext).
  */
 
 :root {

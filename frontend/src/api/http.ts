@@ -1,7 +1,7 @@
 /**
- * Thin HTTP layer over `fetch`: attaches the JWT, parses JSON, normalizes
- * errors into {@link ApiError}, and forces a re-login on `401`.
- * Every other `api/*` module builds on the exported {@link api} object.
+ * Thin wrapper over `fetch`: attaches the JWT, parses JSON, turns failures
+ * into ApiError, and forces a re-login on `401`.
+ * Every other `api/*` module is built on the exported `api` object below.
  */
 
 const BASE_URL = '/api';
@@ -39,7 +39,7 @@ export function clearToken(): void {
 
 /**
  * Performs a request: adds the `Authorization` header and JSON content type,
- * redirects to `/login` on `401`, throws {@link ApiError} on failure, and
+ * redirects to `/login` on `401`, throws ApiError on failure, and
  * returns the parsed JSON body (or `undefined` for `204 No Content`).
  */
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
