@@ -7,6 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.naukma.raft.enums.PinType;
 
+/**
+ * Represents an item pinned by a user.
+ *
+ * A pin can point either to a note or to an image-based item.
+ * It also stores visual position data such as x, y and rotation values.
+ */
 @Entity
 @Table(name = "pins")
 @Data

@@ -10,6 +10,13 @@ import org.naukma.raft.enums.MemberRole;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a user's membership in a workspace.
+ *
+ * Stores the user's role inside the workspace and the time when the user joined.
+ * The combination of workspace and user is unique, so the same user cannot be
+ * added to the same workspace more than once.
+ */
 @Entity
 @Table(name = "workspace_members", uniqueConstraints = @UniqueConstraint(columnNames = {"workspace_id", "user_id"}))
 @Data

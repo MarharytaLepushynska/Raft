@@ -9,6 +9,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Stores the chat read state for a user in a specific workspace.
+ *
+ * The entity keeps the last time when the user read the workspace chat.
+ * This timestamp is used to calculate unread message counts.
+ */
 @Entity
 @Table(
         name = "chat_read_states",

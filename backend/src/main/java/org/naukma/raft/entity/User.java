@@ -9,6 +9,13 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents an application user.
+ *
+ * Stores authentication data, profile information and account creation time.
+ * Users can own workspaces, create tasks, notes, events, reminders and participate
+ * in shared workspace activities.
+ */
 @Entity
 @Table(name = "users")
 @Data

@@ -6,6 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Converts a User entity into a short user summary DTO.
+ *
+ * This summary is used inside chat responses to show basic sender information
+ * without exposing the full user entity.
+ *
+ * @param user user entity to convert
+ * @return short user summary response
+ */
 @Entity
 @Table(name = "achievements")
 @Data

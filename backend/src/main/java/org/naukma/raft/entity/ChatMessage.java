@@ -10,6 +10,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a single message in a workspace chat.
+ *
+ * Each message belongs to one workspace and has a sender, text content,
+ * edit status and timestamps for creation and update.
+ */
 @Entity
 @Table(name = "chat_messages")
 @Data

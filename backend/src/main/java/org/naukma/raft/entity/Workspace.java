@@ -11,6 +11,12 @@ import org.naukma.raft.enums.WorkspaceType;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a personal or shared workspace.
+ *
+ * A workspace groups tasks, events, folders, notes, expenses and chat messages.
+ * It has an owner and can also contain additional members through WorkspaceMember.
+ */
 @Entity
 @Table(name = "workspaces")
 @Data

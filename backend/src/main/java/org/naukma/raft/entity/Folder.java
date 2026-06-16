@@ -12,6 +12,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a folder for organizing notes inside a workspace.
+ *
+ * A folder belongs to a workspace, has an owner and a type.
+ * It is used to group notes and control access through workspace membership.
+ */
 @Entity
 @Table(name = "folders")
 @Data

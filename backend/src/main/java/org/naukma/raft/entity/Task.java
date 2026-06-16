@@ -13,6 +13,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * Represents a task created inside a workspace.
+ *
+ * A task has a creator, an optional assignee, priority, status, due date
+ * and optional due time. Tasks are used for planning personal or shared work.
+ */
 @Entity
 @Table(name = "tasks")
 @Data

@@ -10,6 +10,12 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents an achievement earned by a specific user.
+ *
+ * This entity connects a user with an achievement and stores the date and time
+ * when the achievement was granted.
+ */
 @Entity
 @Table(name = "users_achievements")
 @Data

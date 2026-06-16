@@ -6,6 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a user participating in an event.
+ *
+ * This entity connects events with users and can be used to track
+ * which workspace members are involved in a specific calendar event.
+ */
 @Entity
 @Table(name = "event_participants")
 @Data

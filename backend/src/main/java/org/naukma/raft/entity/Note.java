@@ -12,6 +12,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a note created inside a folder.
+ *
+ * A note stores a title, content, creator and timestamps for creation and update.
+ * Access to notes is controlled through the workspace of the parent folder.
+ */
 @Entity
 @Table(name = "notes")
 @Data

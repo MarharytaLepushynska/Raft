@@ -10,6 +10,13 @@ import org.naukma.raft.enums.NotificationType;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a notification shown to a user.
+ *
+ * Notifications can be created for reminders, achievements, chat messages
+ * or system events. Each notification stores its type, message, related source ID,
+ * read status and creation time.
+ */
 @Entity
 @Table(name = "notifications")
 @Data

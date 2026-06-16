@@ -5,6 +5,13 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a reminder created by a user.
+ *
+ * A reminder can be connected either to a task or to an event.
+ * When its reminder time comes, the system can create a notification
+ * and mark the reminder as sent.
+ */
 @Entity
 @Table(name = "reminders")
 @Data

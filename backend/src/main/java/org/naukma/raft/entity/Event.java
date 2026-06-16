@@ -9,6 +9,12 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a calendar event inside a workspace.
+ *
+ * An event has a creator, title, optional description, start time and end time.
+ * Events are used for planning deadlines, meetings and other scheduled activities.
+ */
 @Entity
 @Table(name = "events")
 @Data

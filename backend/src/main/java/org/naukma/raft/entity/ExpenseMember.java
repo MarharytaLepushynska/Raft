@@ -8,6 +8,12 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Represents a user's share in a shared expense.
+ *
+ * Stores how much the user owes for a specific expense and whether
+ * this share has already been settled.
+ */
 @Entity
 @Table(name = "expense_members")
 @Data

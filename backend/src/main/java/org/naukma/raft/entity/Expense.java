@@ -12,6 +12,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a shared expense inside a workspace.
+ *
+ * An expense stores the total amount, the user who paid for it,
+ * creation time and a list of expense splits assigned to participants.
+ */
 @Entity
 @Table(name = "expenses")
 @Data
