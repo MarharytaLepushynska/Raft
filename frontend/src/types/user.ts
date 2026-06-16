@@ -1,3 +1,4 @@
+/** The logged-in user's full profile. */
 export interface User {
   id: string;
   username: string;
@@ -7,6 +8,7 @@ export interface User {
   avatar?: string;
 }
 
+/** Lightweight public user info (no email), embedded in messages, members, etc. */
 export interface UserSummary {
   id: string;
   username: string;
@@ -15,6 +17,7 @@ export interface UserSummary {
   avatar?: string;
 }
 
+/** Payload for updating the current user's profile. */
 export interface ProfileUpdateRequest {
   username: string;
   firstName: string;
