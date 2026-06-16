@@ -93,7 +93,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setAccentState(next);
   };
 
-  /** Clears the saved preferences and returns to system theme + default accent. */
   const reset = () => {
     localStorage.removeItem(THEME_KEY);
     localStorage.removeItem(ACCENT_KEY);

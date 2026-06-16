@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getNotes, createNote, updateNote, deleteNote } from '@/api/notes.ts';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '@/types/note.ts';
 
+/** Loads notes and lets you create/update/remove them. */
 export function useNotes() {
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(true);

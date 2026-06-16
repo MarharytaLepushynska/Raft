@@ -9,6 +9,7 @@ const normalizePin = (pin: PinItem): PinItem => ({
     type: pin.type.toLowerCase() as PinType
 });
 
+/** Runs the pinboard: loads pins, lets you pin notes or images, and handles dragging and resizing. */
 export function usePinboard() {
     const [pins, setPins] = useState<PinItem[]>([]);
     const [loading, setLoading] = useState(true);

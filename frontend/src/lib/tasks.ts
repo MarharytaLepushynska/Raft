@@ -1,7 +1,6 @@
 import type { Task, TaskPriority, TaskStatus, TaskState } from '@/types/task';
 import type { Workspace } from '@/types/workspace';
 
-/** Display label for each task priority. */
 export const priorityLabels: Record<TaskPriority, string> = {
   LOW: 'Low',
   MEDIUM: 'Medium',
@@ -13,17 +12,14 @@ export function taskAnchorISO(task: Task): string {
   return `${task.dueDate}T${task.dueTime ?? '09:00'}`;
 }
 
-/** CSS color variable for each task priority. */
 export const priorityColors: Record<TaskPriority, string> = {
   HIGH: 'var(--color-priority-high)',
   MEDIUM: 'var(--color-priority-medium)',
   LOW: 'var(--color-priority-low)',
 };
 
-/** Priorities in display order (highest first). */
 export const PRIORITIES: TaskPriority[] = ['HIGH', 'MEDIUM', 'LOW'];
 
-/** Priority options ready for filter/select components. */
 export const priorityOptions = PRIORITIES.map((p) => ({id: p, label: priorityLabels[p], color: priorityColors[p],}));
 
 /** Default assignee for a new task: the current user in shared spaces, nobody in personal ones. */
@@ -49,7 +45,6 @@ export function isMyTask(task: Task, userId: string | undefined): boolean {
   return task.assignee?.id === userId;
 }
 
-/** Display label for each task status. */
 export const statusLabels: Record<TaskStatus, string> = {
   TODO: 'To do',
   IN_PROGRESS: 'In progress',
@@ -65,17 +60,14 @@ export const nextStatus: Record<TaskStatus, TaskStatus> = {
 
 const priorityOrder: Record<TaskPriority, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
 
-/** Comparator: sorts tasks by priority, highest first. */
 export function byPriority(a: Task, b: Task): number {
   return priorityOrder[a.priority] - priorityOrder[b.priority];
 }
 
-/** Today's local date as `YYYY-MM-DD`. */
 export function todayISO(now: Date = new Date()): string {
   return now.toLocaleDateString('en-CA');
 }
 
-/** Returns a new date `days` after `now` (negative `days` goes back). */
 export function addDays(now: Date, days: number): Date {
   const date = new Date(now);
   date.setDate(date.getDate() + days);
@@ -94,7 +86,6 @@ export function getTaskState(task: Task, now: Date = new Date()): TaskState {
   return 'upcoming';
 }
 
-/** Whether a task is due on the given `YYYY-MM-DD` date. */
 export function isDueOn(task: Task, isoDate: string): boolean {
   return task.dueDate === isoDate;
 }
@@ -107,12 +98,10 @@ export function byDueTime(a: Task, b: Task): number {
   return 0;
 }
 
-/** Comparator: sorts tasks by full deadline (date + time), earliest first. */
 export function byDeadline(a: Task, b: Task): number {
   return taskDueAt(a).getTime() - taskDueAt(b).getTime();
 }
 
-/** A titled group of tasks rendered as one section of the task board. */
 export interface TaskGroup {
   key: string;
   title: string;
@@ -136,7 +125,6 @@ export function groupByDateState(tasks: Task[], now: Date, sortFn: (a: Task, b: 
 export type TaskStatusFilter = 'all' | 'active' | 'completed';
 export type TaskSort = 'deadline' | 'priority';
 
-/** Picks the comparator for the chosen sort mode. */
 export function taskSorter(sort: TaskSort): (a: Task, b: Task) => number {
   return sort === 'priority' ? byPriority : byDeadline;
 }

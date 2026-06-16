@@ -1,4 +1,3 @@
-/** Time range the statistics are aggregated over. */
 export type StatsPeriod = 'WEEK' | 'MONTH' | 'YEAR';
 
 /** One bar/point of a chart: `label` (x-axis) with a `count` and/or money `amount`. */

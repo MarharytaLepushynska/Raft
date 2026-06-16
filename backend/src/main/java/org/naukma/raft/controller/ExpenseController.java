@@ -5,11 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.naukma.raft.dto.request.CreateExpenseRequest;
 import org.naukma.raft.dto.response.ExpenseResponse;
 import org.naukma.raft.dto.response.PersonalExpenseStatsResponse;
-import org.naukma.raft.dto.response.WorkspaceExpenseStatsResponse;
 import org.naukma.raft.security.CustomUserDetails;
 import org.naukma.raft.service.ExpenseService;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +14,18 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
+/**
+ * REST controller managing shared balances, bill splitting, and workspace debt calculations.
+ */
 @RestController
 @RequestMapping("/api/expenses")
 @RequiredArgsConstructor
 public class ExpenseController {
     private final ExpenseService expenseService;
 
+    /** Records a new joint bill and fractions it dynamically between group participants. */
     @PostMapping
     public ResponseEntity<ExpenseResponse> createExpense(
             @Valid @RequestBody CreateExpenseRequest request,
@@ -37,6 +36,7 @@ public class ExpenseController {
                 .body(expenseService.createExpense(request, userId));
     }
 
+    /** Generates personal debt sheets, transaction histories, and overall spending balances. */
     @GetMapping("/my")
     public ResponseEntity<PersonalExpenseStatsResponse> getPersonalStats(
             @RequestParam(required = false)
@@ -51,6 +51,7 @@ public class ExpenseController {
         return ResponseEntity.ok(expenseService.getPersonalStats(userId, from, to, page, size));
     }
 
+    /** Marks a specific bill share as settled between lenders and debtors. */
     @PatchMapping("/splits/{splitId}/settle")
     public ResponseEntity<Void> settleSplit(
             @PathVariable Long splitId,

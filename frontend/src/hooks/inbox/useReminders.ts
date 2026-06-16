@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import { getReminders, createReminder, updateReminder, deleteReminder } from '@/api/reminders';
 import type { Reminder, CreateReminderInput, UpdateReminderInput } from '@/types/reminder';
 
+/** Loads all reminders with create/update/remove, and helpers to look up or set the reminder for a task or event. */
 export function useReminders() {
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [loading, setLoading] = useState(true);

@@ -1,4 +1,3 @@
-/** `PERSONAL` (solo, no chat/members) or `SHARED` (collaborative). */
 export type WorkspaceType = 'PERSONAL' | 'SHARED';
 export type MemberRole = 'ADMIN' | 'MEMBER';
 export type WorkspaceColor =

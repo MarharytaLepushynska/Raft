@@ -6,11 +6,16 @@ import org.naukma.raft.entity.Achievement;
 import org.naukma.raft.repository.AchievementRepository;
 import org.springframework.stereotype.Component;
 
+/**
+ * Seeds the database with default achievements on application startup.
+ * Checks for missing records by code to prevent duplicates.
+ */
 @Component
 @RequiredArgsConstructor
 public class AchievementSeeder {
     private final AchievementRepository achievementRepository;
 
+    /** Populates predefined system achievements if they do not exist yet. */
     @PostConstruct
     public void seed() {
         seedIfMissing("TASKS_10", "10 завдань виконано", "Виконайте 10 завдань", "tasks-10.png");
@@ -25,6 +30,7 @@ public class AchievementSeeder {
         seedIfMissing("FIRST_WEEK", "Перший тиждень", "Користуйтесь Raft 7 днів", "week-1.png");
     }
 
+    /** Saves an achievement only if its unique code is not present in the database. */
     private void seedIfMissing(String code, String title, String description, String icon) {
         if (achievementRepository.findByCode(code).isEmpty()) {
             achievementRepository.save(Achievement.builder()

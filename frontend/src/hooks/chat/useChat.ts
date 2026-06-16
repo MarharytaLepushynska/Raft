@@ -4,6 +4,7 @@ import type { ChatMessage } from '@/types/chat';
 
 const POLL_MS = 5000;
 
+/** Loads a workspace's messages, polling every 5s and marking the chat read on each load. Exposes send/edit/remove. */
 export function useChat(workspaceId: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 

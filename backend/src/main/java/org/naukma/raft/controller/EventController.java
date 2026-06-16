@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller for calendar events, tracking schedules, and workspace timelines.
+ */
 @RestController
 @RequestMapping("api/events")
 @RequiredArgsConstructor
@@ -21,11 +24,13 @@ public class EventController {
 
     private final EventService eventService;
 
+    /** Lists all calendar events associated with the authenticated user's environments. */
     @GetMapping
     public ResponseEntity<List<EventResponse>> getEvents(@AuthenticationPrincipal CustomUserDetails user) {
         return ResponseEntity.ok(eventService.getEvents(user.getId()));
     }
 
+    /** Schedules a new calendar event within a personal or shared workspace. */
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(
             @AuthenticationPrincipal CustomUserDetails user,
@@ -36,6 +41,7 @@ public class EventController {
                 .body(eventService.createEvent(user.getId(), request));
     }
 
+    /** Modifies date, bounds, or details of a specific calendar slot. */
     @PatchMapping("/{id}")
     public ResponseEntity<EventResponse> updateEvent(
             @AuthenticationPrincipal CustomUserDetails user,
@@ -45,6 +51,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.updateEvent(user.getId(), id, request));
     }
 
+    /** Cancels and removes an event from the calendar layout. */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(
             @AuthenticationPrincipal CustomUserDetails user,

@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import { getNotifications, getUnreadCount, markAsRead, markAllAsRead, deleteNotification } from '@/api/notifications';
 import type { Notification } from '@/types/notification';
 
+/** Loads inbox notifications and the unread count, with markOne/markAll/remove that keep the count in sync. */
 export function useNotifications() {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(2);

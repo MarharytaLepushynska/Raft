@@ -6,6 +6,7 @@ interface UseTasksOptions {
   workspaceId?: string;
 }
 
+/** Loads tasks and lets you create/update/remove them. Pass a workspaceId to keep only that space's tasks. */
 export function useTasks({ workspaceId }: UseTasksOptions = {}) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);

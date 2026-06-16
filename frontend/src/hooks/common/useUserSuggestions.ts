@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { searchUsers } from '@/api/user';
 import type { User } from '@/types/user';
 
+/** Searches users matching `query` (debounced 200ms) and returns the matches for an autocomplete. */
 export function useUserSuggestions(query: string): User[] {
   const [suggestions, setSuggestions] = useState<User[]>([]);
 

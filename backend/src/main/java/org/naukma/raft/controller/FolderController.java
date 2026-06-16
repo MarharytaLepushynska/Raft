@@ -14,17 +14,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller handling directories and categorical binders for user assets or files.
+ */
 @RestController
 @RequestMapping("api/folders")
 @RequiredArgsConstructor
 public class FolderController {
     private final FolderService folderService;
 
+    /** Retrieves all available storage binders accessible by the current profile. */
     @GetMapping
     public ResponseEntity<List<FolderResponse>> getFolders(@AuthenticationPrincipal CustomUserDetails user) {
         return ResponseEntity.ok(folderService.getFolders(user.getId()));
     }
 
+    /** Spawns a new workspace or dashboard context binder. */
     @PostMapping
     public ResponseEntity<FolderResponse> createFolder(
             @AuthenticationPrincipal CustomUserDetails user,
@@ -35,6 +40,7 @@ public class FolderController {
                 .body(folderService.createFolder(user.getId(), request));
     }
 
+    /** Renames or realigns settings of an existing organizational binder. */
     @PatchMapping("/{id}")
     public ResponseEntity<FolderResponse> updateFolder(
             @AuthenticationPrincipal CustomUserDetails user,
@@ -44,6 +50,7 @@ public class FolderController {
         return ResponseEntity.ok(folderService.updateFolder(user.getId(), id, request));
     }
 
+    /** Discards a folder, affecting its internal structural indices. */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFolder(
             @AuthenticationPrincipal CustomUserDetails user,

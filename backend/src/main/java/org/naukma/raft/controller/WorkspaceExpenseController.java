@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * REST controller for tracking ledger operations and transaction sheets scoped to a single workspace.
+ */
 @RestController
 @RequestMapping("/api/workspaces/{workspaceId}/expenses")
 @RequiredArgsConstructor
 public class WorkspaceExpenseController {
     private final ExpenseService expenseService;
 
+    /** Compiles collective pool status balances and historical debt matrices inside a workspace node. */
     @GetMapping("/stats")
     public ResponseEntity<WorkspaceExpenseStatsResponse> getWorkspaceStats(
             @PathVariable Long workspaceId,
@@ -30,6 +34,7 @@ public class WorkspaceExpenseController {
         return ResponseEntity.ok(expenseService.getWorkspaceStats(workspaceId, userId));
     }
 
+    /** Pulls transaction items and invoices attached strictly within a specific workspace boundary. */
     @GetMapping
     public ResponseEntity<List<ExpenseResponse>> getExpenses(
             @PathVariable Long workspaceId,

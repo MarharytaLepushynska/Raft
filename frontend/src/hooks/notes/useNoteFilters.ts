@@ -17,6 +17,7 @@ export const FOLDER_TYPE_OPTIONS: { value: FolderTypeFilter; label: string }[] =
     { value: 'SHARED', label: 'Shared' },
 ];
 
+/** Holds the notes page's search/sort/filter state and returns the filtered folders and notes (split into mine vs teammates'). */
 export function useNoteFilters(notes: Note[], folders: Folder[], currentUserId: string | undefined) {
     const [noteSearch, setNoteSearch] = useState('');
     const [folderSearch, setFolderSearch] = useState('');

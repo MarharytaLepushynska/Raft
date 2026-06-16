@@ -6,6 +6,7 @@ interface UseEventsOptions {
   workspaceId?: string;
 }
 
+/** Loads calendar events with create/update/remove. A workspaceId narrows them to one space. */
 export function useEvents({ workspaceId }: UseEventsOptions = {}) {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getFolders, createFolder, updateFolder, deleteFolder } from '@/api/folders.ts';
 import type { Folder, CreateFolderInput, UpdateFolderInput } from '@/types/folder.ts';
 
+/** Loads note folders and lets you create/update/remove them. */
 export function useFolders() {
     const [folders, setFolders] = useState<Folder[]>([]);
     const [loading, setLoading] = useState(true);
