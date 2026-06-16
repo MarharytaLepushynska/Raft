@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class StatisticsService {
         long dueTodayTasks = taskRepository.countDueTodayUserTasks(userId, today);
         long dueThisWeekTasks = taskRepository.countDueThisWeekUserTasks(userId, today, weekEnd);
 
-        long upcomingReminders = reminderRepository.countUpcomingUserReminders(userId, LocalDateTime.now());
+        long upcomingReminders = reminderRepository.countUpcomingUserReminders(userId, LocalDateTime.now(ZoneId.of("Europe/Kyiv")));
 
         long earnedAchievements = userAchievementRepository.countByUser_Id(userId);
         long totalAchievements = achievementRepository.count();

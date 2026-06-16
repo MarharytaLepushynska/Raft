@@ -21,6 +21,7 @@ import org.naukma.raft.repository.WorkspaceMemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.time.LocalDateTime;
 
@@ -163,7 +164,7 @@ public class ReminderService {
      */
     @Transactional
     public int processDueReminders() {
-        List<Reminder> dueReminders = reminderRepository.findDueReminders(LocalDateTime.now());
+        List<Reminder> dueReminders = reminderRepository.findDueReminders(LocalDateTime.now(ZoneId.of("Europe/Kyiv")));
 
         dueReminders.forEach(reminder -> {
             notificationService.createNotification(

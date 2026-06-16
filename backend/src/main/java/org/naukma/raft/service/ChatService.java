@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -289,7 +290,7 @@ public class ChatService {
                         .user(user)
                         .build());
 
-        readState.setLastReadAt(LocalDateTime.now());
+        readState.setLastReadAt(LocalDateTime.now(ZoneId.of("Europe/Kyiv")));
 
         chatReadStateRepository.save(readState);
     }

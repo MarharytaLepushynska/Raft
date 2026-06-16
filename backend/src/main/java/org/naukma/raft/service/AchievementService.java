@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.naukma.raft.errorsHadling.NotFoundException;
 
+import java.time.ZoneId;
 import java.util.List;
 
 import java.time.LocalDateTime;
@@ -165,7 +166,7 @@ public class AchievementService {
         String code = "FIRST_WEEK";
         if (alreadyEarned(user, code)) return;
 
-        if (user.getCreated().isBefore(LocalDateTime.now().minusDays(7))) {
+        if (user.getCreated().isBefore(LocalDateTime.now(ZoneId.of("Europe/Kyiv")).minusDays(7))) {
             grantAchievement(user, code);
         }
     }
@@ -299,7 +300,7 @@ public class AchievementService {
         UserAchievement userAchievement = UserAchievement.builder()
                 .user(user)
                 .achievement(achievement)
-                .earnedAt(LocalDateTime.now())
+                .earnedAt(LocalDateTime.now(ZoneId.of("Europe/Kyiv")))
                 .build();
 
         userAchievementRepository.save(userAchievement);
